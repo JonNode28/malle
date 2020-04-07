@@ -1,7 +1,7 @@
 # Malle
 The CMS that does less than any other. 
 
-Most CMSs do way too much and end up cause more problems than they save.
+Most CMSs do too much and end up causing more problems than they save.
 
 By comparison, Malle is:
 1. Generic - compose the data structure you want to manage from primitive data types
@@ -12,10 +12,10 @@ By comparison, Malle is:
 1. Renderer - iterates model configuration and renders CMS UI
     1. React
     1. Angular (roadmap)
-1. Content Types - set of content types
+1. Content Types - a basic set of content types
     1. React
     1. Angular (roadmap)
-1. Validator - validates your data
+1. Validator - validates your data, client and server side
     1. JsonSchema
     1. YUP (roadmap)
 1. API - a backend interface
@@ -25,7 +25,6 @@ By comparison, Malle is:
     1. Koa bootstrapper (roadmap)
 1. Infrastructure Provisioner
     1. AWS AppSync + Lambda + CloudFront + S3
-1. Validator - validates your data
 1. Persistence Adaptors
     1. Primary
         1. MongoDB
@@ -44,7 +43,6 @@ By comparison, Malle is:
 ## Specifications
 
 ### API
-Malle requires certain backend functionality be available
 * List
     * Filter
     * Sort
