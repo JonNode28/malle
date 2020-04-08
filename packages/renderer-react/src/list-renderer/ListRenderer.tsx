@@ -16,7 +16,7 @@ type MalleModelConfig = {
 type MallePropertyConfig = {
   id: string,
   name: string,
-  description: string,
+  description?: string,
   type: string,
   validations: Array<MalleValidationConfig>
 };
