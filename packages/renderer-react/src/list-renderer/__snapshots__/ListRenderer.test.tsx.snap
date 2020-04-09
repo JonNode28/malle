@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ListRenderer /> when display.list config is defined should use 'render' method when defined 1`] = `
+<div
+  class="custom-ui-for-list-items"
+  data-testid="item"
+>
+  Some nameSome descriptive text
+</div>
+`;
+
+exports[`<ListRenderer /> when display.list config is defined should use identityPaths, display.list.namePaths and display.list.descriptionPaths paths when defined 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some Special Name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some special descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "Description" to guess as "description" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some Name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "ID" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "Id" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "Name" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "Title" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "description" to guess as "description" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some Name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "id" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "name" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListRenderer /> when no display.list config is defined should look for a prop called "title" to guess as "name" text 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="name"
+    data-testid="name"
+  >
+    Some name
+  </span>
+  <span
+    class="description"
+    data-testid="description"
+  >
+    Some descriptive text
+  </span>
+</div>
+`;

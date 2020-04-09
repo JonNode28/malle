@@ -6,11 +6,15 @@ module.exports = {
     "\\.(pcss|css|less)$": "identity-obj-proxy"
   },
   setupFilesAfterEnv: [ './setupTests.ts' ],
-  automock: true,
-  unmockedModulePathPatterns: [],
+  unmockedModulePathPatterns: [
+    'enzyme',
+    'ramda',
+    '@testing-library/react',
+    '@testing-library/jest-dom/extend-expect'
+  ],
   snapshotSerializers: [
-    'enzyme-to-json'
+
   ],
   testMatch: ['<rootDir>/**/*.test.ts*'],
-  testPathIgnorePatterns: ['node_modules'],
+  testPathIgnorePatterns: ['node_modules']
 };
