@@ -1,13 +1,26 @@
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useState, ReactNode, ComponentType } from 'react'
+import { getItemId } from '../util/id';
 import * as R from 'ramda';
 import service from '../service';
 import s from './ListRenderer.pcss';
+import { ListItemProps } from "./ListItemProps";
 
-type Props = {
-  config: MalleModelConfig
+export interface Props {
+  config: MalleModelConfig,
+  itemRenderer?: ComponentType<ListItemProps>,
+  validator?: (data: any) => ValidationResult
 }
 
-export type MalleModelConfig = {
+interface ValidationResult {
+  errors: Array<PropertyValidationErrors>
+}
+
+interface PropertyValidationErrors {
+  id: any,
+  messages: Array<string>
+}
+
+export interface MalleModelConfig {
   id: string,
   name: string,
   description?: string,
@@ -15,27 +28,29 @@ export type MalleModelConfig = {
   identityPath?: Array<string>,
   display?: {
     list?: {
-      namePath?: Array<string>,
-      descriptionPath?: Array<string>,
+      titlePath?: Array<string>,
+      subtextPath?: Array<string>,
       render?: (...args: any[]) => ReactNode
     }
   }
-};
+}
 
-type MallePropertyConfig = {
+interface MallePropertyConfig {
   id: string,
   name?: string,
   description?: string,
   type: string,
   validations?: Array<MalleValidationConfig>
-};
+}
 
-type MalleValidationConfig = {
+interface MalleValidationConfig {
   errorMessage: string,
   options: any
-};
+}
 
-function ListRenderer({ config }: Props): any {
+export default function ListRenderer({ config, itemRenderer, validator }: Props): any {
+
+  if(!config) throw Error('Model configuration is required');
 
   const [ skip, setSkip ] = useState(0);
   const [ take, setTake ] = useState(10);
@@ -50,60 +65,13 @@ function ListRenderer({ config }: Props): any {
       setLoading(false);
     })()
   }, [ ]);
-
+  const ItemRenderer = itemRenderer || (({item, index}) => <div key={index}>Missing {config.id} Item Renderer. Item Data: {JSON.stringify(item)}</div>);
   return (
     <div className={s['list-renderer']}>
       <h1>{config.name}</h1>
       <p>{config.description}</p>
       {loading && <div>loading...</div>}
-      {items.map((item, i) => {
-        if(config.display?.list?.render){
-          return config.display.list.render(item);
-        } else if(config.display?.list?.descriptionPath || config.display?.list?.namePath){
-            return renderItemWithPaths(config, item, i,)
-          }
-        return renderItemBestEffort(config, item, i);
-
-      })}
+      {items.map((item, i) => <ItemRenderer key={getItemId(config.identityPath, item)} item={item} index={i} />)}
     </div>
-  );
+ );
 }
-
-function renderItemBestEffort(config: MalleModelConfig, item: any, index: number){
-  const id: any = config.identityPath ?
-    R.path(config.identityPath, item) :
-    getFirstWithValue([['id'], ['Id'], ['ID'], ['key'], ['Key']], item);
-  const name: any = getFirstWithValue([['name'], ['Name'], ['title'], ['Title'], ['id'], ['Id'], ['ID']], item);
-  const description: any = getFirstWithValue([['description'], ['Description']], item);
-
-  return renderItem(id || `${config.id}-${index}`, name || "Untitled", description);
-}
-
-function renderItemWithPaths(config:MalleModelConfig, item: any, index:number){
-  const id: any = config.identityPath && getFirstWithValue([ config.identityPath ], item);
-  const name: any = config.display?.list?.namePath ? getFirstWithValue([ config.display.list.namePath ], item) : null;
-  const description: any = config.display?.list?.descriptionPath ? getFirstWithValue([ config.display.list.descriptionPath ], item) : null;
-
-  return renderItem(id || `${config.id}-${index}`, name || "Untitled", description);
-}
-
-function renderItem(id: string, name: string, description?: string){
-  return (
-    <div key={id} data-testid='item'>
-      <span className={s.name} data-testid='name'>{name}</span>
-      {description && <span className={s.description} data-testid='description'>{description}</span>}
-    </div>
-  );
-}
-
-function getFirstWithValue(paths: Array<Array<string>>, obj: object){
-  let value = null;
-  paths.some(path => {
-    value = R.path(path, obj);
-    return value;
-  });
-  return value;
-}
-
-
-export default ListRenderer;

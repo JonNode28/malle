@@ -1,0 +1,209 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ListItem /> should use idPath, titlePath and subtextPath when defined 1`] = `
+<div
+  data-testid="item"
+>
+  <span
+    class="title"
+    data-testid="title"
+  >
+    Some Special Name
+  </span>
+  <span
+    class="subtext"
+    data-testid="subtext"
+  >
+    Some special descriptive text
+  </span>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "Description" to guess as subtext 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some Name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "ID" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "Id" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "Name" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "Title" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "description" to guess as subtext 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some Name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "id" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "name" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;
+
+exports[`<ListItem /> when no paths are passed in should look for a property called "title" to guess as title 1`] = `
+<div>
+  <div
+    data-testid="item"
+  >
+    <span
+      class="title"
+      data-testid="title"
+    >
+      Some name
+    </span>
+    <span
+      class="subtext"
+      data-testid="subtext"
+    >
+      Some descriptive text
+    </span>
+  </div>
+</div>
+`;

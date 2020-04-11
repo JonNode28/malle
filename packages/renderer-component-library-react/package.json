@@ -1,5 +1,5 @@
 {
-  "name": "malle-renderer-react",
+  "name": "malle-renderer-component-library-react",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -43,7 +43,7 @@
     "enzyme-to-json": "^3.4.4",
     "eslint": "^6.8.0",
     "identity-obj-proxy": "^3.0.0",
-    "malle-renderer-component-library-react": "file:../renderer-component-library-react",
+    "malle-renderer-react": "file:../renderer-react",
     "ramda": "^0.27.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

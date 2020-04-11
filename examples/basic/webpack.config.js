@@ -29,10 +29,51 @@ module.exports = (_env, argv) => {
           }
         },
         {
+          test: /\.pcss$/,
+          exclude: /node_modules/,
+          use: [
+            { loader: 'style-loader' },
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+                sourceMap: false,
+                modules: {
+                  localIdentName: '[path]__[name]__[local]--[hash:base64:5]'
+                }
+              }
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                sourceMap: 'inline',
+                config: {
+                  path: path.resolve(__dirname, './config/postcss.config.js')
+                }
+              }
+            }
+          ]
+        },
+        {
+          test: /\.(gif|png|jpe?g|svg)$/i,
+          use: [{ loader: 'file-loader', options: { publicPath: '/' }}]
+        },
+        {
           test: /\.html$/,
           use: [
             {
               loader: 'html-loader'
+            }
+          ]
+        },
+        {
+          test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+          use: [
+            {
+              loader: 'url-loader',
+              options: {
+                name: '[name].[ext]',
+              }
             }
           ]
         }

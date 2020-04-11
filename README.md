@@ -50,3 +50,12 @@ By comparison, Malle is:
     * Autocomplete
 * Save
 * Delete
+
+## Definition of done
+* Functionality
+* Unit Tests
+* Cypress Tests (optional but check if appropriate)
+* Added to example (optional but check if appropriate)
+
+## Contributing
+See [Contributing Docs](./docs/contributing.md)
