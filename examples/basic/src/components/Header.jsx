@@ -4,8 +4,10 @@ import s from './Header.pcss';
 export default function Header({}) {
   return (
     <header className={s.header}>
-      <h1 className={s.logo}>Malle CMS</h1>
-      <p className={s.subtext}>- doing less than any one else</p>
+      <div className={s.logo}>
+        <h1 className={s.text}>Scopic CMS</h1>
+        <p className={s.subtext}>less than anyone else</p>
+      </div>
     </header>
   );
 }
