@@ -1,26 +1,111 @@
 .header{
     position: fixed;
+    display: flex;
+    align-items: flex-start;
     top: 0;
     left: 0;
     right: 0;
     padding: 0;
     background: rgb(213,7,74);
     background: linear-gradient(146deg, rgba(213,7,74,1) 0%, rgba(0,212,255,1) 100%);
+    z-index: 1000;
+    transition-property: height;
+}
+
+.header.expanded{
+    height: 100vh;
+}
+
+.headerContent{
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.searchResults{
+    display: none;
+    align-items: flex-start;
+}
+.header.expanded .searchResults{
+    display: flex;
 }
 
 .logo{
-    display: inline-block;
     background-color: #ff0049;
-    padding: 10px;
+    padding: 10px 20px 10px 10px;
+}
+.logo img{
+    margin-top:3px;
+    width: 38px;
+    vertical-align: sub;
+}
+
+@media (max-width: 699px) {
+    .logoText{
+        display: none;
+    }
 }
 
 .text{
     display: inline-block;
-    margin: 7px 0 0 0;
+    margin: 0;
 }
 
-p.subtext{
-    display: inline-block;
-    vertical-align: super;
-    margin: 3px 0 0 10px;
+.searchInputContainer{
+    position: relative;
+    display: flex;
+    margin-left: 1rem;
+}
+
+.header.expanded .searchInputContainer{
+    flex-grow: 1;
+}
+
+.searchInput{
+    border: 0 none transparent;
+    padding: 5px 20px 5px 5px;
+    border-radius: 5px;
+    outline: none;
+    color: #9DBFAF;
+    transition-property: padding, font-size;
+    transition-duration: 200ms;
+}
+
+.header.expanded .searchInput{
+    border: 3px solid #00B4CC;
+    color: #00B4CC;
+    font-size: 1.2em;
+    padding: 10px 20px 10px 10px;
+    width: 100%;
+    border-radius: 10px;
+}
+@media (max-width: 699px){
+    .header.expanded .searchInput{
+        font-size: 0.7em;
+    }
+}
+
+.searchButton{
+    border: 0 none transparent;
+    background: transparent;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+}
+
+.searchButton img{
+    width: 20px;
+    margin-left: -45px;
+}
+
+.searchExit{
+    align-self: normal;
+    background-color: transparent;
+    border: 0 none transparent;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.searchExit img{
+    width: 20px;
 }

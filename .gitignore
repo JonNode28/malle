@@ -2,3 +2,4 @@
 *node_modules*
 /packages/renderer-react/dist/*
 /packages/renderer-component-library-react/dist/*
+/examples/basic/dist/*
