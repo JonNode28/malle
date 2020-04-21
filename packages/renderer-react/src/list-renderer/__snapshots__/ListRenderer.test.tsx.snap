@@ -2,7 +2,7 @@
 
 exports[`<ListRenderer /> should render items using the supplied item renderer 1`] = `
 <div
-  data-testid="home-rolled-item-renderer"
+  data-testid="item-renderer"
 >
   #
   1
@@ -10,5 +10,17 @@ exports[`<ListRenderer /> should render items using the supplied item renderer 1
   some page name
    - 
   blah blah blah
+</div>
+`;
+
+exports[`<ListRenderer /> should render items using the supplied pagination control 1`] = `
+<div
+  data-testid="pagination"
+>
+  0
+   - 
+  10
+   - 
+  0
 </div>
 `;

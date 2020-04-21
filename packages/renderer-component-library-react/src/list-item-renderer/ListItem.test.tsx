@@ -45,14 +45,19 @@ describe('<ListItem />', () => {
   });
 
   it('should use idPath, titlePath and subtextPath when defined', async () => {
-    const ListItem = <ListItemRenderer
+    render(<ListItemRenderer
       idPath={[ 'aSpecialId' ]}
       titlePath={[ 'aSpecialName' ]}
-      subtextPath={[ 'aSpecialDescription' ]} />
-    // render(<ListItem item);
+      subtextPath={[ 'aSpecialDescription' ]}
+      item={{
+        aSpecialId: 'some-special-id',
+        aSpecialName: 'Some Special Name',
+        aSpecialDescription: 'blah blah special blah',
+      }}
+    />);
     const item = screen.getByTestId('item');
     expect(within(item).getByTestId('title')).toHaveTextContent('Some Special Name');
-    expect(within(item).getByTestId('subtext')).toHaveTextContent('Some special descriptive text');
+    expect(within(item).getByTestId('subtext')).toHaveTextContent('blah blah special blah');
     expect(item).toMatchSnapshot();
   });
 
