@@ -12,6 +12,7 @@
     transition-duration: 200ms;
     height: 60px;
     backdrop-filter: blur(10px);
+    overflow: hidden;
 }
 
 .header.expanded{
@@ -28,13 +29,15 @@
 
 .searchResults{
     display: flex;
-    transition-property: opacity;
+    transition-property: opacity, visibility;
     transition-duration: 200ms;
     opacity: 0;
+    visibility: hidden;
     align-items: flex-start;
 }
 .header.expanded .searchResults{
     opacity: 1;
+    visibility: visible;
 }
 
 .logo{
