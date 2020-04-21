@@ -1,4 +1,4 @@
-const listFns: { [id: string]:  () => Promise<ListResult>} = {};
+const listFns: { [id: string]:  (skip: number, take: number) => Promise<ListResult>} = {};
 
 type ListResult = {
   items: Array<any>,
@@ -8,12 +8,13 @@ type ListResult = {
 }
 
 export default {
-  init: (modelId: string, fn: () => Promise<ListResult>) => {
+  init: (modelId: string, fn: (skip: number, take: number) => Promise<ListResult>) => {
     listFns[modelId] = fn;
   },
-  list: async (modelId: string): Promise<ListResult> => {
+  list: async (modelId: string, skip: number = 0, take: number = 10): Promise<ListResult> => {
     const fn = listFns[modelId];
     if(!fn) throw new Error(`'${modelId}' doesn't have a list function`);
-    return fn();
+    console.log(`Loading ${modelId} (skip: ${skip}, take: ${take}`);
+    return fn(skip, take);
   }
 }
