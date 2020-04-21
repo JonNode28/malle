@@ -5,15 +5,16 @@ export function getItemId(idPath:Array<string> | null | undefined, item: any): s
   const id = idPath ?
     R.path(idPath, item) :
     getFirstWithValue(idPropertyCandidates.map(candidate => [ candidate ]), item);
-  if(!id) throw Error(`Couldn't guess a sensible property as id. Tried ${idPropertyCandidates.join(', ')}.`)
+  if(id === null) throw Error(`Couldn't guess a sensible property as id. Tried ${idPropertyCandidates.join(', ')}.`)
   return id as string;
 }
 
-function getFirstWithValue(paths: Array<Array<string>>, obj: object): string{
-  let value: number | string = '';
+function getFirstWithValue(paths: Array<Array<string>>, obj: object): string | null{
+  let value: number | string | null = null;
   paths.some(path => {
-    value = R.path(path, obj) as string;
-    return value;
+    const attemptedValue = R.path(path, obj) as string;
+    if(attemptedValue !== undefined) value = attemptedValue;
+    return attemptedValue;
   });
   return value;
 }

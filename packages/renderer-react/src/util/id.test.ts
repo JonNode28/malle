@@ -5,7 +5,7 @@ describe('getItemId()', () => {
     const id = getItemId([ 'specialId' ], { specialId: 'some-id'});
     expect(id).toBe('some-id');
   });
-  it.each(['id', 'Id', 'ID', 'key', 'Key'])('should default to a sensible property when no idPath is provided', (prop) => {
+  it.each(['id', 'Id', 'ID', 'key', 'Key'])(`should default to a sensible property '%p' when no idPath is provided`, (prop) => {
     const id = getItemId(null, { [prop]: 'some-id'});
     expect(id).toBe('some-id');
   });
@@ -13,6 +13,9 @@ describe('getItemId()', () => {
     expect(() => {
       getItemId(null, { specialId: 'some-id'});
     }).toThrow();
+  });
+  it.each([false, 0, -0,])(`should not error with falsy id value '%p'`, (falsyIdValue) => {
+    getItemId(null, { id: falsyIdValue});
   });
 });
 
