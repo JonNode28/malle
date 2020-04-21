@@ -2,6 +2,8 @@ import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
 import external from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
+import postcssImport from 'postcss-import';
+import postcssVariables from 'postcss-css-variables';
 import resolve from 'rollup-plugin-node-resolve'
 import url from 'rollup-plugin-url'
 import typescriptPlugin from 'rollup-plugin-typescript2'
@@ -36,7 +38,13 @@ export default {
       typescript
     }),
     postcss({
-      modules: true
+      modules: true,
+      plugins: [
+        postcssImport({
+          from: 'src'
+        }),
+        postcssVariables()
+      ]
     }),
     url(),
     svgr(),
