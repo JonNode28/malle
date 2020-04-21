@@ -3,31 +3,23 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 import { service } from 'malle-renderer-react';
-service.init('page', () => {
+
+const numberOfPages = 1097
+const pages = [...new Array(numberOfPages)].map((_, i) => {
   return {
-    count: 1,
+    id: i,
+    somethingElse: `blah blah ${i}`,
+    name: `Some name ${i}`,
+    description: `Some descriptive text ${i}`
+  }
+})
+
+service.init('page', (skip, take) => {
+  return {
+    count: pages.length,
     skip: 0,
     take: 10,
-    items: [
-      {
-        id: 1,
-        somethingElse: 'blah blah 1',
-        name: 'Some name 1',
-        description: 'Some descriptive text 1'
-      },
-      {
-        id: 2,
-        somethingElse: 'blah blah 2',
-        name: 'Some name 2',
-        description: 'Some descriptive text 2'
-      },
-      {
-        id: 3,
-        somethingElse: 'blah blah 3',
-        name: 'Some name 3',
-        description: 'Some descriptive text 3'
-      }
-    ]
+    items: pages.slice(skip || 0, (skip || 0) + (take || 10))
   };
 })
 
