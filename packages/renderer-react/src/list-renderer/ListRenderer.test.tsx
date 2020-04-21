@@ -4,7 +4,7 @@ import ListRenderer, {MalleModelConfig} from "./ListRenderer";
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import {ListItemProps} from "./ListItemProps";
+import { ListItemProps } from "../ListItemProps";
 
 jest.mock('../service');
 const mockedService = service as jest.Mocked<typeof service>;

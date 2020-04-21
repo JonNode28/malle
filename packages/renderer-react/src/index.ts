@@ -4,3 +4,5 @@ export * from './list-renderer';
 
 export { ListRenderer, service };
 
+export * from './ListItemProps';
+export * from './PaginationProps';
