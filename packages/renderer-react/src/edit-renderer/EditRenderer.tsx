@@ -3,7 +3,6 @@ import s from './EditRenderer.pcss';
 import ModelConfig from "../ModelConfig";
 import {expand, isPropertyConfig} from "../util/editDisplayConfig";
 import RendererError from "../renderer-error";
-import service from "../service";
 import {isEmpty} from "../util/id";
 import {PropertyConfig} from "../PropertyConfig";
 import EditDisplayConfig from "../EditDisplayConfig";
@@ -12,6 +11,7 @@ import {createNewInstance} from "../util/model";
 import {TypeRendererProps} from "./TypeRendererProps";
 import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
 import ErrorBoundary from "../error-boundary";
+import {useService} from "../data-provider/DataProvider";
 
 export interface EditRendererProps {
   config: ModelConfig,
@@ -23,6 +23,8 @@ export interface EditRendererProps {
 
 export default function EditRenderer({ config, id, typeRenderers, propertyTypeRenderers, renderError }: EditRendererProps){
   if(!config) throw Error('Model configuration is required');
+
+  const service = useService();
 
   const [ editingModel, setEditingModel ] = useState<any>()
   const [ loading, setLoading ] = useState(true);
