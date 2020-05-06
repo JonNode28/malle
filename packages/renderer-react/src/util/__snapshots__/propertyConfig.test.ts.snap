@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`propertyConfig utils getProp() should error when the prop can't be found 1`] = `"Couldn't find prop matching 'some-other-prop' from layout config. Check the property exists."`;
