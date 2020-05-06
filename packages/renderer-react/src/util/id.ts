@@ -5,8 +5,14 @@ export function getItemId(idPath:Array<string> | null | undefined, item: any): s
   const id = idPath ?
     R.path(idPath, item) :
     getFirstWithValue(idPropertyCandidates.map(candidate => [ candidate ]), item);
-  if(id === null) throw Error(`Couldn't guess a sensible property as id. Tried ${idPropertyCandidates.join(', ')}.`)
+  if(isEmpty(id)) throw Error(`Couldn't guess a sensible property as id. Tried ${idPropertyCandidates.join(', ')}.`)
   return id as string;
+}
+export function isEmpty(id: any): id is undefined | null {
+  return typeof id === 'undefined' ||
+    id === null ||
+    (typeof id === 'string' && id === '') ||
+    (typeof id === 'number' && isNaN(id));
 }
 
 function getFirstWithValue(paths: Array<Array<string>>, obj: object): string | null{
