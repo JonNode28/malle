@@ -1,15 +1,18 @@
-import React, { useEffect, useState, ReactNode, ComponentType } from 'react'
+import React, { useEffect, useState, ReactNode, ComponentType, Fragment } from 'react'
 import { getItemId } from '../util/id';
 import * as R from 'ramda';
-import service from '../service';
 import s from './ListRenderer.pcss';
 import { ListItemProps } from '../ListItemProps';
 import { PaginationProps } from '../PaginationProps';
+import RendererError from "../renderer-error";
+import ModelConfig from "../ModelConfig";
+import { useService } from "../data-provider/DataProvider";
 
 export interface Props {
-  config: MalleModelConfig,
-  itemRenderer: ComponentType<ListItemProps>,
+  config: ModelConfig,
+  renderItem: ComponentType<ListItemProps>,
   pagination: ComponentType<PaginationProps>,
+  error: ComponentType<ErrorProps>,
   validator?: (data: any) => ValidationResult
 }
 
@@ -22,37 +25,16 @@ interface PropertyValidationErrors {
   messages: Array<string>
 }
 
-export interface MalleModelConfig {
-  id: string,
-  name: string,
-  description?: string,
-  properties: Array<MallePropertyConfig>,
-  identityPath?: Array<string>,
-  display?: {
-    list?: {
-      titlePath?: Array<string>,
-      subtextPath?: Array<string>,
-      render?: (...args: any[]) => ReactNode
-    }
-  }
+interface ErrorProps{
+  title: string,
+  message: string
 }
 
-interface MallePropertyConfig {
-  id: string,
-  name?: string,
-  description?: string,
-  type: string,
-  validations?: Array<MalleValidationConfig>
-}
-
-interface MalleValidationConfig {
-  errorMessage: string,
-  options: any
-}
-
-export default function ListRenderer({ config, itemRenderer, pagination, validator }: Props): any {
+export default function ListRenderer({ config, renderItem, pagination, validator }: Props): any {
 
   if(!config) throw Error('Model configuration is required');
+
+  const service = useService();
 
   const [ skip, setSkip ] = useState(0);
   const [ take, setTake ] = useState(10);
@@ -70,22 +52,23 @@ export default function ListRenderer({ config, itemRenderer, pagination, validat
     })()
   }, [ skip, take ]);
 
-  const ItemRenderer = itemRenderer || (({item, index}) => {
-    return <div key={index} className={s.error}>Missing list item renderer control</div>;
+  const ItemRenderer = renderItem || (({item, index}) => {
+    return <RendererError key={index}>Missing list item renderer control</RendererError>;
   });
   const Pagination = pagination || (({ skip, take, count, onChange }) => {
-    return <div className={s.error}>Missing Pagination control</div>
-  })
+    return <RendererError>Missing Pagination control</RendererError>
+  });
   return (
-    <div className={s['list-renderer']}>
-      <h1>{config.name}</h1>
-      <p>{config.description}</p>
+    <Fragment>
       {loading && <div>loading...</div>}
-      {items.map((item, i) => <ItemRenderer key={getItemId(config.identityPath, item)} item={item} index={i} />)}
+      {items.map((item, i) => <ItemRenderer
+        key={getItemId(config.identityPath, item)}
+        item={item}
+        index={i}/>)}
       <Pagination skip={skip} take={take} count={count} onChange={(skip, take) => {
         setSkip(skip);
         setTake(take);
       }} />
-    </div>
+    </Fragment>
  );
 }
