@@ -3,7 +3,6 @@ import DataProvider, {useService} from "./DataProvider";
 import {Service} from "./Service";
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
-import mock = jest.mock;
 
 describe(`<DataProvider />`, () => {
   let mockService: Service;
