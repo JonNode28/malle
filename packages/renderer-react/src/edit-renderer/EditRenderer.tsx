@@ -2,7 +2,6 @@ import React, {Component, ComponentType, useEffect, useState} from "react";
 import s from './EditRenderer.pcss';
 import ModelConfig from "../ModelConfig";
 import {expand, isPropertyConfig} from "../util/editDisplayConfig";
-import RendererError from "../renderer-error";
 import {isEmpty} from "../util/id";
 import EditDisplayConfig from "../EditDisplayConfig";
 import {getProp, queryProp} from "../util/propertyConfig";
@@ -21,15 +20,15 @@ export interface EditRendererProps {
 }
 
 export default function EditRenderer({ config, id, typeRenderers, propertyTypeRenderers, errorRenderer }: EditRendererProps){
-  if(!config) throw Error('Model configuration is required');
+  const ErrorDisplayComponent: ComponentType<{ err: Error }> = errorRenderer || (({ err }) => <div data-testid='error'>error: {err.message}</div>);
+
+  if(!config) return <ErrorDisplayComponent err={new Error('Model configuration is required')} />;
 
   const service = useService();
 
   const [ editingModel, setEditingModel ] = useState<any>()
   const [ loading, setLoading ] = useState(true);
-  const [ error, setError ] = useState<string>();
-
-  const defaultedErrorRenderer: ComponentType<{ err: Error }> = errorRenderer || (({ err }) => <div data-testid='error'>error: {err.message}</div>);
+  const [ error, setError ] = useState<Error>();
 
   useEffect(() => {
     (async () => {
@@ -41,13 +40,13 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
           const getResult = await service.get(config.id, id);
           setLoading(false);
           if (!getResult.item) {
-            setError(`Couldn't find a ${config.name} with ID '${id}'`);
+            setError(new Error(`Couldn't find a ${config.name} with ID '${id}'`));
             return;
           }
           setEditingModel(getResult.item);
         } catch(err){
           setLoading(false);
-          setError(`There was a problem loading that ${config.name}: ${err.message}`);
+          setError(new Error(`There was a problem loading that ${config.name}: ${err.message}`));
         }
       }
     })()
@@ -56,12 +55,12 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
   return (
     <div className={s.editRenderer}>
 
-      {error && <RendererError>{error}</RendererError>}
+      {error && <ErrorDisplayComponent err={error} />}
 
       {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
       <form onSubmit={() => service.save(config.id, editingModel)} data-testid='form'>
-        <ErrorBoundary errorRenderer={defaultedErrorRenderer}>
+        <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
           {editingModel && renderFromDisplayConfig(config.display?.edit)}
         </ErrorBoundary>
         <button type='submit' data-testid='save'>Save</button>
@@ -76,7 +75,7 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
       const expandedDisplayConfig = expand(displayConfig, config.properties);
 
       return expandedDisplayConfig.map((itemDisplayConfig, i) => {
-        return <ErrorBoundary key={i} errorRenderer={defaultedErrorRenderer}>
+        return <ErrorBoundary key={i} errorRenderer={ErrorDisplayComponent}>
           {(() => {
             if (!itemDisplayConfig.typeRenderer) {
               throw new Error(`Somehow ${itemDisplayConfig.type} ended up without a type Renderer. Sounds like a problem with microo 🥺`);
@@ -113,8 +112,7 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
         </ErrorBoundary>
       });
     } catch(err){
-      const Error = defaultedErrorRenderer;
-      return <Error err={err} />
+      return <ErrorDisplayComponent err={err} />
     }
   }
 

@@ -99,6 +99,17 @@ describe(`<EditRenderer />`, () => {
       });
       expect(mockService.get).toHaveBeenCalledWith('page', 123);
     });
+    it(`should display an appropriate error when no model configuration is provided`, async () => {
+      await act(async() => {
+        render(
+          <DataProvider service={mockService}>
+            // @ts-ignore
+            <EditRenderer config={null} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          </DataProvider>);
+      });
+      const error = screen.getByTestId('error');
+      expect(error.textContent).toMatchSnapshot();
+    });
     it(`should display an appropriate error when it can't find item with the specified ID`, async () => {
       mockService.get.mockResolvedValue({
         item: null

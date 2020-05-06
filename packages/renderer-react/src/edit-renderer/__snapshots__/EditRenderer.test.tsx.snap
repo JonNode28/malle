@@ -22,6 +22,8 @@ exports[`<EditRenderer /> should render the UI for non-property display config 1
 
 exports[`<EditRenderer /> should show loading UI to begin with 1`] = `"loading..."`;
 
-exports[`<EditRenderer /> when editing an existing item should display an appropriate error when it can't find item with the specified ID 1`] = `"Couldn't find a Page with ID 'some-id'"`;
+exports[`<EditRenderer /> when editing an existing item should display an appropriate error when it can't find item with the specified ID 1`] = `"error: Couldn't find a Page with ID 'some-id'"`;
 
-exports[`<EditRenderer /> when editing an existing item should display an appropriate error when service can't load data 1`] = `"There was a problem loading that Page: some error message"`;
+exports[`<EditRenderer /> when editing an existing item should display an appropriate error when no model configuration is provided 1`] = `"error: Model configuration is required"`;
+
+exports[`<EditRenderer /> when editing an existing item should display an appropriate error when service can't load data 1`] = `"error: There was a problem loading that Page: some error message"`;
