@@ -1,5 +1,4 @@
 import React, {ComponentType} from "react";
-import service from '../service';
 import EditRenderer from "./EditRenderer";
 import { act, render, within, fireEvent } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
@@ -9,13 +8,12 @@ import ModelConfig from "../ModelConfig";
 import {prop} from "ramda";
 import {TypeRendererProps} from "./TypeRendererProps";
 import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
-
-jest.mock('../service');
-const mockedService = service as jest.Mocked<typeof service>;
+import DataProvider from "../data-provider";
 
 describe(`<EditRenderer />`, () => {
   let baseConfig: ModelConfig,
-    propertyTypeRenderers: { [typeId: string]: ComponentType<PropertyTypeRendererProps> };
+    propertyTypeRenderers: { [typeId: string]: ComponentType<PropertyTypeRendererProps> },
+    mockService: any;
 
   beforeEach(() => {
     baseConfig = {
@@ -39,10 +37,31 @@ describe(`<EditRenderer />`, () => {
       ]
     };
     propertyTypeRenderers = {
-      'string': ( { data, propertyConfig, onChange } ) => (
+      'string': ( { data, propertyConfig, onChange }: PropertyTypeRendererProps ) => (
         <div data-testid={`property-${propertyConfig.id}`}>{data[propertyConfig.id]}</div>
       )
-    }
+    };
+
+    mockService = {
+      list: jest.fn().mockResolvedValue({
+        items: [],
+        count: 10,
+        skip: 0,
+        take: 10
+      }),
+      get: jest.fn().mockResolvedValue({
+        item: {},
+        version: 1,
+        created: new Date(),
+        updated: new Date(),
+        deleted: false
+      }),
+      save: jest.fn().mockResolvedValue({
+        item: {},
+        version: 2,
+        updated: new Date()
+      }),
+    };
   });
 
   afterEach(() => {
@@ -57,7 +76,10 @@ describe(`<EditRenderer />`, () => {
       baseConfig.properties[1].default = 'Untitled';
 
       await act(async() => {
-        render(<EditRenderer config={baseConfig} propertyTypeRenderers={propertyTypeRenderers}/>);
+        render(
+          <DataProvider service={mockService}>
+            <EditRenderer config={baseConfig} propertyTypeRenderers={propertyTypeRenderers}/>
+          </DataProvider>);
       });
 
       const idProp = screen.getByTestId('property-id');
@@ -69,31 +91,41 @@ describe(`<EditRenderer />`, () => {
   describe(`when editing an existing item`, () => {
     it(`should load the item to edit`, async () => {
       await act(async() => {
-        render(<EditRenderer config={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} />);
+        render(
+          <DataProvider service={mockService}>
+            <EditRenderer config={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} />
+          </DataProvider>
+          );
       });
-      expect(mockedService.get).toHaveBeenCalledWith('page', 123);
+      expect(mockService.get).toHaveBeenCalledWith('page', 123);
     });
     it(`should display an appropriate error when it can't find item with the specified ID`, async () => {
-      mockedService.get.mockResolvedValue({
+      mockService.get.mockResolvedValue({
         item: null
       });
       await act(async() => {
-        render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+        render(
+          <DataProvider service={mockService}>
+            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          </DataProvider>);
       });
       const error = screen.getByTestId('error');
       expect(error.textContent).toMatchSnapshot();
     });
     it(`should display an appropriate error when service can't load data`, async () => {
-      mockedService.get.mockRejectedValue({ message: 'some error message' });
+      mockService.get.mockRejectedValue({ message: 'some error message' });
       await act(async() => {
-        render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+        render(
+          <DataProvider service={mockService}>
+            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          </DataProvider>);
       });
       const error = screen.getByTestId('error');
       expect(error.textContent).toMatchSnapshot();
     });
   });
   it(`should render the UI to edit each property`, async () => {
-    mockedService.get.mockResolvedValue({
+    mockService.get.mockResolvedValue({
       item: {
         id: 'some-id',
         title: 'Some Page Title'
@@ -104,7 +136,10 @@ describe(`<EditRenderer />`, () => {
       deleted: false
     })
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
     });
     const idProp = screen.getByTestId('property-id');
     expect(idProp).toHaveTextContent('some-id');
@@ -113,14 +148,20 @@ describe(`<EditRenderer />`, () => {
   });
   it(`should show loading UI to begin with`, async () => {
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
       const loading = screen.queryByTestId('loading');
       expect(loading?.textContent).toMatchSnapshot();
     });
   });
   it(`should hide the loading UI once item has been loaded`, async () => {
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
     });
     const loading = screen.queryByTestId('loading');
     expect(loading).toBeNull();
@@ -137,20 +178,23 @@ describe(`<EditRenderer />`, () => {
       ]
     };
     await act(async () => {
-      render(<EditRenderer
-        config={baseConfig}
-        propertyTypeRenderers={propertyTypeRenderers}
-        typeRenderers={{
-          'column': ({ data, displayConfig, renderChildren}) => (
-            <div data-testid='col'>{displayConfig.children && renderChildren(displayConfig.children)}</div>
-          )
-        }}/>);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            propertyTypeRenderers={propertyTypeRenderers}
+            typeRenderers={{
+              'column': ({ data, displayConfig, renderChildren}) => (
+                <div data-testid='col'>{displayConfig.children && renderChildren(displayConfig.children)}</div>
+              )
+            }}/>
+        </DataProvider>);
     });
     const column = screen.getByTestId('col');
     expect(column).toMatchSnapshot();
   });
   it(`should display an appropriate error when a property display config doesn't match a property`, async () => {
-    mockedService.get.mockResolvedValue({
+    mockService.get.mockResolvedValue({
       item: {
         id: 'some-id',
         title: 'Some Page Title'
@@ -166,13 +210,16 @@ describe(`<EditRenderer />`, () => {
       ]
     }
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
     });
     const error = screen.getByTestId('error');
     expect(error?.textContent).toMatchSnapshot();
   });
   it(`should display an appropriate error when it can't find the correct property type renderer`, async () => {
-    mockedService.get.mockResolvedValue({
+    mockService.get.mockResolvedValue({
       item: {
         id: 'some-id',
         title: 'Some Page Title'
@@ -188,13 +235,16 @@ describe(`<EditRenderer />`, () => {
       type: 'rainbow'
     })
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
     });
     const error = screen.getByTestId('error');
     expect(error?.textContent).toMatchSnapshot();
   });
   it(`should display an appropriate error when it can't find the correct non-property type renderer`, async () => {
-    mockedService.get.mockResolvedValue({
+    mockService.get.mockResolvedValue({
       item: {
         id: 'some-id',
         title: 'Some Page Title'
@@ -212,13 +262,16 @@ describe(`<EditRenderer />`, () => {
       ]
     }
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
     });
     const error = screen.getByTestId('error');
     expect(error?.textContent).toMatchSnapshot();
   });
   it(`should save the model instance when the form submits (either with enter key or clicking Save)`, async () => {
-    mockedService.get.mockResolvedValue({
+    mockService.get.mockResolvedValue({
       item: {
         id: 'some-id',
         title: 'Some Page Title'
@@ -229,10 +282,13 @@ describe(`<EditRenderer />`, () => {
       deleted: false
     });
     await act(async() => {
-      render(<EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />);
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
     });
     fireEvent.submit(screen.getByTestId('form'));
-    expect(mockedService.save).toHaveBeenCalledWith(
+    expect(mockService.save).toHaveBeenCalledWith(
       'page',
       {
         id: 'some-id',

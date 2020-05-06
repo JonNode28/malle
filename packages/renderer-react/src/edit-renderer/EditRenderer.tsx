@@ -4,7 +4,6 @@ import ModelConfig from "../ModelConfig";
 import {expand, isPropertyConfig} from "../util/editDisplayConfig";
 import RendererError from "../renderer-error";
 import {isEmpty} from "../util/id";
-import {PropertyConfig} from "../PropertyConfig";
 import EditDisplayConfig from "../EditDisplayConfig";
 import {getProp, queryProp} from "../util/propertyConfig";
 import {createNewInstance} from "../util/model";
@@ -18,10 +17,10 @@ export interface EditRendererProps {
   id?: string | number,
   typeRenderers?: { [typeId: string]: ComponentType<TypeRendererProps> }
   propertyTypeRenderers?: { [typeId: string]: ComponentType<PropertyTypeRendererProps> },
-  renderError?: ComponentType<{ err: Error }>
+  errorRenderer?: ComponentType<{ err: Error }>
 }
 
-export default function EditRenderer({ config, id, typeRenderers, propertyTypeRenderers, renderError }: EditRendererProps){
+export default function EditRenderer({ config, id, typeRenderers, propertyTypeRenderers, errorRenderer }: EditRendererProps){
   if(!config) throw Error('Model configuration is required');
 
   const service = useService();
@@ -30,7 +29,7 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState<string>();
 
-  const renderErrorComponent: ComponentType<{ err: Error }> = renderError || (({ err }) => <div data-testid='error'>error: {err.message}</div>);
+  const defaultedErrorRenderer: ComponentType<{ err: Error }> = errorRenderer || (({ err }) => <div data-testid='error'>error: {err.message}</div>);
 
   useEffect(() => {
     (async () => {
@@ -59,10 +58,10 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
 
       {error && <RendererError>{error}</RendererError>}
 
-      {loading && <div data-testid='loading'>loading...</div>}
+      {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
       <form onSubmit={() => service.save(config.id, editingModel)} data-testid='form'>
-        <ErrorBoundary renderError={renderErrorComponent}>
+        <ErrorBoundary errorRenderer={defaultedErrorRenderer}>
           {editingModel && renderFromDisplayConfig(config.display?.edit)}
         </ErrorBoundary>
         <button type='submit' data-testid='save'>Save</button>
@@ -77,7 +76,7 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
       const expandedDisplayConfig = expand(displayConfig, config.properties);
 
       return expandedDisplayConfig.map((itemDisplayConfig, i) => {
-        return <ErrorBoundary key={i} renderError={renderErrorComponent}>
+        return <ErrorBoundary key={i} errorRenderer={defaultedErrorRenderer}>
           {(() => {
             if (!itemDisplayConfig.typeRenderer) {
               throw new Error(`Somehow ${itemDisplayConfig.type} ended up without a type Renderer. Sounds like a problem with microo 🥺`);
@@ -114,7 +113,7 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
         </ErrorBoundary>
       });
     } catch(err){
-      const Error = renderErrorComponent;
+      const Error = defaultedErrorRenderer;
       return <Error err={err} />
     }
   }
