@@ -1,5 +1,5 @@
 import React from "react";
-import ListItemRenderer from "./ListItem";
+import ListItemRenderer from "./ListItemRenderer";
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
@@ -16,8 +16,7 @@ describe('<ListItem />', () => {
           [prop]: 'Some name',
           description: 'Some descriptive text'
         }} />);
-        const item = screen.getByTestId('item');
-        expect(screen.getByTestId('title')).toHaveTextContent('Some name');
+        expect(screen.getByTestId('item-title')).toHaveTextContent('Some name');
         expect(container).toMatchSnapshot();
       });
 
@@ -28,18 +27,8 @@ describe('<ListItem />', () => {
           name: 'Some Name',
           [prop]: 'Some descriptive text'
         }}/>);
-        expect(screen.getByTestId('subtext')).toHaveTextContent('Some descriptive text');
+        expect(screen.getByTestId('item-subtext')).toHaveTextContent('Some descriptive text');
         expect(container).toMatchSnapshot();
-      });
-
-    it.each(['id', 'Id', 'ID'])(
-      `should look for a property called %p to guess as ID`, async (prop) => {
-        const wrapper = shallow(<ListItemRenderer item={{
-          [prop]: 'some-id',
-          name: 'Some Name',
-          somethingElse: 'blah blah',
-        }}/>);
-        expect(wrapper.find(`div[data-testid='item']`).key()).toBe('some-id');
       });
 
   });
@@ -55,10 +44,8 @@ describe('<ListItem />', () => {
         aSpecialDescription: 'blah blah special blah',
       }}
     />);
-    const item = screen.getByTestId('item');
-    expect(within(item).getByTestId('title')).toHaveTextContent('Some Special Name');
-    expect(within(item).getByTestId('subtext')).toHaveTextContent('blah blah special blah');
-    expect(item).toMatchSnapshot();
+    expect(screen.getByTestId('item-title')).toHaveTextContent('Some Special Name');
+    expect(screen.getByTestId('item-subtext')).toHaveTextContent('blah blah special blah');
   });
 
 });

@@ -1,7 +1,3 @@
-import ListItem from './ListItem';
-import createListItemRenderer from "./createListItemRenderer";
+import ListItemRenderer from './ListItemRenderer';
 
-export {
-  ListItem,
-  createListItemRenderer
-};
+export default ListItemRenderer;
