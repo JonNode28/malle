@@ -1,5 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<ListRenderer /> should display an appropriate error when a list item renderer throws and error 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  Some item renderer error!
+</div>
+`;
+
+exports[`<ListRenderer /> should display an appropriate error when no list renderer is provided 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  Missing list item renderer control
+</div>
+`;
+
+exports[`<ListRenderer /> should display an appropriate error when no pagination renderer is provided 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  Missing Pagination control
+</div>
+`;
+
+exports[`<ListRenderer /> should display an appropriate error when service can't load data 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  Some data loading issue
+</div>
+`;
+
+exports[`<ListRenderer /> should display an appropriate error when the pagination component throws an error 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  Some pagination error!
+</div>
+`;
+
 exports[`<ListRenderer /> should render items using the supplied item renderer 1`] = `
 <div
   data-testid="item-renderer"

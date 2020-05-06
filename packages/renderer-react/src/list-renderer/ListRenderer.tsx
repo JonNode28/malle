@@ -1,19 +1,17 @@
 import React, { useEffect, useState, ReactNode, ComponentType, Fragment } from 'react'
 import { getItemId } from '../util/id';
-import * as R from 'ramda';
-import s from './ListRenderer.pcss';
 import { ListItemProps } from '../ListItemProps';
 import { PaginationProps } from '../PaginationProps';
-import RendererError from "../renderer-error";
 import ModelConfig from "../ModelConfig";
 import { useService } from "../data-provider/DataProvider";
+import ErrorBoundary from "../error-boundary";
 
-export interface Props {
+export interface ListRendererProps {
   config: ModelConfig,
   renderItem: ComponentType<ListItemProps>,
   pagination: ComponentType<PaginationProps>,
-  error: ComponentType<ErrorProps>,
-  validator?: (data: any) => ValidationResult
+  validator?: (data: any) => ValidationResult,
+  errorRenderer?: ComponentType<{ err: Error }>
 }
 
 interface ValidationResult {
@@ -30,9 +28,9 @@ interface ErrorProps{
   message: string
 }
 
-export default function ListRenderer({ config, renderItem, pagination, validator }: Props): any {
-
-  if(!config) throw Error('Model configuration is required');
+export default function ListRenderer({ config, renderItem, pagination, validator, errorRenderer }: ListRendererProps): any {
+  const ErrorDisplayComponent: ComponentType<{ err: Error }> = errorRenderer || (({ err }) => <div data-testid='error'>error: {err.message}</div>);
+  if(!config) return <ErrorDisplayComponent err={new Error('Model configuration is required')} />;
 
   const service = useService();
 
@@ -41,34 +39,50 @@ export default function ListRenderer({ config, renderItem, pagination, validator
   const [ count, setCount ] = useState(0);
   const [ items, setItems ] = useState<Array<any>>([]);
   const [ loading, setLoading ] = useState(false);
+  const [ error, setError ] = useState<Error>();
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const listResult = await service.list(config.id, skip, take);
+      let listResult;
+      try {
+        listResult = await service.list(config.id, skip, take);
+      } catch(err){
+        setLoading(false);
+        setError(err);
+        return;
+      }
       setItems(listResult.items);
       setCount(listResult.count);
       setLoading(false);
     })()
-  }, [ skip, take ]);
+  }, [ config, skip, take ]);
 
   const ItemRenderer = renderItem || (({item, index}) => {
-    return <RendererError key={index}>Missing list item renderer control</RendererError>;
+    return <ErrorDisplayComponent key={index} err={new Error('Missing list item renderer control')} />;
   });
   const Pagination = pagination || (({ skip, take, count, onChange }) => {
-    return <RendererError>Missing Pagination control</RendererError>
+    return <ErrorDisplayComponent err={new Error('Missing Pagination control')} />;
   });
   return (
     <Fragment>
-      {loading && <div>loading...</div>}
-      {items.map((item, i) => <ItemRenderer
-        key={getItemId(config.identityPath, item)}
-        item={item}
-        index={i}/>)}
-      <Pagination skip={skip} take={take} count={count} onChange={(skip, take) => {
-        setSkip(skip);
-        setTake(take);
-      }} />
+      { error && <ErrorDisplayComponent err={error} /> }
+      { loading && <div>loading...</div> }
+      {items.map((item, i) => (
+        <ErrorBoundary
+          key={getItemId(config.identityPath, item)}
+          errorRenderer={ErrorDisplayComponent}>
+          <ItemRenderer
+            item={item}
+            index={i}/>
+        </ErrorBoundary>
+          ))}
+      <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
+        <Pagination skip={skip} take={take} count={count} onChange={(skip, take) => {
+          setSkip(skip);
+          setTake(take);
+        }} />
+      </ErrorBoundary>
     </Fragment>
  );
 }
