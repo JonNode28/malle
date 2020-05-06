@@ -1,4 +1,4 @@
 export interface ListItemProps {
-  item?: any,
+  item: any,
   index?: number
 }
