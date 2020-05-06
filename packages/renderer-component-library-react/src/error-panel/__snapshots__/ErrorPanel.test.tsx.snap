@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ErrorPanel /> should display a default message if no error is provided 1`] = `"An error occurred"`;
+
+exports[`<ErrorPanel /> should display a default message if no error message is provided 1`] = `"An error occurred"`;
+
+exports[`<ErrorPanel /> should display the error message 1`] = `"some error message"`;
