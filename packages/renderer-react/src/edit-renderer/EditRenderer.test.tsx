@@ -204,6 +204,20 @@ describe(`<EditRenderer />`, () => {
     const column = screen.getByTestId('col');
     expect(column).toMatchSnapshot();
   });
+  it(`should use the provided error renderer when provided`, async () => {
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            // @ts-ignore
+            config={null} id={'some-id'}
+            propertyTypeRenderers={propertyTypeRenderers}
+            errorRenderer={() => <div data-testid='custom-error'>A custom error display component</div>}/>
+        </DataProvider>);
+    });
+    const error = screen.getByTestId('custom-error');
+    expect(error?.textContent).toBe('A custom error display component');
+  });
   it(`should display an appropriate error when a property display config doesn't match a property`, async () => {
     mockService.get.mockResolvedValue({
       item: {
