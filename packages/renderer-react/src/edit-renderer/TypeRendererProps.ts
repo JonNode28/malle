@@ -5,6 +5,6 @@ import {ComponentType} from "react";
 export interface TypeRendererProps {
   data: any,
   displayConfig: EditDisplayConfig,
-  renderChildren: (displayConfig: Array<EditDisplayConfig | string>) => ComponentType<any>,
+  renderChildren?: (displayConfig: Array<EditDisplayConfig | string>) => ComponentType<any>,
   onChange?: (data: any) => void
 }
