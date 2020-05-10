@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<DefaultError /> should fallback if incorrect error param is passed 1`] = `"error: unreadable error"`;
+
+exports[`<DefaultError /> should render Error messages 1`] = `"error: This is an Error error"`;
+
+exports[`<DefaultError /> should render string errors 1`] = `"error: This is a string error"`;
