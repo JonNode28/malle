@@ -1,10 +1,15 @@
 import React, { Fragment } from 'react'
 import * as R from 'ramda';
 import s from './ListItemRenderer.pcss';
-import { ListItemProps } from "malle-renderer-react";
-import RendererOptions from "./RendererOptions";
+import { RenderItemProps } from "malle-renderer-react";
 
-export default function ListItemRenderer({ idPath, item, titlePath, subtextPath }: ListItemProps & RendererOptions){
+export interface ListItemRendererProps extends RenderItemProps {
+  idPath?: Array<string>,
+  titlePath?: Array<string>,
+  subtextPath?: Array<string>
+}
+
+export default function ListItemRenderer({  idPath, item, titlePath, subtextPath }: ListItemRendererProps){
 
   const id: any = idPath ?
     R.path(idPath, item) :
