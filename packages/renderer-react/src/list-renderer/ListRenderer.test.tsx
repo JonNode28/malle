@@ -3,20 +3,20 @@ import ListRenderer from "./ListRenderer";
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import { ListItemProps } from "../ListItemProps";
-import {PaginationProps} from "../PaginationProps";
 import ModelConfig from "../ModelConfig";
 import DataProvider, {ListResult} from "../data-provider";
+import { RenderItemProps } from "./RenderItemProps";
+import { RenderPaginationProps } from "./RenderPaginationProps";
 
-function MockPagination({ skip, take, count }: PaginationProps) {
+function MockPagination({ count }: RenderPaginationProps) {
   return (
     <div data-testid='pagination'>
-      {skip} - {take} - {count}
+      {count}
     </div>
   );
 }
 
-function MockItemRenderer ({ item }: ListItemProps) {
+function MockItemRenderer ({ item }: RenderItemProps) {
   return (
     <div key={item.id} data-testid='item-renderer'>
       #{item.id} {item.title} - {item.somethingElse}
@@ -84,11 +84,27 @@ describe('<ListRenderer />', () => {
           <ListRenderer
             config={baseModelConfig}
             renderItem={() => <div>Item</div>}
-            pagination={() => <div>Page</div>}
+            renderPagination={() => <div>Page</div>}
           />
         </DataProvider>);
     });
     expect(mockService.list).toHaveBeenCalledWith('page', 0, 10);
+  });
+  it('should load paginated items', async () => {
+    mockService.list.mockResolvedValue({ items: [], count: 0, skip: 0, take: 10 });
+    await act( async() => {
+      render(
+        <DataProvider service={mockService}>
+          <ListRenderer
+            config={baseModelConfig}
+            renderItem={() => <div>Item</div>}
+            renderPagination={() => <div>Page</div>}
+            page={2}
+            size={20}
+          />
+        </DataProvider>);
+    });
+    expect(mockService.list).toHaveBeenCalledWith('page', 20, 20);
   });
   it('should render items using the supplied item renderer', async () => {
     mockService.list.mockResolvedValue({
@@ -110,7 +126,7 @@ describe('<ListRenderer />', () => {
           <ListRenderer
             config={baseModelConfig}
             renderItem={MockItemRenderer}
-            pagination={() => <div>Page</div>}
+            renderPagination={() => <div>Page</div>}
           />
         </DataProvider>);
     });
@@ -125,7 +141,7 @@ describe('<ListRenderer />', () => {
           <ListRenderer
             config={baseModelConfig}
             renderItem={() => <div>Item</div>}
-            pagination={MockPagination}
+            renderPagination={MockPagination}
           />
         </DataProvider>);
     });
@@ -144,7 +160,7 @@ describe('<ListRenderer />', () => {
           <ListRenderer
             config={baseModelConfig}
             renderItem={ErroringListItemRenderer}
-            pagination={MockPagination}
+            renderPagination={MockPagination}
           />
         </DataProvider>);
     });
@@ -163,7 +179,7 @@ describe('<ListRenderer />', () => {
           <ListRenderer
             config={baseModelConfig}
             renderItem={MockItemRenderer}
-            pagination={ErroringPagination}
+            renderPagination={ErroringPagination}
           />
         </DataProvider>);
     });
@@ -178,7 +194,7 @@ describe('<ListRenderer />', () => {
           <ListRenderer
             config={baseModelConfig}
             renderItem={MockItemRenderer}
-            pagination={MockPagination}
+            renderPagination={MockPagination}
           />
         </DataProvider>);
     });
@@ -194,23 +210,7 @@ describe('<ListRenderer />', () => {
             config={baseModelConfig}
             // @ts-ignore
             renderItem={null}
-            pagination={MockPagination}
-          />
-        </DataProvider>);
-    });
-    const item = screen.getByTestId('error');
-    expect(item).toMatchSnapshot();
-  });
-  it(`should display an appropriate error when no pagination renderer is provided`, async () => {
-    mockService.list.mockResolvedValue(mockListResult);
-    await act( async() => {
-      render(
-        <DataProvider service={mockService}>
-          <ListRenderer
-            config={baseModelConfig}
-            renderItem={MockItemRenderer}
-            // @ts-ignore
-            pagination={null}
+            renderPagination={MockPagination}
           />
         </DataProvider>);
     });

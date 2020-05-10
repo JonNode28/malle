@@ -63,9 +63,5 @@ exports[`<ListRenderer /> should render items using the supplied pagination cont
   data-testid="pagination"
 >
   0
-   - 
-  10
-   - 
-  0
 </div>
 `;
