@@ -1,33 +1,21 @@
 import s from "./Pagination.pcss";
 import React from "react";
-import { PaginationProps } from "malle-renderer-react";
-import cs from 'classnames'
+import { PaginationProps } from "./PaginationProps";
 
-export default function Pagination({ skip, take, count, onChange }: PaginationProps){
-  const pages = count ? ([...new Array(Math.ceil(count / take))].map((_, i) => {
+export default function Pagination({ page, size, count, renderPageItem }: PaginationProps){
+  if(count === 0) return null;
+  const pages = count ? ([...new Array(Math.ceil(count / size))].map((_, i) => {
     return {
-      label: i + 1,
-      skip: take * i,
-      take: take
+      number: i + 1,
+      size
     }
   })) : [];
 
   return (
     <div className={s.pages} data-testid='pages'>
-      {pages && pages.map((page) => {
-        const current = page.skip === skip && page.take === take;
-        return current ? (
-          <div key={page.label} className={cs(s.page, s.current)} data-testid='current-page'>
-            {page.label}
-          </div>
-        ) : (
-          <button
-            key={page.label}
-            className={s.page}
-            onClick={() => onChange(page.skip, page.take)}
-            data-testid='page'
-          >{page.label}</button>
-        );
+      {pages && pages.map((eachPage) => {
+        const isCurrent = eachPage.number === page && eachPage.size === size;
+        return renderPageItem({ isCurrent, page: eachPage.number, size })
       })}
     </div>
   )
