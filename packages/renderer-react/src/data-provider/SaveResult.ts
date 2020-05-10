@@ -1,5 +1,6 @@
 export interface SaveResult {
-  item: any,
-  version: number,
+  item: any
+  version: number
+  created?: Date
   updated: Date
 }
