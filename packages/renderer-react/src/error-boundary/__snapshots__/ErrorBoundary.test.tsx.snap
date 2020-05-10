@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<ErrorBoundary /> should display Error errors with the defined renderer 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  This is an Error error
+</div>
+`;
+
+exports[`<ErrorBoundary /> should display string errors with the defined renderer 1`] = `
+<div
+  data-testid="error"
+>
+  error: 
+  This is a string error
+</div>
+`;
+
 exports[`<ErrorBoundary /> should display the error with the defined renderer 1`] = `
 <div
   data-testid="mock-error"

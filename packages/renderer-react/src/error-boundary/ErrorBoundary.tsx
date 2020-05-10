@@ -7,7 +7,7 @@ interface Props {
 }
 
 export interface ErrorRendererProps{
-  err: Error
+  err: Error | string
 }
 
 interface State {

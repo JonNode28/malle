@@ -2,33 +2,43 @@ import React, {ComponentType} from 'react';
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import ErrorBoundary, {ErrorRendererProps} from "./ErrorBoundary";
-
-function MockErrorRenderer({ err }: ErrorRendererProps){
-  return <div data-testid='mock-error'>{err.message}</div>;
-}
+import DefaultError from "../default-error";
 
 describe(`<ErrorBoundary />`, () => {
 
   it(`should render children when no error is raised`, () => {
     const { container } = render(
-      <ErrorBoundary errorRenderer={MockErrorRenderer}>
+      <ErrorBoundary errorRenderer={DefaultError}>
         <div>some child</div>
       </ErrorBoundary>
     )
   });
-  it(`should display the error with the defined renderer`, () => {
-    function ErroringComponent(){
-      throw new Error('This is an error');
-      return null;
+  it(`should display Error errors with the defined renderer`, () => {
+    function ErroringComponent(): null{
+      throw new Error('This is an Error error');
     }
     act(() => {
       render(
-        <ErrorBoundary errorRenderer={MockErrorRenderer}>
+        <ErrorBoundary errorRenderer={DefaultError}>
           <ErroringComponent />
         </ErrorBoundary>
       );
     });
-    const error = screen.getByTestId('mock-error');
+    const error = screen.getByTestId('error');
+    expect(error).toMatchSnapshot();
+  });
+  it(`should display string errors with the defined renderer`, () => {
+    function ErroringComponent(): null{
+      throw 'This is a string error';
+    }
+    act(() => {
+      render(
+        <ErrorBoundary errorRenderer={DefaultError}>
+          <ErroringComponent />
+        </ErrorBoundary>
+      );
+    });
+    const error = screen.getByTestId('error');
     expect(error).toMatchSnapshot();
   });
 });
