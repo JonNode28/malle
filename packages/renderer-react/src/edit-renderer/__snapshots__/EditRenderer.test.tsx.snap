@@ -1,10 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<EditRenderer /> should display an appropriate error when a display type renderer errors 1`] = `"error: A display type renderer error!"`;
+
 exports[`<EditRenderer /> should display an appropriate error when a property display config doesn't match a property 1`] = `"error: Couldn't find prop matching 'some-weird-unknown-prop' from layout config. Check the property exists."`;
+
+exports[`<EditRenderer /> should display an appropriate error when a property type renderer errors 1`] = `"error: A property type renderer error!"`;
 
 exports[`<EditRenderer /> should display an appropriate error when it can't find the correct non-property type renderer 1`] = `"error: No type renderer for display type 'column'. Registered type renderers: []"`;
 
 exports[`<EditRenderer /> should display an appropriate error when it can't find the correct property type renderer 1`] = `"error: No property type renderer for type 'rainbow' of 'Prop of unknown type'. Registered property type renderers: [string]"`;
+
+exports[`<EditRenderer /> should display an appropriate error when no cancel function is provided 1`] = `"error: A cancel function is required"`;
+
+exports[`<EditRenderer /> should display an appropriate error when no model configuration is provided 1`] = `"error: Model configuration is required"`;
 
 exports[`<EditRenderer /> should hide the loading UI once item has been loaded 1`] = `"loading..."`;
 
@@ -23,6 +31,8 @@ exports[`<EditRenderer /> should render the UI for non-property display config 1
 exports[`<EditRenderer /> should show loading UI to begin with 1`] = `"loading..."`;
 
 exports[`<EditRenderer /> when editing an existing item should display an appropriate error when it can't find item with the specified ID 1`] = `"error: Couldn't find a Page with ID 'some-id'"`;
+
+exports[`<EditRenderer /> when editing an existing item should display an appropriate error when no cancel function is provided 1`] = `"error: A cancel function is required"`;
 
 exports[`<EditRenderer /> when editing an existing item should display an appropriate error when no model configuration is provided 1`] = `"error: Model configuration is required"`;
 

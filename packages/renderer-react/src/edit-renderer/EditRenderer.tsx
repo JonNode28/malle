@@ -1,38 +1,53 @@
-import React, {Component, ComponentType, useEffect, useState} from "react";
+import React, { Component, ComponentType, useEffect, useState } from "react";
 import s from './EditRenderer.pcss';
 import ModelConfig from "../ModelConfig";
-import {expand, isPropertyConfig} from "../util/editDisplayConfig";
-import {isEmpty} from "../util/id";
+import { expand, isPropertyConfig } from "../util/editDisplayConfig";
+import { isEmpty } from "../util/id";
 import EditDisplayConfig from "../EditDisplayConfig";
-import {getProp, queryProp} from "../util/propertyConfig";
-import {createNewInstance} from "../util/model";
-import {TypeRendererProps} from "./TypeRendererProps";
-import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
+import { getProp, queryProp } from "../util/propertyConfig";
+import { createNewInstance } from "../util/model";
+import { TypeRendererProps } from "./TypeRendererProps";
+import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
 import ErrorBoundary from "../error-boundary";
-import {useService} from "../data-provider/DataProvider";
+import { useService } from "../data-provider/DataProvider";
+import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
+import DefaultError from "../default-error";
 
 export interface EditRendererProps {
-  config: ModelConfig,
-  id?: string | number,
+  config: ModelConfig
+  id?: string | number
   typeRenderers?: { [typeId: string]: ComponentType<TypeRendererProps> }
-  propertyTypeRenderers?: { [typeId: string]: ComponentType<PropertyTypeRendererProps> },
-  errorRenderer?: ComponentType<{ err: Error }>
+  propertyTypeRenderers?: { [typeId: string]: ComponentType<PropertyTypeRendererProps> }
+  errorRenderer?: ComponentType<ErrorRendererProps>
+  onSaved?: (modelId: string, instance: any) => void
+  cancel: (modelId: string | undefined, instance: any) => void
 }
 
-export default function EditRenderer({ config, id, typeRenderers, propertyTypeRenderers, errorRenderer }: EditRendererProps){
-  const ErrorDisplayComponent: ComponentType<{ err: Error }> = errorRenderer || (({ err }) => <div data-testid='error'>error: {err.message}</div>);
+export default function EditRenderer(
+  {
+    config,
+    id,
+    typeRenderers,
+    propertyTypeRenderers,
+    errorRenderer,
+    onSaved,
+    cancel
+  }: EditRendererProps) {
 
-  if(!config) return <ErrorDisplayComponent err={new Error('Model configuration is required')} />;
+  const ErrorDisplayComponent: ComponentType<ErrorRendererProps> = errorRenderer || DefaultError;
+
+  if (!config) return <ErrorDisplayComponent err={new Error('Model configuration is required')}/>;
+  if(!cancel) return <ErrorDisplayComponent err={new Error('A cancel function is required')} />;
 
   const service = useService();
 
-  const [ editingModel, setEditingModel ] = useState<any>()
-  const [ loading, setLoading ] = useState(true);
-  const [ error, setError ] = useState<Error>();
+  const [editingModel, setEditingModel] = useState<any>()
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error>();
 
   useEffect(() => {
     (async () => {
-      if(isEmpty(id)) {
+      if (isEmpty(id)) {
         setEditingModel(createNewInstance(config));
         setLoading(false);
       } else {
@@ -44,35 +59,39 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
             return;
           }
           setEditingModel(getResult.item);
-        } catch(err){
+        } catch (err) {
           setLoading(false);
           setError(new Error(`There was a problem loading that ${config.name}: ${err.message}`));
         }
       }
     })()
-  }, [ id ]);
+  }, [id]);
 
   return (
     <div className={s.editRenderer}>
 
-      {error && <ErrorDisplayComponent err={error} />}
+      {error && <ErrorDisplayComponent err={error}/>}
 
       {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
-      <form onSubmit={() => service.save(config.id, editingModel)} data-testid='form'>
+      <form onSubmit={e => {
+        e.preventDefault();
+        service.save(config.id, editingModel);
+        if (onSaved) onSaved(config.id, editingModel);
+      }} data-testid='form'>
         <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
           {editingModel && renderFromDisplayConfig(config.display?.edit)}
         </ErrorBoundary>
         <button type='submit' data-testid='save'>Save</button>
-
+        <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingModel)}>Cancel</button>
       </form>
 
     </div>
   );
 
-  function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any{
+  function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any {
     try {
-      const expandedDisplayConfig = expand(displayConfig, config.properties);
+       const expandedDisplayConfig = expand(displayConfig, config.properties);
 
       return expandedDisplayConfig.map((itemDisplayConfig, i) => {
         return <ErrorBoundary key={i} errorRenderer={ErrorDisplayComponent}>
@@ -111,8 +130,8 @@ export default function EditRenderer({ config, id, typeRenderers, propertyTypeRe
           })()}
         </ErrorBoundary>
       });
-    } catch(err){
-      return <ErrorDisplayComponent err={err} />
+    } catch (err) {
+      return <ErrorDisplayComponent err={err}/>
     }
   }
 

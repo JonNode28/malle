@@ -1,12 +1,9 @@
 import React, {ComponentType} from "react";
-import EditRenderer from "./EditRenderer";
 import { act, render, within, fireEvent } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import {PropertyConfig} from "../PropertyConfig";
+import EditRenderer from "./EditRenderer";
 import ModelConfig from "../ModelConfig";
-import {prop} from "ramda";
-import {TypeRendererProps} from "./TypeRendererProps";
 import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
 import DataProvider from "../data-provider";
 
@@ -78,7 +75,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} propertyTypeRenderers={propertyTypeRenderers}/>
+            <EditRenderer config={baseConfig} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>);
       });
 
@@ -93,22 +90,11 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} />
+            <EditRenderer config={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>
           );
       });
       expect(mockService.get).toHaveBeenCalledWith('page', 123);
-    });
-    it(`should display an appropriate error when no model configuration is provided`, async () => {
-      await act(async() => {
-        render(
-          <DataProvider service={mockService}>
-            // @ts-ignore
-            <EditRenderer config={null} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
-          </DataProvider>);
-      });
-      const error = screen.getByTestId('error');
-      expect(error.textContent).toMatchSnapshot();
     });
     it(`should display an appropriate error when it can't find item with the specified ID`, async () => {
       mockService.get.mockResolvedValue({
@@ -117,7 +103,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>);
       });
       const error = screen.getByTestId('error');
@@ -128,7 +114,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>);
       });
       const error = screen.getByTestId('error');
@@ -149,7 +135,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const idProp = screen.getByTestId('property-id');
@@ -161,7 +147,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
       const loading = screen.queryByTestId('loading');
       expect(loading?.textContent).toMatchSnapshot();
@@ -171,7 +157,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const loading = screen.queryByTestId('loading');
@@ -196,9 +182,10 @@ describe(`<EditRenderer />`, () => {
             propertyTypeRenderers={propertyTypeRenderers}
             typeRenderers={{
               'column': ({ data, displayConfig, renderChildren}) => (
-                <div data-testid='col'>{displayConfig.children && renderChildren(displayConfig.children)}</div>
+                <div data-testid='col'>{displayConfig.children && renderChildren && renderChildren(displayConfig.children)}</div>
               )
-            }}/>
+            }}
+            cancel={() => {}}/>
         </DataProvider>);
     });
     const column = screen.getByTestId('col');
@@ -212,11 +199,34 @@ describe(`<EditRenderer />`, () => {
             // @ts-ignore
             config={null} id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
-            errorRenderer={() => <div data-testid='custom-error'>A custom error display component</div>}/>
+            errorRenderer={() => <div data-testid='custom-error'>A custom error display component</div>}
+            cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('custom-error');
     expect(error?.textContent).toBe('A custom error display component');
+  });
+  it(`should display an appropriate error when no model configuration is provided`, async () => {
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          // @ts-ignore
+          <EditRenderer config={null} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+        </DataProvider>);
+    });
+    const error = screen.getByTestId('error');
+    expect(error.textContent).toMatchSnapshot();
+  });
+  it(`should display an appropriate error when no cancel function is provided`, async() => {
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          // @ts-ignore
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+        </DataProvider>);
+    });
+    const error = screen.getByTestId('error');
+    expect(error.textContent).toMatchSnapshot();
   });
   it(`should display an appropriate error when a property display config doesn't match a property`, async () => {
     mockService.get.mockResolvedValue({
@@ -237,7 +247,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers}  cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -262,7 +272,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -289,13 +299,59 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
     expect(error?.textContent).toMatchSnapshot();
   });
-  it(`should save the model instance when the form submits (either with enter key or clicking Save)`, async () => {
+  it(`should display an appropriate error when a property type renderer errors`, async () => {
+    propertyTypeRenderers['erroring-type-renderer'] = () => {
+      throw new Error('A property type renderer error!');
+    };
+    baseConfig.properties.push({
+      id: 'erroring',
+      name: 'Erroring',
+      type: 'erroring-type-renderer'
+    });
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+        </DataProvider>
+      );
+    });
+    const error = screen.getByTestId('error');
+    expect(error?.textContent).toMatchSnapshot();
+  });
+  it(`should display an appropriate error when a display type renderer errors`, async () => {
+    baseConfig.display = {
+      edit: [
+        {
+          type: 'erroring-display-type-renderer'
+        }
+      ]
+    }
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            id={'some-id'}
+            propertyTypeRenderers={propertyTypeRenderers}
+            typeRenderers={{
+              'erroring-display-type-renderer':  () => {
+                throw new Error('A display type renderer error!');
+              }
+            }}
+            cancel={() => {}} />
+        </DataProvider>
+      );
+    });
+    const error = screen.getByTestId('error');
+    expect(error?.textContent).toMatchSnapshot();
+  });
+  it(`should save the model instance when the form submits`, async () => {
     mockService.get.mockResolvedValue({
       item: {
         id: 'some-id',
@@ -309,7 +365,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     fireEvent.submit(screen.getByTestId('form'));
@@ -319,6 +375,63 @@ describe(`<EditRenderer />`, () => {
         id: 'some-id',
         title: 'Some Page Title'
       });
+  });
+  it(`should call the onSaved callback after saving`, async () => {
+    mockService.get.mockResolvedValue({
+      item: {
+        id: 'some-id',
+        title: 'Some Page Title'
+      },
+      version: 1,
+      created: new Date(),
+      updated: new Date(),
+      deleted: false
+    });
+    const mockOnSaved = jest.fn();
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            id={'some-id'}
+            propertyTypeRenderers={propertyTypeRenderers}
+            cancel={() => {}}
+          onSaved={mockOnSaved}/>
+        </DataProvider>);
+    });
+    fireEvent.submit(screen.getByTestId('form'));
+    expect(mockOnSaved).toHaveBeenCalledWith('page', {
+      id: 'some-id',
+      title: 'Some Page Title'
+    });
+  });
+  it(`should call the cancel callback when the cancel button is clicked`, async () => {
+    mockService.get.mockResolvedValue({
+      item: {
+        id: 'some-id',
+        title: 'Some Page Title'
+      },
+      version: 1,
+      created: new Date(),
+      updated: new Date(),
+      deleted: false
+    });
+    const mockCancel = jest.fn();
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            id={'some-id'}
+            propertyTypeRenderers={propertyTypeRenderers}
+            cancel={mockCancel}/>
+        </DataProvider>);
+    });
+    fireEvent.click(screen.getByTestId('cancel'));
+    expect(mockCancel).toHaveBeenCalledWith('page', {
+      id: 'some-id',
+      title: 'Some Page Title'
+    });
   });
 });
 
