@@ -9,6 +9,4 @@ export {
 };
 
 export * from './list-renderer';
-export * from './ListItemProps';
-export * from './PaginationProps';
 export * from './edit-renderer';
