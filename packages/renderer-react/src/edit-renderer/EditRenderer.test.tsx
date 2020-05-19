@@ -1,11 +1,11 @@
-import React, {ComponentType} from "react";
+import React, {ComponentType, Fragment} from "react";
 import { act, render, within, fireEvent } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
 import EditRenderer from "./EditRenderer";
-import ModelConfig from "../ModelConfig";
 import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
 import DataProvider from "../data-provider";
+import { ModelConfig, ValidationExecutionStage } from "microo-core";
 
 describe(`<EditRenderer />`, () => {
   let baseConfig: ModelConfig,
@@ -34,8 +34,21 @@ describe(`<EditRenderer />`, () => {
       ]
     };
     propertyTypeRenderers = {
-      'string': ( { data, propertyConfig, onChange }: PropertyTypeRendererProps ) => (
-        <div data-testid={`property-${propertyConfig.id}`}>{data[propertyConfig.id]}</div>
+      'string': ( { data, propertyConfig, onChange, validationResults }: PropertyTypeRendererProps ) => (
+        <Fragment>
+          <input
+            data-testid={`property-${propertyConfig.id}`}
+            value={data[propertyConfig.id]}
+            onChange={(e) => {
+              onChange && onChange({
+                ...data,
+                [propertyConfig.id]: e.currentTarget.value
+              });
+            }} />
+          {validationResults && validationResults.map((result, i) => !result.valid && (
+            <div data-testid='validation-result' key={i}>{result.errorMessage}</div>
+          ))}
+        </Fragment>
       )
     };
 
@@ -80,9 +93,9 @@ describe(`<EditRenderer />`, () => {
       });
 
       const idProp = screen.getByTestId('property-id');
-      expect(idProp).toHaveTextContent('a-generated-id');
+      expect(idProp).toHaveValue('a-generated-id');
       const titleProp = screen.getByTestId('property-title');
-      expect(titleProp).toHaveTextContent('Untitled');
+      expect(titleProp).toHaveValue('Untitled');
     });
   });
   describe(`when editing an existing item`, () => {
@@ -139,9 +152,9 @@ describe(`<EditRenderer />`, () => {
         </DataProvider>);
     });
     const idProp = screen.getByTestId('property-id');
-    expect(idProp).toHaveTextContent('some-id');
+    expect(idProp).toHaveValue('some-id');
     const titleProp = screen.getByTestId('property-title');
-    expect(titleProp).toHaveTextContent('Some Page Title');
+    expect(titleProp).toHaveValue('Some Page Title');
   });
   it(`should show loading UI to begin with`, async () => {
     await act(async() => {
@@ -432,6 +445,41 @@ describe(`<EditRenderer />`, () => {
       id: 'some-id',
       title: 'Some Page Title'
     });
+  });
+  it(`should show an immediate validation error when invalid data is entered`, async () => {
+    mockService.get.mockResolvedValue({
+    item: {
+      id: 'some-id',
+      title: 'Some Page Title'
+    },
+    version: 1,
+    created: new Date(),
+    updated: new Date(),
+    deleted: false
+  });
+    const validationFn = jest.fn();
+    baseConfig.properties[1].validation = {
+      executeOn: [ ValidationExecutionStage.CHANGE ],
+      execute: validationFn
+    };
+    validationFn.mockResolvedValue({
+      valid: false,
+      errorMessage: 'some validation error'
+    });
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            id={'some-id'}
+            propertyTypeRenderers={propertyTypeRenderers}
+            cancel={() => {}}/>
+        </DataProvider>);
+    });
+    await act(async() => {
+      fireEvent.change(screen.getByTestId('property-title'), { target: { value: '' } });
+    });
+    expect(screen.getByTestId('validation-result').textContent).toMatchSnapshot();
   });
 });
 

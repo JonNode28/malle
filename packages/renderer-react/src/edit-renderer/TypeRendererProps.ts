@@ -1,6 +1,5 @@
-import {PropertyConfig} from "../PropertyConfig";
-import EditDisplayConfig from "../EditDisplayConfig";
 import {ComponentType} from "react";
+import { EditDisplayConfig } from "microo-core";
 
 export interface TypeRendererProps {
   data: any,

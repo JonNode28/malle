@@ -1,9 +1,7 @@
-import React, { Component, ComponentType, useEffect, useState } from "react";
+import React, { ComponentType, useEffect, useState } from "react";
 import s from './EditRenderer.pcss';
-import ModelConfig from "../ModelConfig";
 import { expand, isPropertyConfig } from "../util/editDisplayConfig";
 import { isEmpty } from "../util/id";
-import EditDisplayConfig from "../EditDisplayConfig";
 import { getProp, queryProp } from "../util/propertyConfig";
 import { createNewInstance } from "../util/model";
 import { TypeRendererProps } from "./TypeRendererProps";
@@ -12,6 +10,16 @@ import ErrorBoundary from "../error-boundary";
 import { useService } from "../data-provider/DataProvider";
 import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 import DefaultError from "../default-error";
+import {
+  EditDisplayConfig,
+  ModelConfig, PropertyConfig,
+  PropertyValidator,
+  ValidationExecutionStage,
+  ValidationResult,
+  Validator
+} from "microo-core";
+import debounce from 'debounce';
+import { prop } from "ramda";
 
 export interface EditRendererProps {
   config: ModelConfig
@@ -41,9 +49,10 @@ export default function EditRenderer(
 
   const service = useService();
 
-  const [editingModel, setEditingModel] = useState<any>()
+  const [editingModel, setEditingModel] = useState<any>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
+  const [validationResults, setValidationResults ] = useState<{[id: string]: Array<ValidationResult>}>({});
 
   useEffect(() => {
     (async () => {
@@ -67,6 +76,25 @@ export default function EditRenderer(
     })()
   }, [id]);
 
+  function save(){
+    service.save(config.id, editingModel);
+    if (onSaved) onSaved(config.id, editingModel);
+  }
+
+  async function onChange(propertyConfig: PropertyConfig, data: any){
+    setEditingModel(data);
+    if(!propertyConfig.validation) return;
+    const validation: Array<PropertyValidator> = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
+    const onChangeValidation = validation.filter(validation => validation.executeOn.indexOf(ValidationExecutionStage.CHANGE) !== -1);
+    if(!onChangeValidation.length) return;
+    const results = await Promise.all(onChangeValidation.map(validation =>
+      validation.execute(ValidationExecutionStage.CHANGE, propertyConfig, config, data)));
+    setValidationResults({
+      ...validationResults,
+      [propertyConfig.id]: results
+    });
+  }
+
   return (
     <div className={s.editRenderer}>
 
@@ -76,11 +104,12 @@ export default function EditRenderer(
 
       <form onSubmit={e => {
         e.preventDefault();
-        service.save(config.id, editingModel);
-        if (onSaved) onSaved(config.id, editingModel);
+        save()
       }} data-testid='form'>
         <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
+
           {editingModel && renderFromDisplayConfig(config.display?.edit)}
+
         </ErrorBoundary>
         <button type='submit' data-testid='save'>Save</button>
         <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingModel)}>Cancel</button>
@@ -109,14 +138,18 @@ export default function EditRenderer(
               if (!TypeRenderer) {
                 throw new Error(`No property type renderer for type '${itemDisplayConfig.typeRenderer || matchingProp.type}' of '${matchingProp.name}'. Registered property type renderers: [${Object.keys(propertyTypeRenderers || {}).join(`, `)}]`);
               }
+              
+              const propertyConfig = getProp(itemDisplayConfig.options.property, config.properties);
+              
               return <TypeRenderer
                 data={editingModel}
-                propertyConfig={getProp(itemDisplayConfig.options.property, config.properties)}
+                propertyConfig={propertyConfig}
                 displayConfig={itemDisplayConfig}
                 onChange={(data: any) => {
-                  setEditingModel(data);
+                  onChange(propertyConfig, data);
                 }}
-                renderChildren={renderFromDisplayConfig}/>
+                renderChildren={renderFromDisplayConfig}
+                validationResults={validationResults[propertyConfig.id]}/>
             } else {
               const TypeRenderer = typeRenderers && typeRenderers[itemDisplayConfig.type];
               if (!TypeRenderer) {
