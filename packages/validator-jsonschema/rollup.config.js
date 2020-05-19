@@ -4,6 +4,7 @@ import external from 'rollup-plugin-peer-deps-external'
 import resolve from 'rollup-plugin-node-resolve'
 import typescriptPlugin from 'rollup-plugin-typescript2'
 import typescript from 'typescript';
+import json from 'rollup-plugin-json';
 
 import pkg from './package.json'
 
@@ -37,6 +38,7 @@ export default {
       plugins: [ '@babel/plugin-proposal-export-default-from' ]
     }),
     resolve(),
-    commonjs()
+    commonjs(),
+    json()
   ]
 }
