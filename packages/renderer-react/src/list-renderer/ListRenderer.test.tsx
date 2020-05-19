@@ -3,10 +3,10 @@ import ListRenderer from "./ListRenderer";
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import ModelConfig from "../ModelConfig";
 import DataProvider, {ListResult} from "../data-provider";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
+import { ModelConfig } from "microo-core";
 
 function MockPagination({ count }: RenderPaginationProps) {
   return (

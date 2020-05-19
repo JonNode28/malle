@@ -1,12 +1,12 @@
 import React, { useEffect, useState, ReactNode, ComponentType, Fragment } from 'react'
 import { getItemId } from '../util/id';
-import ModelConfig from "../ModelConfig";
 import { useService } from "../data-provider/DataProvider";
 import ErrorBoundary from "../error-boundary";
 import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 import DefaultError from "../default-error";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
+import { ModelConfig } from "microo-core";
 
 export interface ListRendererProps {
   config: ModelConfig
