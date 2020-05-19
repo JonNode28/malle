@@ -1,4 +1,4 @@
-import {PropertyConfig} from "../PropertyConfig";
+import { PropertyConfig } from "microo-core";
 
 export function getProp(id: string, properties: Array<PropertyConfig>): PropertyConfig {
   const matchingProp = queryProp(id, properties);

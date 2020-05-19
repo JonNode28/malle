@@ -1,8 +1,7 @@
 import { expand } from './editDisplayConfig';
-import ModelConfig from "../ModelConfig";
-import EditDisplayConfig from "../EditDisplayConfig";
+import { EditDisplayConfig, ModelConfig } from "microo-core";
 
-describe(`editLayout.ts`, () => {
+describe(`editDisplayLayout.ts`, () => {
   let baseConfig: ModelConfig;
   beforeEach(() => {
     baseConfig = {
@@ -13,11 +12,7 @@ describe(`editLayout.ts`, () => {
           id: 'title',
           name: 'Title',
           description: 'The page description',
-          type: 'string',
-          validations: [
-            { options: { "maximum": 255 }, errorMessage: 'Cannot be more than 255 characters long' },
-            { options: { "minimum": 1 }, errorMessage: 'Must be at least 1 character long' }
-          ]
+          type: 'string'
         },
         {
           id: 'authorName',

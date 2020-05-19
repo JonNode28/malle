@@ -1,7 +1,5 @@
-import {PropertyConfig} from "../PropertyConfig";
-import EditDisplayConfig from "../EditDisplayConfig";
 import {getProp} from "./propertyConfig";
-import EditDisplayPropertyConfig from "../EditDisplayPropertyConfig";
+import { EditDisplayConfig, EditDisplayPropertyConfig, PropertyConfig } from "microo-core";
 
 export function expand(editDisplayConfig: Array<EditDisplayConfig | string> | undefined, properties: Array<PropertyConfig>): Array<EditDisplayConfig>{
   if(!editDisplayConfig) {

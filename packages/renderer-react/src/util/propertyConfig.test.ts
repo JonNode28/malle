@@ -1,5 +1,5 @@
 import {getProp, queryProp} from "./propertyConfig";
-import {PropertyConfig} from "../PropertyConfig";
+import { PropertyConfig } from "microo-core";
 
 describe(`propertyConfig utils`, () => {
   let props: Array<PropertyConfig>;

@@ -1,4 +1,4 @@
-import ModelConfig from "../ModelConfig";
+import { ModelConfig } from "microo-core";
 
 export function createNewInstance(config: ModelConfig): any{
   return config.properties.reduce<any>((a, c) => {
