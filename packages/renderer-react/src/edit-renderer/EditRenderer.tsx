@@ -1,7 +1,7 @@
 import React, { ComponentType, useEffect, useState } from "react";
 import s from './EditRenderer.pcss';
 import { expand, isPropertyConfig } from "../util/editDisplayConfig";
-import { isEmpty } from "../util/id";
+import { getItemId, isEmpty } from "../util/id";
 import { getProp, queryProp } from "../util/propertyConfig";
 import { createNewInstance } from "../util/model";
 import { TypeRendererProps } from "./TypeRendererProps";
@@ -15,11 +15,8 @@ import {
   ModelConfig, PropertyConfig,
   PropertyValidator,
   ValidationExecutionStage,
-  ValidationResult,
-  Validator
+  ValidationResult
 } from "microo-core";
-import debounce from 'debounce';
-import { prop } from "ramda";
 
 export interface EditRendererProps {
   config: ModelConfig
@@ -49,10 +46,12 @@ export default function EditRenderer(
 
   const service = useService();
 
-  const [editingModel, setEditingModel] = useState<any>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error>();
-  const [validationResults, setValidationResults ] = useState<{[id: string]: Array<ValidationResult>}>({});
+  const isNew = isEmpty(id);
+
+  const [ editingModel, setEditingModel ] = useState<any>();
+  const [ loading, setLoading ] = useState(true);
+  const [ error, setError ] = useState<Error>();
+  const [ validationResults, setValidationResults ] = useState<{[id: string]: Array<ValidationResult>}>({});
 
   useEffect(() => {
     (async () => {
@@ -76,8 +75,29 @@ export default function EditRenderer(
     })()
   }, [id]);
 
-  function save(){
-    service.save(config.id, editingModel);
+  async function save(){
+    const executionStage = isNew ? ValidationExecutionStage.CLIENT_CREATE : ValidationExecutionStage.CLIENT_UPDATE;
+    const validationResults: { [id: string]: Array<ValidationResult> } = {};
+    
+    for(const propertyConfig of config.properties){
+      if(!propertyConfig.validation) continue;
+      const validators = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
+      const relevantValidators = validators.filter(validator => validator.executeOn.indexOf(executionStage) !== -1);
+      if(!relevantValidators.length) continue;
+      validationResults[propertyConfig.id] = await Promise.all(relevantValidators.map(validator =>
+        validator.execute(executionStage, propertyConfig, config, editingModel)));
+    }
+
+    const valid = !Object.entries(validationResults)
+      .some(([key, value]) => {
+        return value.some(eachResult => !eachResult.valid)
+      });
+
+    setValidationResults(validationResults);
+
+    if(!valid) return;
+
+    await service.save(config.id, editingModel);
     if (onSaved) onSaved(config.id, editingModel);
   }
 

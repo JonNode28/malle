@@ -1,9 +1,9 @@
-import React, {ComponentType, Fragment} from "react";
-import { act, render, within, fireEvent } from '@testing-library/react';
+import React, { ComponentType, Fragment } from "react";
+import { act, fireEvent, render } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
 import EditRenderer from "./EditRenderer";
-import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
+import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
 import DataProvider from "../data-provider";
 import { ModelConfig, ValidationExecutionStage } from "microo-core";
 
@@ -409,10 +409,12 @@ describe(`<EditRenderer />`, () => {
             id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
             cancel={() => {}}
-          onSaved={mockOnSaved}/>
+            onSaved={mockOnSaved} />
         </DataProvider>);
     });
-    fireEvent.submit(screen.getByTestId('form'));
+    await act(async() => {
+      fireEvent.submit(screen.getByTestId('form'));
+    });
     expect(mockOnSaved).toHaveBeenCalledWith('page', {
       id: 'some-id',
       title: 'Some Page Title'
@@ -480,6 +482,70 @@ describe(`<EditRenderer />`, () => {
       fireEvent.change(screen.getByTestId('property-title'), { target: { value: '' } });
     });
     expect(screen.getByTestId('validation-result').textContent).toMatchSnapshot();
+  });
+  it(`should show validation errors when saving a new instance`, async () => {
+    baseConfig.properties[1].validation = {
+      executeOn: [ ValidationExecutionStage.CLIENT_CREATE ],
+      execute: () => Promise.resolve({
+        valid: false,
+        errorMessage: 'some validation error'
+      })
+    };
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            propertyTypeRenderers={propertyTypeRenderers}
+            cancel={() => {}}/>
+        </DataProvider>);
+    });
+
+    await act(async() => {
+      fireEvent.change(screen.getByTestId('property-title'), { target: { value: '' } });
+      fireEvent.click(screen.getByTestId('save'));
+    });
+
+    expect(screen.getByTestId('validation-result').textContent).toMatchSnapshot();
+  });
+  it(`should show validation errors when saving an existing instance`, async () => {
+    mockService.get.mockResolvedValue({
+      item: {
+        id: 'some-id',
+        title: 'Some Page Title'
+      },
+      version: 1,
+      created: new Date(),
+      updated: new Date(),
+      deleted: false
+    });
+    baseConfig.properties[1].validation = {
+      executeOn: [ ValidationExecutionStage.CLIENT_UPDATE ],
+      execute: () => Promise.resolve({
+        valid: false,
+        errorMessage: 'some validation error'
+      })
+    };
+    await act(async() => {
+      render(
+        <DataProvider service={mockService}>
+          <EditRenderer
+            config={baseConfig}
+            propertyTypeRenderers={propertyTypeRenderers}
+            id={'some-id'}
+            cancel={() => {}} />
+        </DataProvider>);
+    });
+
+    await act(async() => {
+      fireEvent.change(screen.getByTestId('property-title'), { target: { value: '' } });
+      fireEvent.click(screen.getByTestId('save'));
+    });
+
+    expect(screen.getByTestId('validation-result').textContent).toMatchSnapshot();
+  });
+  it(`should not save when validation errors are present`, () => {
+
   });
 });
 
