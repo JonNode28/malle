@@ -1,5 +1,5 @@
 import React, {createContext, useContext} from 'react';
-import { Service } from "./Service";
+import { Service } from "microo-core";
 
 interface DataProviderProps {
   service: Service,

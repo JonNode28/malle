@@ -16,16 +16,20 @@ export default class JsonSchemaPropertyValidator extends JsonSchemaValidator imp
   execute(stage: ValidationExecutionStage, propertyConfig: PropertyConfig, modelConfig: ModelConfig, data: any): Promise<ValidationResult> {
     const propertyValue = data[propertyConfig.id];
     const valid = this._validateFn(propertyValue);
+
     if(valid){
-      return Promise.resolve({ valid: true });
+      return Promise.resolve({
+        valid: true,
+        dataPaths: [ propertyConfig.id ]
+      });
     } else {
       const result: ValidationResult = {
         valid: false,
-        errorMessage: generateErrorMessage(data, this._options, this._validateFn)
+        errorMessage: generateErrorMessage(data, this._options, this._validateFn),
       }
 
       if(this._validateFn.errors){
-        result.dataPaths = this._validateFn.errors.map(err => err.dataPath);
+        result.dataPaths = this._validateFn.errors.map(err => propertyConfig.id + err.dataPath);
       }
 
       if(Array.isArray(this._options.errorDisplayMode)){

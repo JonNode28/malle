@@ -16,7 +16,9 @@ export default class JsonSchemaModelValidator extends JsonSchemaValidator implem
   execute(stage: ValidationExecutionStage, config: ModelConfig, data: any): Promise<ValidationResult> {
     const valid = this._validateFn(data);
     if(valid){
-      return Promise.resolve({ valid: true });
+      return Promise.resolve({
+        valid: true
+      });
     } else {
       const result: ValidationResult = {
         valid: false,

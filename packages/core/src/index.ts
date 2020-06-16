@@ -6,3 +6,7 @@ export * from './EditDisplayConfig';
 export * from './EditDisplayPropertyConfig';
 export * from './ModelConfig';
 export * from './PropertyConfig';
+export * from './Service';
+export * from './ListResult';
+export * from './GetResult';
+export * from './SaveResult';

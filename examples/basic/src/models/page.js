@@ -14,7 +14,6 @@ export default {
         new JsonSchemaPropertyValidator({
           error: 'Cannot be more than 255 characters long',
           executeOn: [
-            ValidationExecutionStage.CHANGE,
             ValidationExecutionStage.CLIENT_UPDATE,
             ValidationExecutionStage.CLIENT_CREATE,
             ValidationExecutionStage.SERVER_UPDATE,
@@ -28,7 +27,6 @@ export default {
         new JsonSchemaPropertyValidator({
           error: 'Must be at least 1 character long',
           executeOn: [
-            ValidationExecutionStage.CHANGE,
             ValidationExecutionStage.CLIENT_UPDATE,
             ValidationExecutionStage.CLIENT_CREATE,
             ValidationExecutionStage.SERVER_UPDATE,

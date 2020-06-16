@@ -17,6 +17,7 @@ import {
   ValidationExecutionStage,
   ValidationResult
 } from "microo-core";
+import { useValidationResults } from "./ValidationResultsProvider";
 
 export interface EditRendererProps {
   config: ModelConfig
@@ -51,7 +52,7 @@ export default function EditRenderer(
   const [ editingModel, setEditingModel ] = useState<any>();
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState<Error>();
-  const [ validationResults, setValidationResults ] = useState<{[id: string]: Array<ValidationResult>}>({});
+  let [ validationResults, validationResultsCache, setValidationResults ] = useValidationResults();
 
   useEffect(() => {
     (async () => {
@@ -66,7 +67,9 @@ export default function EditRenderer(
             setError(new Error(`Couldn't find a ${config.name} with ID '${id}'`));
             return;
           }
+
           setEditingModel(getResult.item);
+
         } catch (err) {
           setLoading(false);
           setError(new Error(`There was a problem loading that ${config.name}: ${err.message}`));
@@ -77,21 +80,18 @@ export default function EditRenderer(
 
   async function save(){
     const executionStage = isNew ? ValidationExecutionStage.CLIENT_CREATE : ValidationExecutionStage.CLIENT_UPDATE;
-    const validationResults: { [id: string]: Array<ValidationResult> } = {};
+    let validationResults: Array<ValidationResult> = [];
     
     for(const propertyConfig of config.properties){
       if(!propertyConfig.validation) continue;
       const validators = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
       const relevantValidators = validators.filter(validator => validator.executeOn.indexOf(executionStage) !== -1);
       if(!relevantValidators.length) continue;
-      validationResults[propertyConfig.id] = await Promise.all(relevantValidators.map(validator =>
-        validator.execute(executionStage, propertyConfig, config, editingModel)));
+      validationResults = validationResults.concat(await Promise.all(relevantValidators.map(validator =>
+        validator.execute(executionStage, propertyConfig, config, editingModel))));
     }
 
-    const valid = !Object.entries(validationResults)
-      .some(([key, value]) => {
-        return value.some(eachResult => !eachResult.valid)
-      });
+    const valid = !validationResults.some(result => result.valid);
 
     setValidationResults(validationResults);
 
@@ -116,32 +116,32 @@ export default function EditRenderer(
   }
 
   return (
-    <div className={s.editRenderer}>
+      <div className={s.editRenderer}>
 
-      {error && <ErrorDisplayComponent err={error}/>}
+        {error && <ErrorDisplayComponent err={error}/>}
 
-      {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
+        {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
-      <form onSubmit={e => {
-        e.preventDefault();
-        save()
-      }} data-testid='form'>
-        <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
+        <form onSubmit={e => {
+          e.preventDefault();
+          save()
+        }} data-testid='form'>
+          <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
 
-          {editingModel && renderFromDisplayConfig(config.display?.edit)}
+            {editingModel && renderFromDisplayConfig(config.display?.edit)}
 
-        </ErrorBoundary>
-        <button type='submit' data-testid='save'>Save</button>
-        <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingModel)}>Cancel</button>
-      </form>
+          </ErrorBoundary>
+          <button type='submit' data-testid='save'>Save</button>
+          <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingModel)}>Cancel</button>
+        </form>
 
-    </div>
+      </div>
   );
 
   function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any {
     try {
        const expandedDisplayConfig = expand(displayConfig, config.properties);
-
+      console.log(JSON.stringify(validationResults));
       return expandedDisplayConfig.map((itemDisplayConfig, i) => {
         return <ErrorBoundary key={i} errorRenderer={ErrorDisplayComponent}>
           {(() => {
@@ -169,7 +169,7 @@ export default function EditRenderer(
                   onChange(propertyConfig, data);
                 }}
                 renderChildren={renderFromDisplayConfig}
-                validationResults={validationResults[propertyConfig.id]}/>
+                validationResults={validationResultsCache[propertyConfig.id]}/>
             } else {
               const TypeRenderer = typeRenderers && typeRenderers[itemDisplayConfig.type];
               if (!TypeRenderer) {
