@@ -3,13 +3,21 @@ import s from './EditRenderer.pcss';
 import { expand, isPropertyConfig } from "../util/editDisplayConfig";
 import { getItemId, isEmpty } from "../util/id";
 import { getProp, queryProp } from "../util/propertyConfig";
-import { createNewInstance } from "../util/model";
+import { createNewInstance, getPropStateMap } from "../util/model";
 import { TypeRendererProps } from "./TypeRendererProps";
 import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
 import ErrorBoundary from "../error-boundary";
 import { useService } from "../data-provider/DataProvider";
 import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 import DefaultError from "../default-error";
+import {
+  RecoilRoot,
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState, RecoilState,
+} from 'recoil';
 import {
   EditDisplayConfig,
   ModelConfig, PropertyConfig,
@@ -18,6 +26,7 @@ import {
   ValidationResult
 } from "microo-core";
 import { useValidationResults } from "./ValidationResultsProvider";
+import RecoilPropertyDataProvider from "./RecoilPropertyDataProvider";
 
 export interface EditRendererProps {
   config: ModelConfig
@@ -48,8 +57,8 @@ export default function EditRenderer(
   const service = useService();
 
   const isNew = isEmpty(id);
+  const [ propStateMap, setPropStateMap ] = useState<{ [ jsonPointer: string ]: RecoilState<any> } | null>(null);
 
-  const [ editingModel, setEditingModel ] = useState<any>();
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState<Error>();
   let [ validationResults, validationResultsCache, setValidationResults ] = useValidationResults();
@@ -57,7 +66,8 @@ export default function EditRenderer(
   useEffect(() => {
     (async () => {
       if (isEmpty(id)) {
-        setEditingModel(createNewInstance(config));
+        const newInstance = (createNewInstance(config));
+        setPropStateMap(getPropStateMap(config, newInstance));
         setLoading(false);
       } else {
         try {
@@ -67,55 +77,42 @@ export default function EditRenderer(
             setError(new Error(`Couldn't find a ${config.name} with ID '${id}'`));
             return;
           }
-
-          setEditingModel(getResult.item);
-
+          setPropStateMap(getPropStateMap(config, getResult.item));
         } catch (err) {
+          console.error(err);
           setLoading(false);
           setError(new Error(`There was a problem loading that ${config.name}: ${err.message}`));
+          return;
         }
       }
     })()
   }, [id]);
 
-  async function save(){
-    const executionStage = isNew ? ValidationExecutionStage.CLIENT_CREATE : ValidationExecutionStage.CLIENT_UPDATE;
-    let validationResults: Array<ValidationResult> = [];
-    
-    for(const propertyConfig of config.properties){
-      if(!propertyConfig.validation) continue;
-      const validators = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
-      const relevantValidators = validators.filter(validator => validator.executeOn.indexOf(executionStage) !== -1);
-      if(!relevantValidators.length) continue;
-      validationResults = validationResults.concat(await Promise.all(relevantValidators.map(validator =>
-        validator.execute(executionStage, propertyConfig, config, editingModel))));
-    }
-
-    const valid = !validationResults.some(result => result.valid);
-
-    setValidationResults(validationResults);
-
-    if(!valid) return;
-
-    await service.save(config.id, editingModel);
-    if (onSaved) onSaved(config.id, editingModel);
-  }
-
-  async function onChange(propertyConfig: PropertyConfig, data: any){
-    setEditingModel(data);
-    if(!propertyConfig.validation) return;
-    const validation: Array<PropertyValidator> = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
-    const onChangeValidation = validation.filter(validation => validation.executeOn.indexOf(ValidationExecutionStage.CHANGE) !== -1);
-    if(!onChangeValidation.length) return;
-    const results = await Promise.all(onChangeValidation.map(validation =>
-      validation.execute(ValidationExecutionStage.CHANGE, propertyConfig, config, data)));
-    setValidationResults({
-      ...validationResults,
-      [propertyConfig.id]: results
-    });
-  }
+  // async function save(){
+  //   const executionStage = isNew ? ValidationExecutionStage.CLIENT_CREATE : ValidationExecutionStage.CLIENT_UPDATE;
+  //   let validationResults: Array<ValidationResult> = [];
+  //
+  //   for(const propertyConfig of config.properties){
+  //     if(!propertyConfig.validation) continue;
+  //     const validators = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
+  //     const relevantValidators = validators.filter(validator => validator.executeOn.indexOf(executionStage) !== -1);
+  //     if(!relevantValidators.length) continue;
+  //     validationResults = validationResults.concat(await Promise.all(relevantValidators.map(validator =>
+  //       validator.execute(executionStage, propertyConfig, config, originalModelData))));
+  //   }
+  //
+  //   const valid = !validationResults.some(result => result.valid);
+  //
+  //   setValidationResults(validationResults);
+  //
+  //   if(!valid) return;
+  //
+  //   await service.save(config.id, originalModelData);
+  //   if (onSaved) onSaved(config.id, originalModelData);
+  // }
 
   return (
+    <RecoilRoot>
       <div className={s.editRenderer}>
 
         {error && <ErrorDisplayComponent err={error}/>}
@@ -124,18 +121,19 @@ export default function EditRenderer(
 
         <form onSubmit={e => {
           e.preventDefault();
-          save()
+          //save()
         }} data-testid='form'>
           <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
 
-            {editingModel && renderFromDisplayConfig(config.display?.edit)}
+            {propStateMap && renderFromDisplayConfig(config.display?.edit)}
 
           </ErrorBoundary>
           <button type='submit' data-testid='save'>Save</button>
-          <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingModel)}>Cancel</button>
+          <button type='button' data-testid='cancel' onClick={() => cancel(config.id, id)}>Cancel</button>
         </form>
 
       </div>
+    </RecoilRoot>
   );
 
   function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any {
@@ -160,23 +158,28 @@ export default function EditRenderer(
               }
               
               const propertyConfig = getProp(itemDisplayConfig.options.property, config.properties);
-              
-              return <TypeRenderer
-                data={editingModel}
-                propertyConfig={propertyConfig}
-                displayConfig={itemDisplayConfig}
-                onChange={(data: any) => {
-                  onChange(propertyConfig, data);
-                }}
-                renderChildren={renderFromDisplayConfig}
-                validationResults={validationResultsCache[propertyConfig.id]}/>
+              if(propStateMap === null) throw new Error('propStateMap is required');
+              return (
+                <RecoilPropertyDataProvider modelConfig={config} propertyConfig={propertyConfig} propertyStateMap={propStateMap}>
+                {({ propData, modelData, setPropDataValue, setModelDataValue }) => (
+                  <TypeRenderer
+                    propData={propData}
+                    modelData={modelData}
+                    setPropDataValue={setPropDataValue}
+                    setModelDataValue={setModelDataValue}
+                    propertyConfig={propertyConfig}
+                    displayConfig={itemDisplayConfig}
+                    renderChildren={renderFromDisplayConfig}
+                    validationResults={validationResultsCache[propertyConfig.id]}/>
+                )}
+                </RecoilPropertyDataProvider>
+              );
             } else {
               const TypeRenderer = typeRenderers && typeRenderers[itemDisplayConfig.type];
               if (!TypeRenderer) {
                 throw new Error(`No type renderer for display type '${itemDisplayConfig.type}'. Registered type renderers: [${Object.keys(typeRenderers || {}).join(`, `)}]`);
               }
               return <TypeRenderer
-                data={editingModel}
                 displayConfig={itemDisplayConfig}
                 renderChildren={renderFromDisplayConfig}/>
             }
@@ -184,6 +187,7 @@ export default function EditRenderer(
         </ErrorBoundary>
       });
     } catch (err) {
+      console.error(err);
       return <ErrorDisplayComponent err={err}/>
     }
   }

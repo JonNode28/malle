@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
 
 
 module.exports = (_env, argv) => {
@@ -82,10 +83,12 @@ module.exports = (_env, argv) => {
     resolve: {
       extensions: [ '*', '.js', '.jsx' ],
       alias: {
-        react: path.resolve('./node_modules/react') // Required so that Webpack doesn't try and use react from linked package in development
+        react: path.resolve('./node_modules/react'), // Required so that Webpack doesn't try and use react from linked package in development
+        recoil: path.resolve('./node_modules/malle-renderer-react/node_modules/recoil')
       }
     },
     plugins: [
+      new DuplicatePackageCheckerPlugin(),
       new HtmlWebPackPlugin({
         template: './src/index.html',
         filename: './index.html'

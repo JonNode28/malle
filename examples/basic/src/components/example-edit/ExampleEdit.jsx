@@ -4,8 +4,10 @@ import { EditRenderer } from "malle-renderer-react";
 import { useParams, useHistory } from "react-router-dom";
 import { ErrorPanel, StringRenderer } from 'malle-renderer-component-library-react';
 import querystring from 'query-string';
-import {useLocation} from "react-router";
+import { useLocation } from "react-router";
 import { ValidationResultsProvider, ValidationSummary, EditingModelProvider } from "malle-renderer-react";
+import { getPropertyState } from "malle-renderer-react";
+import { useRecoilState } from "recoil";
 
 export function ExampleEdit({ config, listUri }){
   const { id } = useParams();
@@ -23,16 +25,14 @@ export function ExampleEdit({ config, listUri }){
             renderError={ErrorPanel}
             propertyTypeRenderers={{
               'string': StringRenderer,
-              'multiline-string': ({ data, propertyConfig, onChange }) => {
+              'multiline-string': ({ propertyStateMap, propertyConfig, validationResults }) => {
+                const [ propData, setPropData ] = useRecoilState(getPropertyState(propertyStateMap, propertyConfig));
                 return (
                   <div>
                     <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
                     {propertyConfig.description && <p>{propertyConfig.description}</p>}
-                    <textarea id={propertyConfig.id} value={data[propertyConfig.id]} onChange={(e) => {
-                      onChange({
-                        ...data,
-                        [propertyConfig.id]: e.currentTarget.value
-                      });
+                    <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
+                      setPropData(e.currentTarget.value);
                     }} />
                   </div>
                 );

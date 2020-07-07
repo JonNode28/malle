@@ -53,6 +53,10 @@ export default {
       plugins: [ '@babel/plugin-proposal-export-default-from' ]
     }),
     resolve(),
-    commonjs()
+    commonjs({
+      namedExports: {
+        'recoil': ['RecoilRoot', 'useRecoilState', 'atom']
+      }
+    })
   ]
 }
