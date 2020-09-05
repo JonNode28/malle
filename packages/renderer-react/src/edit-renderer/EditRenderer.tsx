@@ -1,14 +1,14 @@
-import React, { ComponentType, useEffect, useState } from "react";
+import React, {ComponentType, useEffect, useState} from "react";
 import s from './EditRenderer.pcss';
-import { expand, isPropertyConfig } from "../util/editDisplayConfig";
-import { getItemId, isEmpty } from "../util/id";
-import { getProp, queryProp } from "../util/propertyConfig";
-import { createNewInstance, getPropStateMap } from "../util/model";
-import { TypeRendererProps } from "./TypeRendererProps";
-import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
+import {expand, isPropertyConfig} from "../util/editDisplayConfig";
+import {getItemId, isEmpty} from "../util/id";
+import {getProp, queryProp} from "../util/propertyConfig";
+import {createNewInstance, getPropStateMap} from "../util/model";
+import {TypeRendererProps} from "./TypeRendererProps";
+import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
 import ErrorBoundary from "../error-boundary";
-import { useService } from "../data-provider/DataProvider";
-import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
+import {useService} from "../data-provider/DataProvider";
+import {ErrorRendererProps} from "../error-boundary/ErrorBoundary";
 import DefaultError from "../default-error";
 import {
   RecoilRoot,
@@ -20,16 +20,17 @@ import {
 } from 'recoil';
 import {
   EditDisplayConfig,
-  ModelConfig, PropertyConfig,
+  ModelConfig,
+  PropertyConfig,
   PropertyValidator,
   ValidationExecutionStage,
   ValidationResult
 } from "microo-core";
-import { useValidationResults } from "./ValidationResultsProvider";
+import {useValidationResults} from "./ValidationResultsProvider";
 import RecoilPropertyDataProvider from "./RecoilPropertyDataProvider";
 
 export interface EditRendererProps {
-  config: ModelConfig
+  modelConfig: ModelConfig
   id?: string | number
   typeRenderers?: { [typeId: string]: ComponentType<TypeRendererProps> }
   propertyTypeRenderers?: { [typeId: string]: ComponentType<PropertyTypeRendererProps> }
@@ -40,7 +41,7 @@ export interface EditRendererProps {
 
 export default function EditRenderer(
   {
-    config,
+    modelConfig,
     id,
     typeRenderers,
     propertyTypeRenderers,
@@ -51,37 +52,37 @@ export default function EditRenderer(
 
   const ErrorDisplayComponent: ComponentType<ErrorRendererProps> = errorRenderer || DefaultError;
 
-  if (!config) return <ErrorDisplayComponent err={new Error('Model configuration is required')}/>;
-  if(!cancel) return <ErrorDisplayComponent err={new Error('A cancel function is required')} />;
+  if (!modelConfig) return <ErrorDisplayComponent err={new Error('Model configuration is required')}/>;
+  if (!cancel) return <ErrorDisplayComponent err={new Error('A cancel function is required')}/>;
 
   const service = useService();
 
   const isNew = isEmpty(id);
-  const [ propStateMap, setPropStateMap ] = useState<{ [ jsonPointer: string ]: RecoilState<any> } | null>(null);
+  const [propStateMap, setPropStateMap] = useState<{ [jsonPointer: string]: RecoilState<any> } | null>(null);
 
-  const [ loading, setLoading ] = useState(true);
-  const [ error, setError ] = useState<Error>();
-  let [ validationResults, validationResultsCache, setValidationResults ] = useValidationResults();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error>();
+  let [validationResults, validationResultsCache, setValidationResults] = useValidationResults();
 
   useEffect(() => {
     (async () => {
       if (isEmpty(id)) {
-        const newInstance = (createNewInstance(config));
-        setPropStateMap(getPropStateMap(config, newInstance));
+        const newInstance = (createNewInstance(modelConfig));
+        setPropStateMap(getPropStateMap(modelConfig, newInstance));
         setLoading(false);
       } else {
         try {
-          const getResult = await service.get(config.id, id);
+          const getResult = await service.get(modelConfig.id, id);
           setLoading(false);
           if (!getResult.item) {
-            setError(new Error(`Couldn't find a ${config.name} with ID '${id}'`));
+            setError(new Error(`Couldn't find a ${modelConfig.name} with ID '${id}'`));
             return;
           }
-          setPropStateMap(getPropStateMap(config, getResult.item));
+          setPropStateMap(getPropStateMap(modelConfig, getResult.item));
         } catch (err) {
           console.error(err);
           setLoading(false);
-          setError(new Error(`There was a problem loading that ${config.name}: ${err.message}`));
+          setError(new Error(`There was a problem loading that ${modelConfig.name}: ${err.message}`));
           return;
         }
       }
@@ -125,11 +126,11 @@ export default function EditRenderer(
         }} data-testid='form'>
           <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
 
-            {propStateMap && renderFromDisplayConfig(config.display?.edit)}
+            {propStateMap && renderFromDisplayConfig(modelConfig.display?.edit)}
 
           </ErrorBoundary>
           <button type='submit' data-testid='save'>Save</button>
-          <button type='button' data-testid='cancel' onClick={() => cancel(config.id, id)}>Cancel</button>
+          <button type='button' data-testid='cancel' onClick={() => cancel(modelConfig.id, id)}>Cancel</button>
         </form>
 
       </div>
@@ -138,7 +139,7 @@ export default function EditRenderer(
 
   function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any {
     try {
-       const expandedDisplayConfig = expand(displayConfig, config.properties);
+      const expandedDisplayConfig = expand(displayConfig, modelConfig.properties);
       console.log(JSON.stringify(validationResults));
       return expandedDisplayConfig.map((itemDisplayConfig, i) => {
         return <ErrorBoundary key={i} errorRenderer={ErrorDisplayComponent}>
@@ -148,7 +149,7 @@ export default function EditRenderer(
             }
 
             if (isPropertyConfig(itemDisplayConfig)) {
-              const matchingProp = queryProp(itemDisplayConfig.options.property, config.properties);
+              const matchingProp = queryProp(itemDisplayConfig.options.property, modelConfig.properties);
               if (!matchingProp) {
                 throw new Error(`Couldn't find prop matching '${itemDisplayConfig.type}' display config`);
               }
@@ -156,22 +157,24 @@ export default function EditRenderer(
               if (!TypeRenderer) {
                 throw new Error(`No property type renderer for type '${itemDisplayConfig.typeRenderer || matchingProp.type}' of '${matchingProp.name}'. Registered property type renderers: [${Object.keys(propertyTypeRenderers || {}).join(`, `)}]`);
               }
-              
-              const propertyConfig = getProp(itemDisplayConfig.options.property, config.properties);
-              if(propStateMap === null) throw new Error('propStateMap is required');
+
+              const propertyConfig = getProp(itemDisplayConfig.options.property, modelConfig.properties);
+              if (propStateMap === null) throw new Error('propStateMap is required');
               return (
-                <RecoilPropertyDataProvider modelConfig={config} propertyConfig={propertyConfig} propertyStateMap={propStateMap}>
-                {({ propData, modelData, setPropDataValue, setModelDataValue }) => (
-                  <TypeRenderer
-                    propData={propData}
-                    modelData={modelData}
-                    setPropDataValue={setPropDataValue}
-                    setModelDataValue={setModelDataValue}
-                    propertyConfig={propertyConfig}
-                    displayConfig={itemDisplayConfig}
-                    renderChildren={renderFromDisplayConfig}
-                    validationResults={validationResultsCache[propertyConfig.id]}/>
-                )}
+                <RecoilPropertyDataProvider modelConfig={modelConfig} propertyConfig={propertyConfig}
+                                            propertyStateMap={propStateMap}>
+                  {({propData, modelData, setPropDataValue, setModelDataValue}) => (
+                    <TypeRenderer
+                      propertyConfig={propertyConfig}
+                      modelConfig={modelConfig}
+                      displayConfig={itemDisplayConfig}
+                      propData={propData}
+                      modelData={modelData}
+                      setPropDataValue={setPropDataValue}
+                      setModelDataValue={setModelDataValue}
+                      renderChildren={renderFromDisplayConfig}
+                      validationResults={validationResultsCache[propertyConfig.id]}/>
+                  )}
                 </RecoilPropertyDataProvider>
               );
             } else {

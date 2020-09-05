@@ -12,6 +12,8 @@ interface RecoilPropertyDataProviderProps {
   children: (props: ChildFunctionProps) => any
 }
 interface ChildFunctionProps {
+  modelConfig: ModelConfig
+  propertyConfig: PropertyConfig
   propData: any
   modelData: any
   setPropDataValue: (value: any) => void
@@ -21,30 +23,30 @@ export default function RecoilPropertyDataProvider({ modelConfig, propertyConfig
   if(typeof children !== 'function') throw new Error(`<RecoilPropDataProvider /> must be passed a function child`);
 
   const [ propData, setPropData ] = useRecoilState(getPropertyState(propertyStateMap, propertyConfig));
+  //
+  // const modelDataSelector = selector<any>({
+  //   key: 'ModelDataSelector',
+  //   get: ({ get }) => {
+  //     console.info('Getting entire model data');
+  //     return modelConfig.properties.reduce((a, c): any => {
+  //       const jsonPointer = getPropertyJsonPointer(c);
+  //       const state = propertyStateMap[jsonPointer];
+  //       if(!state) return;
+  //       ptr.set(a, jsonPointer, get(state))
+  //     }, {})
+  //   },
+  //   set: ({ get, set }, newValue) => {
+  //     console.info('Setting entire model data');
+  //     modelConfig.properties.forEach(propertyConfig => {
+  //       const jsonPointer = getPropertyJsonPointer(propertyConfig);
+  //       const state = propertyStateMap[jsonPointer];
+  //       if(!state) return;
+  //       set(state, ptr.get(newValue, jsonPointer)); // TODO: Optimise with a prev/next equality check
+  //     });
+  //   }
+  // });
+  //
+  // const [ modelData, setModelData ] = useRecoilState<any>(modelDataSelector);
 
-  const modelDataSelector = selector<any>({
-    key: 'ModelDataSelector',
-    get: ({ get }) => {
-      console.info('Getting entire model data');
-      return modelConfig.properties.reduce((a, c): any => {
-        const jsonPointer = getPropertyJsonPointer(c);
-        const state = propertyStateMap[jsonPointer];
-        if(!state) return;
-        ptr.set(a, jsonPointer, get(state))
-      }, {})
-    },
-    set: ({ get, set }, newValue) => {
-      console.info('Setting entire model data');
-      modelConfig.properties.forEach(propertyConfig => {
-        const jsonPointer = getPropertyJsonPointer(propertyConfig);
-        const state = propertyStateMap[jsonPointer];
-        if(!state) return;
-        set(state, ptr.get(newValue, jsonPointer)); // TODO: Optimise with a prev/next equality check
-      });
-    }
-  });
-
-  const [ modelData, setModelData ] = useRecoilState<any>(modelDataSelector);
-
-  return children({ propData: propData, modelData: modelData, setPropDataValue: setPropData, setModelDataValue: setModelData });
+  return children({ propertyConfig, modelConfig, propData: propData, modelData: null, setPropDataValue: setPropData, setModelDataValue: () => {} });
 }

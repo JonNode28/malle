@@ -6,8 +6,6 @@ import { ErrorPanel, StringRenderer } from 'malle-renderer-component-library-rea
 import querystring from 'query-string';
 import { useLocation } from "react-router";
 import { ValidationResultsProvider, ValidationSummary, EditingModelProvider } from "malle-renderer-react";
-import { getPropertyState } from "malle-renderer-react";
-import { useRecoilState } from "recoil";
 
 export function ExampleEdit({ config, listUri }){
   const { id } = useParams();
@@ -20,19 +18,18 @@ export function ExampleEdit({ config, listUri }){
       <ValidationResultsProvider>
         <EditingModelProvider>
           <EditRenderer
-            config={config}
+            modelConfig={config}
             id={id === 'new' ? null : parseInt(id)}
             renderError={ErrorPanel}
             propertyTypeRenderers={{
               'string': StringRenderer,
-              'multiline-string': ({ propertyStateMap, propertyConfig, validationResults }) => {
-                const [ propData, setPropData ] = useRecoilState(getPropertyState(propertyStateMap, propertyConfig));
+              'multiline-string': ({ propData,setPropDataValue, propertyConfig, validationResults }) => {
                 return (
                   <div>
                     <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
                     {propertyConfig.description && <p>{propertyConfig.description}</p>}
                     <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
-                      setPropData(e.currentTarget.value);
+                        setPropDataValue(e.currentTarget.value);
                     }} />
                   </div>
                 );

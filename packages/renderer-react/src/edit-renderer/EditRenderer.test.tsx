@@ -88,7 +88,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+            <EditRenderer modelConfig={baseConfig} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>);
       });
 
@@ -103,7 +103,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+            <EditRenderer modelConfig={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>
           );
       });
@@ -116,7 +116,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+            <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>);
       });
       const error = screen.getByTestId('error');
@@ -127,7 +127,7 @@ describe(`<EditRenderer />`, () => {
       await act(async() => {
         render(
           <DataProvider service={mockService}>
-            <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+            <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
           </DataProvider>);
       });
       const error = screen.getByTestId('error');
@@ -148,7 +148,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const idProp = screen.getByTestId('property-id');
@@ -160,7 +160,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
       const loading = screen.queryByTestId('loading');
       expect(loading?.textContent).toMatchSnapshot();
@@ -170,7 +170,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const loading = screen.queryByTestId('loading');
@@ -191,7 +191,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             propertyTypeRenderers={propertyTypeRenderers}
             typeRenderers={{
               'column': ({ data, displayConfig, renderChildren}) => (
@@ -210,10 +210,10 @@ describe(`<EditRenderer />`, () => {
         <DataProvider service={mockService}>
           <EditRenderer
             // @ts-ignore
-            config={null} id={'some-id'}
-            propertyTypeRenderers={propertyTypeRenderers}
-            errorRenderer={() => <div data-testid='custom-error'>A custom error display component</div>}
-            cancel={() => {}} />
+              modelConfig={null} id={'some-id'}
+              propertyTypeRenderers={propertyTypeRenderers}
+              errorRenderer={() => <div data-testid='custom-error'>A custom error display component</div>}
+              cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('custom-error');
@@ -224,7 +224,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           // @ts-ignore
-          <EditRenderer config={null} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={null} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -235,7 +235,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           // @ts-ignore
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -260,7 +260,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers}  cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -285,7 +285,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -312,7 +312,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     const error = screen.getByTestId('error');
@@ -330,7 +330,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>
       );
     });
@@ -349,7 +349,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
             typeRenderers={{
@@ -378,7 +378,7 @@ describe(`<EditRenderer />`, () => {
     await act(async() => {
       render(
         <DataProvider service={mockService}>
-          <EditRenderer config={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
+          <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
         </DataProvider>);
     });
     fireEvent.submit(screen.getByTestId('form'));
@@ -405,7 +405,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
             cancel={() => {}}
@@ -436,7 +436,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
             cancel={mockCancel}/>
@@ -472,7 +472,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
             cancel={() => {}}/>
@@ -495,7 +495,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             propertyTypeRenderers={propertyTypeRenderers}
             cancel={() => {}}/>
         </DataProvider>);
@@ -530,7 +530,7 @@ describe(`<EditRenderer />`, () => {
       render(
         <DataProvider service={mockService}>
           <EditRenderer
-            config={baseConfig}
+            modelConfig={baseConfig}
             propertyTypeRenderers={propertyTypeRenderers}
             id={'some-id'}
             cancel={() => {}} />
