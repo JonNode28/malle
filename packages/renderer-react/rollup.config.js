@@ -47,7 +47,7 @@ export default {
     resolve(),
     commonjs({
       namedExports: {
-        'recoil': [ 'RecoilRoot', 'useRecoilState', 'atom', 'selector' ]
+        'recoil': [ 'RecoilRoot', 'useRecoilState', 'useRecoilValue', 'atom', 'selector' ]
       }
     })
   ]

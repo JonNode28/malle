@@ -1,15 +1,16 @@
-import React, {ComponentType, useEffect, useState} from "react";
+import React, { ComponentType, Suspense, useEffect, useState } from "react";
 import s from './EditRenderer.pcss';
-import {expand, isPropertyConfig} from "../util/editDisplayConfig";
-import {getItemId, isEmpty} from "../util/id";
-import {getProp, queryProp} from "../util/propertyConfig";
-import {createNewInstance, getPropStateMap} from "../util/model";
-import {TypeRendererProps} from "./TypeRendererProps";
-import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
+import { expand, isPropertyConfig } from "../util/editDisplayConfig";
+import { getItemId, isEmpty } from "../util/id";
+import { getProp, queryProp } from "../util/propertyConfig";
+import { createNewInstance, getPropertyJsonPointer } from "../util/model";
+import { TypeRendererProps } from "./TypeRendererProps";
+import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
 import ErrorBoundary from "../error-boundary";
-import {useService} from "../data-provider/DataProvider";
-import {ErrorRendererProps} from "../error-boundary/ErrorBoundary";
+import { useService } from "../data-provider/DataProvider";
+import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 import DefaultError from "../default-error";
+import ptr from 'json-pointer';
 import {
   RecoilRoot,
   atom,
@@ -26,7 +27,6 @@ import {
   ValidationExecutionStage,
   ValidationResult
 } from "microo-core";
-import {useValidationResults} from "./ValidationResultsProvider";
 import RecoilPropertyDataProvider from "./RecoilPropertyDataProvider";
 
 export interface EditRendererProps {
@@ -58,17 +58,15 @@ export default function EditRenderer(
   const service = useService();
 
   const isNew = isEmpty(id);
-  const [propStateMap, setPropStateMap] = useState<{ [jsonPointer: string]: RecoilState<any> } | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
-  let [validationResults, validationResultsCache, setValidationResults] = useValidationResults();
+  const [ startingData, setStartingData ] = useState<Object|null>(null);
 
   useEffect(() => {
     (async () => {
       if (isEmpty(id)) {
         const newInstance = (createNewInstance(modelConfig));
-        setPropStateMap(getPropStateMap(modelConfig, newInstance));
+        setStartingData(newInstance)
         setLoading(false);
       } else {
         try {
@@ -78,7 +76,7 @@ export default function EditRenderer(
             setError(new Error(`Couldn't find a ${modelConfig.name} with ID '${id}'`));
             return;
           }
-          setPropStateMap(getPropStateMap(modelConfig, getResult.item));
+          setStartingData(getResult.item)
         } catch (err) {
           console.error(err);
           setLoading(false);
@@ -126,7 +124,7 @@ export default function EditRenderer(
         }} data-testid='form'>
           <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
 
-            {propStateMap && renderFromDisplayConfig(modelConfig.display?.edit)}
+            {startingData && renderFromDisplayConfig(modelConfig.display?.edit)}
 
           </ErrorBoundary>
           <button type='submit' data-testid='save'>Save</button>
@@ -138,9 +136,9 @@ export default function EditRenderer(
   );
 
   function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any {
+    if(!startingData) return
     try {
       const expandedDisplayConfig = expand(displayConfig, modelConfig.properties);
-      console.log(JSON.stringify(validationResults));
       return expandedDisplayConfig.map((itemDisplayConfig, i) => {
         return <ErrorBoundary key={i} errorRenderer={ErrorDisplayComponent}>
           {(() => {
@@ -159,23 +157,28 @@ export default function EditRenderer(
               }
 
               const propertyConfig = getProp(itemDisplayConfig.options.property, modelConfig.properties);
-              if (propStateMap === null) throw new Error('propStateMap is required');
+              const jsonPointer = getPropertyJsonPointer(propertyConfig)
+              const startingPropData = ptr.get(startingData, jsonPointer)
               return (
-                <RecoilPropertyDataProvider modelConfig={modelConfig} propertyConfig={propertyConfig}
-                                            propertyStateMap={propStateMap}>
-                  {({propData, modelData, setPropDataValue, setModelDataValue}) => (
-                    <TypeRenderer
-                      propertyConfig={propertyConfig}
-                      modelConfig={modelConfig}
-                      displayConfig={itemDisplayConfig}
-                      propData={propData}
-                      modelData={modelData}
-                      setPropDataValue={setPropDataValue}
-                      setModelDataValue={setModelDataValue}
-                      renderChildren={renderFromDisplayConfig}
-                      validationResults={validationResultsCache[propertyConfig.id]}/>
-                  )}
-                </RecoilPropertyDataProvider>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <RecoilPropertyDataProvider
+                    modelConfig={modelConfig}
+                    propertyConfig={propertyConfig}
+                    startingPropData={startingPropData} >
+                    {({propData, modelData, setPropDataValue, setModelDataValue, validationResults}) => (
+                      <TypeRenderer
+                        propertyConfig={propertyConfig}
+                        modelConfig={modelConfig}
+                        displayConfig={itemDisplayConfig}
+                        propData={propData}
+                        modelData={modelData}
+                        setPropDataValue={setPropDataValue}
+                        setModelDataValue={setModelDataValue}
+                        renderChildren={renderFromDisplayConfig}
+                        validationResults={validationResults}/>
+                    )}
+                  </RecoilPropertyDataProvider>
+                </Suspense>
               );
             } else {
               const TypeRenderer = typeRenderers && typeRenderers[itemDisplayConfig.type];

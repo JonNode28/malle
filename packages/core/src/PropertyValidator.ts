@@ -3,5 +3,10 @@ import { ValidationExecutionStage, ValidationResult, Validator } from "./Validat
 import { PropertyConfig } from "./PropertyConfig";
 
 export interface PropertyValidator extends Validator {
-  execute: (stage: ValidationExecutionStage, propertyConfig: PropertyConfig, modelConfig: ModelConfig, data: any) => Promise<ValidationResult>
+  execute: (
+    stage: ValidationExecutionStage,
+    propertyConfig: PropertyConfig,
+    modelConfig: ModelConfig,
+    data: any
+  ) => Promise<ValidationResult>
 }

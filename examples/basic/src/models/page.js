@@ -8,7 +8,7 @@ export default {
     {
       id: 'title',
       name: 'Title',
-      description: 'The page description',
+      description: 'The page title',
       type: 'string',
       validation: [
         new JsonSchemaPropertyValidator({

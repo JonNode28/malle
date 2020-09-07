@@ -1,14 +1,15 @@
-import { RecoilState, selector, useRecoilState } from "recoil";
-import { getPropertyJsonPointer, getPropertyState } from "../util/model";
-import { ModelConfig, PropertyConfig } from "microo-core";
-import ptr from 'json-pointer';
+import { RecoilState, selector, useRecoilState, useRecoilValue } from "recoil";
+import { getPropertyJsonPointer } from "../util/model";
+import { ModelConfig, PropertyConfig, ValidationExecutionStage, ValidationResult } from "microo-core";
+import {useMemo} from "react";
+import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
+import validationSelectorStore from "../store/validationSelectorStore";
+import propDataStore from "../store/propDataStore";
 
 interface RecoilPropertyDataProviderProps {
   modelConfig: ModelConfig
   propertyConfig: PropertyConfig
-  propertyStateMap: {
-    [jsonPointer: string]: RecoilState<any>;
-  }
+  startingPropData: any
   children: (props: ChildFunctionProps) => any
 }
 interface ChildFunctionProps {
@@ -18,11 +19,43 @@ interface ChildFunctionProps {
   modelData: any
   setPropDataValue: (value: any) => void
   setModelDataValue: (value: any) => void
+  validationResults: Array<ValidationResult>
 }
-export default function RecoilPropertyDataProvider({ modelConfig, propertyConfig, propertyStateMap, children }: RecoilPropertyDataProviderProps){
+export default function RecoilPropertyDataProvider({ modelConfig, propertyConfig, startingPropData, children }: RecoilPropertyDataProviderProps){
   if(typeof children !== 'function') throw new Error(`<RecoilPropDataProvider /> must be passed a function child`);
 
-  const [ propData, setPropData ] = useRecoilState(getPropertyState(propertyStateMap, propertyConfig));
+  const propJsonPointer = getPropertyJsonPointer(propertyConfig);
+
+  const propDataState = propDataStore.get(modelConfig.id, propJsonPointer, startingPropData)
+
+  const [ propData, setPropData ] = useRecoilState(propDataState);
+
+  const onChangeValidators = useMemo(() => {
+    if(!propertyConfig.validation) return [];
+    return (
+      Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ]
+    ).filter(validation => validation.executeOn.indexOf(ValidationExecutionStage.CHANGE))
+  }, [])
+
+  const validationResultsSelector = validationSelectorStore.get(
+    modelConfig.id,
+    propertyConfig.id,
+    {
+      key: `${modelConfig.id}-${propertyConfig.id}-790ef02a-ad02-482b-9b91-ba6290d8e813`,
+      get: async({ get }) => {
+        const propData = get(propDataState)
+        return await Promise.all(onChangeValidators.map(validator =>
+          validator.execute(
+            ValidationExecutionStage.CHANGE,
+            propertyConfig,
+            modelConfig,
+            propData)))
+      }
+    })
+
+  const validationResults = useRecoilValue(validationResultsSelector)
+
+
   //
   // const modelDataSelector = selector<any>({
   //   key: 'ModelDataSelector',
@@ -48,5 +81,13 @@ export default function RecoilPropertyDataProvider({ modelConfig, propertyConfig
   //
   // const [ modelData, setModelData ] = useRecoilState<any>(modelDataSelector);
 
-  return children({ propertyConfig, modelConfig, propData: propData, modelData: null, setPropDataValue: setPropData, setModelDataValue: () => {} });
+  return children({
+    propertyConfig,
+    modelConfig,
+    propData: propData,
+    modelData: null,
+    setPropDataValue: setPropData,
+    setModelDataValue: () => {},
+    validationResults
+  });
 }

@@ -10,13 +10,14 @@ import {
 import generateErrorMessage from "./generateErrorMessage";
 
 export default class JsonSchemaPropertyValidator extends JsonSchemaValidator implements PropertyValidator{
+  _options: JsonSchemaValidatorOptions
   constructor(options: JsonSchemaValidatorOptions) {
     super(options);
+    this._options = options
   }
-  execute(stage: ValidationExecutionStage, propertyConfig: PropertyConfig, modelConfig: ModelConfig, data: any): Promise<ValidationResult> {
-    const propertyValue = data[propertyConfig.id];
-    const valid = this._validateFn(propertyValue);
-
+  execute(stage: ValidationExecutionStage, propertyConfig: PropertyConfig, modelConfig: ModelConfig, propertyData: any): Promise<ValidationResult> {
+    const valid = this._validateFn(propertyData);
+    console.log(`${propertyConfig.id} value of ${JSON.stringify(propertyData)} ${valid?'passed':'failed'} validation: ${JSON.stringify(this._options)}`)
     if(valid){
       return Promise.resolve({
         valid: true,
@@ -25,7 +26,7 @@ export default class JsonSchemaPropertyValidator extends JsonSchemaValidator imp
     } else {
       const result: ValidationResult = {
         valid: false,
-        errorMessage: generateErrorMessage(data, this._options, this._validateFn),
+        errorMessage: generateErrorMessage(propertyData, this._options, this._validateFn),
       }
 
       if(this._validateFn.errors){

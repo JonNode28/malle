@@ -12,23 +12,6 @@ export function createNewInstance(config: ModelConfig): any{
   }, {});
 }
 
-export function getPropStateMap(config: ModelConfig, data: any): { [ jsonPointer: string ]: RecoilState<any> } {
-  return config.properties.reduce((a: { [ jsonPointer: string ]: RecoilState<any> }, c: PropertyConfig ) => {
-    const propJsonPointer = getPropertyJsonPointer(c);
-    let defaultVal;
-    if(data){
-      defaultVal = ptr.get(data, propJsonPointer);
-    } else {
-      defaultVal = typeof c.default === 'function' ? c.default() : c.default
-    }
-    a[propJsonPointer] = atom({
-      key: `property-state-${propJsonPointer}`,
-      default: defaultVal
-    })
-    return a;
-  }, {});
-}
-
 export function propStateMapToData(propStateMap: { [ jsonPointer: string ]: RecoilState<any> }): any {
   const data = {};
   Object.entries(propStateMap).forEach(([ jsonPointer, state ]) => {
@@ -38,15 +21,4 @@ export function propStateMapToData(propStateMap: { [ jsonPointer: string ]: Reco
 
 export function getPropertyJsonPointer(config: PropertyConfig){
   return `/${config.id}`;
-}
-
-export function getPropertyState(
-  propertyStateMap: { [ jsonPointer: string ]: RecoilState<any> },
-  propertyConfig: PropertyConfig
-): RecoilState<any> {
-  if(!propertyConfig) throw Error(`propertyConfig argument is required`);
-  const propJsonPointer = getPropertyJsonPointer(propertyConfig);
-  const propState = propertyStateMap[propJsonPointer];
-  if(propState === undefined) throw new Error(`Couldn't find state for prop ${propJsonPointer}`);
-  return propState;
 }
