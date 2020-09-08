@@ -1,7 +1,7 @@
-import { RecoilState, selector, useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { getPropertyJsonPointer } from "../util/model";
 import { ModelConfig, PropertyConfig, ValidationExecutionStage, ValidationResult } from "microo-core";
-import {useMemo} from "react";
+import { useEffect, useMemo } from "react";
 import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
 import validationSelectorStore from "../store/validationSelectorStore";
 import propDataStore from "../store/propDataStore";
@@ -30,31 +30,9 @@ export default function RecoilPropertyDataProvider({ modelConfig, propertyConfig
 
   const [ propData, setPropData ] = useRecoilState(propDataState);
 
-  const onChangeValidators = useMemo(() => {
-    if(!propertyConfig.validation) return [];
-    return (
-      Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ]
-    ).filter(validation => validation.executeOn.indexOf(ValidationExecutionStage.CHANGE))
-  }, [])
+  const validationResultsSelector = validationSelectorStore.get(propDataState, modelConfig, propertyConfig)
 
-  const validationResultsSelector = validationSelectorStore.get(
-    modelConfig.id,
-    propertyConfig.id,
-    {
-      key: `${modelConfig.id}-${propertyConfig.id}-790ef02a-ad02-482b-9b91-ba6290d8e813`,
-      get: async({ get }) => {
-        const propData = get(propDataState)
-        return await Promise.all(onChangeValidators.map(validator =>
-          validator.execute(
-            ValidationExecutionStage.CHANGE,
-            propertyConfig,
-            modelConfig,
-            propData)))
-      }
-    })
-
-  const validationResults = useRecoilValue(validationResultsSelector)
-
+  const validationResults = validationResultsSelector ? useRecoilValue(validationResultsSelector): []
 
   //
   // const modelDataSelector = selector<any>({
