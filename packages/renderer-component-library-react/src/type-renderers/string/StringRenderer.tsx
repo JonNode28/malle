@@ -20,7 +20,7 @@ export default function StringRenderer(
       <input
         type='text'
         id={propertyConfig.id}
-        defaultValue={propData}
+        value={propData}
         data-testid='string-input'
         onChange={(e) => {
           setPropDataValue && setPropDataValue(e.currentTarget.value);

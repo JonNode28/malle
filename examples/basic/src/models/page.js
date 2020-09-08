@@ -36,7 +36,8 @@ export default {
             "minLength": 1
           },
           displayMode: [ 'INLINE', 'SUMMARY', 'MODAL' ],
-        })
+        }),
+
       ]
     },
     {

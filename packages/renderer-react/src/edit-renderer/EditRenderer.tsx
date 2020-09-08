@@ -160,25 +160,23 @@ export default function EditRenderer(
               const jsonPointer = getPropertyJsonPointer(propertyConfig)
               const startingPropData = ptr.get(startingData, jsonPointer)
               return (
-                <Suspense fallback={<div>Loading...</div>}>
-                  <RecoilPropertyDataProvider
-                    modelConfig={modelConfig}
-                    propertyConfig={propertyConfig}
-                    startingPropData={startingPropData} >
-                    {({propData, modelData, setPropDataValue, setModelDataValue, validationResults}) => (
-                      <TypeRenderer
-                        propertyConfig={propertyConfig}
-                        modelConfig={modelConfig}
-                        displayConfig={itemDisplayConfig}
-                        propData={propData}
-                        modelData={modelData}
-                        setPropDataValue={setPropDataValue}
-                        setModelDataValue={setModelDataValue}
-                        renderChildren={renderFromDisplayConfig}
-                        validationResults={validationResults}/>
-                    )}
-                  </RecoilPropertyDataProvider>
-                </Suspense>
+                <RecoilPropertyDataProvider
+                  modelConfig={modelConfig}
+                  propertyConfig={propertyConfig}
+                  startingPropData={startingPropData} >
+                  {({propData, modelData, setPropDataValue, setModelDataValue, validationResults}) => (
+                    <TypeRenderer
+                      propertyConfig={propertyConfig}
+                      modelConfig={modelConfig}
+                      displayConfig={itemDisplayConfig}
+                      propData={propData}
+                      modelData={modelData}
+                      setPropDataValue={setPropDataValue}
+                      setModelDataValue={setModelDataValue}
+                      renderChildren={renderFromDisplayConfig}
+                      validationResults={validationResults}/>
+                  )}
+                </RecoilPropertyDataProvider>
               );
             } else {
               const TypeRenderer = typeRenderers && typeRenderers[itemDisplayConfig.type];

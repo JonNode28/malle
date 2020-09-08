@@ -1,9 +1,13 @@
 import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { getPropertyJsonPointer } from "../util/model";
-import { ModelConfig, PropertyConfig, ValidationExecutionStage, ValidationResult } from "microo-core";
-import { useEffect, useMemo } from "react";
-import {PropertyTypeRendererProps} from "./PropertyTypeRendererProps";
-import validationSelectorStore from "../store/validationSelectorStore";
+import {
+  ModelConfig,
+  PropertyConfig,
+  PropertyValidator,
+  ValidationExecutionStage,
+  ValidationResult
+} from "microo-core";
+import { useEffect, useMemo, useState } from "react";
 import propDataStore from "../store/propDataStore";
 
 interface RecoilPropertyDataProviderProps {
@@ -30,9 +34,36 @@ export default function RecoilPropertyDataProvider({ modelConfig, propertyConfig
 
   const [ propData, setPropData ] = useRecoilState(propDataState);
 
-  const validationResultsSelector = validationSelectorStore.get(propDataState, modelConfig, propertyConfig)
+  const onChangeValidators = useMemo(() => {
+    if(!propertyConfig.validation) return null
+    let validations:Array<PropertyValidator> = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ]
+    return validations.filter(validation => validation.executeOn.indexOf(ValidationExecutionStage.CHANGE))
+  }, [ propertyConfig ])
 
-  const validationResults = validationResultsSelector ? useRecoilValue(validationResultsSelector): []
+  const [ validationResults, setValidationResults ] = useState<Array<ValidationResult>>([])
+
+  useEffect(() => {
+    if(!onChangeValidators) return
+    (async () => {
+      const results = await Promise.all(onChangeValidators.map(validator =>
+        validator.execute(
+          ValidationExecutionStage.CHANGE,
+          propertyConfig,
+          modelConfig,
+          propData
+        )))
+      const flattenedValidationResults = results.reduce<ValidationResult[]>((a, c) => {
+        if(Array.isArray(c)) return a.concat(c)
+        a.push(c)
+        return a
+      }, [])
+      setValidationResults(flattenedValidationResults)
+    })()
+  }, [ propData ])
+
+  //const validationResultsSelector = validationSelectorStore.get(propDataState, modelConfig, propertyConfig)
+
+  //const validationResults = validationResultsSelector ? useRecoilValue(validationResultsSelector): []
 
   //
   // const modelDataSelector = selector<any>({

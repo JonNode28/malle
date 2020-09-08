@@ -8,5 +8,5 @@ export interface PropertyValidator extends Validator {
     propertyConfig: PropertyConfig,
     modelConfig: ModelConfig,
     data: any
-  ) => Promise<ValidationResult>
+  ) => ValidationResult | ValidationResult[] | Promise<ValidationResult> | Promise<ValidationResult[]>
 }
