@@ -12,12 +12,7 @@ import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 import DefaultError from "../default-error";
 import ptr from 'json-pointer';
 import {
-  RecoilRoot,
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState, RecoilState,
+  RecoilRoot, useRecoilCallback,
 } from 'recoil';
 import {
   EditDisplayConfig,
@@ -28,6 +23,8 @@ import {
   ValidationResult
 } from "microo-core";
 import RecoilPropertyDataProvider from "./RecoilPropertyDataProvider";
+import modelDataStore from "../store/modelDataStore";
+import ModelRenderer from "./ModelRenderer";
 
 export interface EditRendererProps {
   modelConfig: ModelConfig
@@ -57,10 +54,13 @@ export default function EditRenderer(
 
   const service = useService();
 
-  const isNew = isEmpty(id);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error>();
-  const [ startingData, setStartingData ] = useState<Object|null>(null);
+  const [ loading, setLoading ] = useState(true);
+  const [ error, setError ] = useState<Error>();
+  const [ startingData, setStartingData ] = useState<Object | null>(null);
+  const save = useRecoilCallback(({ snapshot }) => async () => {
+    const model = await snapshot.getPromise(modelDataStore.get(modelConfig, startingData))
+    console.log('saving model ', model)
+  })
 
   useEffect(() => {
     (async () => {
@@ -85,7 +85,7 @@ export default function EditRenderer(
         }
       }
     })()
-  }, [id]);
+  }, [ id ]);
 
   // async function save(){
   //   const executionStage = isNew ? ValidationExecutionStage.CLIENT_CREATE : ValidationExecutionStage.CLIENT_UPDATE;
@@ -110,91 +110,39 @@ export default function EditRenderer(
   //   if (onSaved) onSaved(config.id, originalModelData);
   // }
 
+  if(!startingData) return null
+
   return (
-    <RecoilRoot>
-      <div className={s.editRenderer}>
+    <div className={s.editRenderer}>
 
-        {error && <ErrorDisplayComponent err={error}/>}
+      {error && <ErrorDisplayComponent err={error}/>}
 
-        {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
+      {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
+      <RecoilRoot>
         <form onSubmit={e => {
           e.preventDefault();
-          //save()
+          (async () => {
+            await save()
+          })()
         }} data-testid='form'>
-          <ErrorBoundary errorRenderer={ErrorDisplayComponent}>
 
-            {startingData && renderFromDisplayConfig(modelConfig.display?.edit)}
+            <ModelRenderer
+              modelConfig={modelConfig}
+              typeRenderers={typeRenderers}
+              propertyTypeRenderers={propertyTypeRenderers}
+              startingData={startingData}
+              ErrorDisplayComponent={ErrorDisplayComponent} />
 
-          </ErrorBoundary>
           <button type='submit' data-testid='save'>Save</button>
           <button type='button' data-testid='cancel' onClick={() => cancel(modelConfig.id, id)}>Cancel</button>
-        </form>
 
-      </div>
-    </RecoilRoot>
+        </form>
+      </RecoilRoot>
+
+    </div>
   );
 
-  function renderFromDisplayConfig(displayConfig?: Array<EditDisplayConfig | string>): any {
-    if(!startingData) return
-    try {
-      const expandedDisplayConfig = expand(displayConfig, modelConfig.properties);
-      return expandedDisplayConfig.map((itemDisplayConfig, i) => {
-        return <ErrorBoundary key={i} errorRenderer={ErrorDisplayComponent}>
-          {(() => {
-            if (!itemDisplayConfig.typeRenderer) {
-              throw new Error(`Somehow ${itemDisplayConfig.type} ended up without a type Renderer. Sounds like a problem with microo 🥺`);
-            }
-
-            if (isPropertyConfig(itemDisplayConfig)) {
-              const matchingProp = queryProp(itemDisplayConfig.options.property, modelConfig.properties);
-              if (!matchingProp) {
-                throw new Error(`Couldn't find prop matching '${itemDisplayConfig.type}' display config`);
-              }
-              const TypeRenderer = propertyTypeRenderers && propertyTypeRenderers[itemDisplayConfig.typeRenderer || matchingProp.type];
-              if (!TypeRenderer) {
-                throw new Error(`No property type renderer for type '${itemDisplayConfig.typeRenderer || matchingProp.type}' of '${matchingProp.name}'. Registered property type renderers: [${Object.keys(propertyTypeRenderers || {}).join(`, `)}]`);
-              }
-
-              const propertyConfig = getProp(itemDisplayConfig.options.property, modelConfig.properties);
-              const jsonPointer = getPropertyJsonPointer(propertyConfig)
-              const startingPropData = ptr.get(startingData, jsonPointer)
-              return (
-                <RecoilPropertyDataProvider
-                  modelConfig={modelConfig}
-                  propertyConfig={propertyConfig}
-                  startingPropData={startingPropData} >
-                  {({propData, modelData, setPropDataValue, setModelDataValue, validationResults}) => (
-                    <TypeRenderer
-                      propertyConfig={propertyConfig}
-                      modelConfig={modelConfig}
-                      displayConfig={itemDisplayConfig}
-                      propData={propData}
-                      modelData={modelData}
-                      setPropDataValue={setPropDataValue}
-                      setModelDataValue={setModelDataValue}
-                      renderChildren={renderFromDisplayConfig}
-                      validationResults={validationResults}/>
-                  )}
-                </RecoilPropertyDataProvider>
-              );
-            } else {
-              const TypeRenderer = typeRenderers && typeRenderers[itemDisplayConfig.type];
-              if (!TypeRenderer) {
-                throw new Error(`No type renderer for display type '${itemDisplayConfig.type}'. Registered type renderers: [${Object.keys(typeRenderers || {}).join(`, `)}]`);
-              }
-              return <TypeRenderer
-                displayConfig={itemDisplayConfig}
-                renderChildren={renderFromDisplayConfig}/>
-            }
-          })()}
-        </ErrorBoundary>
-      });
-    } catch (err) {
-      console.error(err);
-      return <ErrorDisplayComponent err={err}/>
-    }
-  }
-
 }
+
 
