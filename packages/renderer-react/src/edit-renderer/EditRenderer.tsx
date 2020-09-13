@@ -23,7 +23,7 @@ import {
   ValidationResult
 } from "microo-core";
 import modelDataStore from "../store/modelDataStore";
-import ModelRenderer from "./ModelRenderer";
+import EditModelRenderer from "./EditModelRenderer";
 
 export interface EditRendererProps {
   modelConfig: ModelConfig
@@ -122,7 +122,7 @@ export default function EditRenderer(
           })()
         }} data-testid='form'>
 
-            <ModelRenderer
+            <EditModelRenderer
               modelConfig={modelConfig}
               startingData={startingData}
               ErrorDisplayComponent={ErrorDisplayComponent} />
