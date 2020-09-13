@@ -4,7 +4,7 @@ import { expand, isPropertyConfig } from "../util/editDisplayConfig";
 import { getItemId, isEmpty } from "../util/id";
 import { getProp, queryProp } from "../util/propertyConfig";
 import { createNewInstance, getPropertyJsonPointer } from "../util/model";
-import { TypeRendererProps } from "./TypeRendererProps";
+import { DisplayTypeRendererProps } from "./DisplayTypeRendererProps";
 import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
 import ErrorBoundary from "../error-boundary";
 import { useService } from "../data-provider/DataProvider";
@@ -22,15 +22,12 @@ import {
   ValidationExecutionStage,
   ValidationResult
 } from "microo-core";
-import RecoilPropertyDataProvider from "./RecoilPropertyDataProvider";
 import modelDataStore from "../store/modelDataStore";
 import ModelRenderer from "./ModelRenderer";
 
 export interface EditRendererProps {
   modelConfig: ModelConfig
   id?: string | number
-  typeRenderers?: { [typeId: string]: ComponentType<TypeRendererProps> }
-  propertyTypeRenderers?: { [typeId: string]: ComponentType<PropertyTypeRendererProps> }
   errorRenderer?: ComponentType<ErrorRendererProps>
   onSaved?: (modelId: string, instance: any) => void
   cancel: (modelId: string | undefined, instance: any) => void
@@ -40,8 +37,6 @@ export default function EditRenderer(
   {
     modelConfig,
     id,
-    typeRenderers,
-    propertyTypeRenderers,
     errorRenderer,
     onSaved,
     cancel
@@ -129,8 +124,6 @@ export default function EditRenderer(
 
             <ModelRenderer
               modelConfig={modelConfig}
-              typeRenderers={typeRenderers}
-              propertyTypeRenderers={propertyTypeRenderers}
               startingData={startingData}
               ErrorDisplayComponent={ErrorDisplayComponent} />
 

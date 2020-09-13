@@ -51,6 +51,14 @@ export default {
       name: 'Body',
       description: 'The content of the page',
       type: 'string'
+    },
+    {
+      id: 'tags',
+      name: 'Tags',
+      description: 'Page tags',
+      type: 'list',
+      listType: 'OBJECT',
+      listItemType: 'string'
     }
   ],
   validation: {
@@ -83,7 +91,8 @@ export default {
       // },
       'title',
       'authorName',
-      { type: 'property', typeRenderer: 'multiline-string', options: { property: 'body' } }
+      { type: 'property', typeRenderer: 'multiline-string', options: { property: 'body' } },
+      'tags'
     ]
   }
 }

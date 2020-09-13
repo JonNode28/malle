@@ -193,7 +193,7 @@ describe(`<EditRenderer />`, () => {
           <EditRenderer
             modelConfig={baseConfig}
             propertyTypeRenderers={propertyTypeRenderers}
-            typeRenderers={{
+            displayTypeRenderers={{
               'column': ({ data, displayConfig, renderChildren}) => (
                 <div data-testid='col'>{displayConfig.children && renderChildren && renderChildren(displayConfig.children)}</div>
               )
@@ -352,7 +352,7 @@ describe(`<EditRenderer />`, () => {
             modelConfig={baseConfig}
             id={'some-id'}
             propertyTypeRenderers={propertyTypeRenderers}
-            typeRenderers={{
+            displayTypeRenderers={{
               'erroring-display-type-renderer':  () => {
                 throw new Error('A display type renderer error!');
               }

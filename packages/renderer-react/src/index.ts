@@ -1,13 +1,15 @@
 import ListRenderer from './list-renderer'
-import EditRenderer, { ValidationSummary, EditingModelProvider }from './edit-renderer';
-import DataProvider from './data-provider';
+import EditRenderer from './edit-renderer';
+import ValidationSummary from './edit-renderer/ValidationSummary'
+import DataProvider from './data-provider'
+import typeRendererStore from "./store/typeRendererStore";
 
 export {
   ListRenderer,
   EditRenderer,
-  EditingModelProvider,
   DataProvider,
-  ValidationSummary
+  ValidationSummary,
+  typeRendererStore
 };
 
 export * from './list-renderer';

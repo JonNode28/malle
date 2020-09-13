@@ -1,8 +1,8 @@
-import { TypeRendererProps } from "./TypeRendererProps";
+import { DisplayTypeRendererProps } from "./DisplayTypeRendererProps";
 import { ModelConfig, PropertyConfig, ValidationResult } from "microo-core";
 import { RecoilState } from "recoil";
 
-export interface PropertyTypeRendererProps extends TypeRendererProps {
+export interface PropertyTypeRendererProps extends DisplayTypeRendererProps {
   propertyConfig: PropertyConfig
   modelConfig: ModelConfig
   propData: any
