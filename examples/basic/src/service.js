@@ -6,6 +6,10 @@ let pages = [...new Array(numberOfPages)].map((_, i) => {
     description: `Some descriptive text ${i}`,
     authorName: `Joe Bloggs ${i}`,
     body: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean condimentum varius lacus, id rhoncus ante pretium vestibulum. Vestibulum facilisis libero non lacus imperdiet, ac lacinia massa venenatis ${i}`,
+    tags: [
+        'sport',
+        'adventure'
+    ],
     version: 1,
     created: new Date(),
     updated: new Date(),

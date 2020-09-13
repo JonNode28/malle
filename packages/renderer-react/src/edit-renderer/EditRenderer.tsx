@@ -31,6 +31,8 @@ export interface EditRendererProps {
   errorRenderer?: ComponentType<ErrorRendererProps>
   onSaved?: (modelId: string, instance: any) => void
   cancel: (modelId: string | undefined, instance: any) => void
+  displayTypeRenderers: { [typeId: string]: ComponentType<DisplayTypeRendererProps> }
+  propertyTypeRenderers: { [typeId: string]: ComponentType<PropertyTypeRendererProps> }
 }
 
 export default function EditRenderer(
@@ -39,7 +41,9 @@ export default function EditRenderer(
     id,
     errorRenderer,
     onSaved,
-    cancel
+    cancel,
+    displayTypeRenderers,
+    propertyTypeRenderers
   }: EditRendererProps) {
 
   const ErrorDisplayComponent: ComponentType<ErrorRendererProps> = errorRenderer || DefaultError;
@@ -114,25 +118,22 @@ export default function EditRenderer(
 
       {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
-      <RecoilRoot>
         <form onSubmit={e => {
           e.preventDefault();
           (async () => {
             await save()
           })()
         }} data-testid='form'>
-
             <EditModelRenderer
               modelConfig={modelConfig}
               startingData={startingData}
-              ErrorDisplayComponent={ErrorDisplayComponent} />
-
+              ErrorDisplayComponent={ErrorDisplayComponent}
+              displayTypeRenderers={displayTypeRenderers}
+              propertyTypeRenderers={propertyTypeRenderers}
+            />
           <button type='submit' data-testid='save'>Save</button>
           <button type='button' data-testid='cancel' onClick={() => cancel(modelConfig.id, id)}>Cancel</button>
-
         </form>
-      </RecoilRoot>
-
     </div>
   );
 

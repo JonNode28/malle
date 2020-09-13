@@ -5,6 +5,7 @@ export interface PropertyConfig {
   name?: string
   description?: string
   type: string
+  listItemType?: string
   default?: any | Function
   validation?: PropertyValidator | Array<PropertyValidator>
 }

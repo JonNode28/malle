@@ -57,7 +57,6 @@ export default {
       name: 'Tags',
       description: 'Page tags',
       type: 'list',
-      listType: 'OBJECT',
       listItemType: 'string'
     }
   ],
