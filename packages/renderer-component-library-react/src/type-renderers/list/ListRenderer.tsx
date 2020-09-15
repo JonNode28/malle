@@ -2,6 +2,8 @@ import React from 'react'
 import s from './ListRenderer.pcss'
 import { PropertyTypeRendererProps } from "malle-renderer-react";
 import { EditPropertyRenderer } from "malle-renderer-react";
+import { propDataStore } from "malle-renderer-react";
+import { useRecoilState } from "recoil";
 
 export default function ListRenderer(
   {
@@ -19,6 +21,13 @@ export default function ListRenderer(
   }: PropertyTypeRendererProps
 ){
   const PropertyTypeRenderer = propertyTypeRenderers[propertyConfig.listItemType || 'string']
+
+  const propDataState = propDataStore.get(modelConfig.id, '/title')
+
+  const [ recoilPropData, setRecoilPropData ] = useRecoilState(propDataState);
+
+  console.log(recoilPropData)
+
   return (
     <div className={s.listRenderer}>
       {(() => {

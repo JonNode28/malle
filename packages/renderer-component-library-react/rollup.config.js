@@ -14,7 +14,9 @@ import pkg from './package.json'
 
 const externals = [
   ...Object.keys(pkg.peerDependencies),
-  ...Object.keys(pkg.dependencies)
+  ...Object.keys(pkg.dependencies),
+    'renderer-react',
+    '/Users/jonathanpritchard/Projects/supersonicanaconda/packages/renderer-react/dist/index.es.js'
 ];
 console.log('externals', externals);
 
@@ -33,6 +35,7 @@ export default {
     }
   ],
   plugins: [
+    { load(id) {console.log(id)} },
     external(externals),
     typescriptPlugin({
       typescript

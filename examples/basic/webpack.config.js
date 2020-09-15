@@ -83,8 +83,9 @@ module.exports = (_env, argv) => {
     resolve: {
       extensions: [ '*', '.js', '.jsx' ],
       alias: {
-        react: path.resolve('./node_modules/react'), // Required so that Webpack doesn't try and use react from linked package in development
-        recoil: path.resolve('./node_modules/malle-renderer-react/node_modules/recoil')
+        'react': path.resolve('./node_modules/react'), // Required so that Webpack doesn't try and use react from linked package in development
+        'recoil': path.resolve('./node_modules/malle-renderer-react/node_modules/recoil'),
+        'malle-renderer-react': path.resolve('./node_modules/malle-renderer-react/dist')
       }
     },
     plugins: [

@@ -20,9 +20,13 @@
   "license": "ISC",
   "peerDependencies": {
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "malle-renderer-react": "file:../renderer-react",
+    "@types/recoil": "0.0.1",
+    "recoil": "0.0.10"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-export-default-from": "^7.8.3",
@@ -46,7 +50,6 @@
     "eslint": "^6.8.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.5.4",
-    "malle-renderer-react": "file:../renderer-react",
     "microo-core": "file:../core",
     "microo-theme": "file:../theme",
     "postcss-css-variables": "^0.14.0",
