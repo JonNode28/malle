@@ -1,5 +1,5 @@
-import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 import React  from "react";
+import { ErrorRendererProps } from "microo-core";
 
 export default function DefaultError({ err }: ErrorRendererProps){
   if(typeof err === 'string') return <div data-testid='error'>error: {err}</div>;

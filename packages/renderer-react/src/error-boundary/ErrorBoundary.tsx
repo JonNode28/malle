@@ -1,13 +1,10 @@
 import React, {ComponentType} from "react";
 import s from './ErrorBoundary.pcss';
+import { ErrorRendererProps } from "microo-core";
 
 interface Props {
   children: any,
   errorRenderer: ComponentType<ErrorRendererProps>
-}
-
-export interface ErrorRendererProps{
-  err: Error | string
 }
 
 interface State {

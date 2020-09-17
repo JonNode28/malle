@@ -31,7 +31,7 @@ export default {
     }
   ],
   plugins: [
-    { load(id) {console.log(id)} },
+    // For debugging: { load(id) {console.log(id)} },
     external(externals),
     typescriptPlugin({
       typescript

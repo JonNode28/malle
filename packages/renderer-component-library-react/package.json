@@ -26,6 +26,9 @@
     "recoil": "0.0.10"
   },
   "dependencies": {
+    "@types/recoil": "0.0.1",
+    "malle-renderer-react": "file:../renderer-react",
+    "recoil": "0.0.13"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -41,6 +44,7 @@
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^25.2.1",
+    "@types/json-pointer": "^1.0.30",
     "@types/ramda": "^0.27.3",
     "@types/react": "^16.9.25",
     "classnames": "^2.2.6",
@@ -50,6 +54,7 @@
     "eslint": "^6.8.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.5.4",
+    "json-pointer": "^0.6.0",
     "microo-core": "file:../core",
     "microo-theme": "file:../theme",
     "postcss-css-variables": "^0.14.0",

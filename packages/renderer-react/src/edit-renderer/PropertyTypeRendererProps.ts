@@ -1,8 +1,7 @@
 import { DisplayTypeRendererProps } from "./DisplayTypeRendererProps";
-import { EditDisplayConfig, ModelConfig, PropertyConfig, ValidationResult } from "microo-core";
+import { EditDisplayConfig, ErrorRendererProps, ModelConfig, PropertyConfig, ValidationResult } from "microo-core";
 import { RecoilState } from "recoil";
 import { ComponentType } from "react";
-import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
 
 export interface PropertyTypeRendererProps extends DisplayTypeRendererProps {
   propertyConfig: PropertyConfig

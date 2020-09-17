@@ -6,7 +6,7 @@ export default {
   name: 'Page',
   descriptions: 'A page in a blog',
   type: 'object',
-  properties: [
+  children: [
     {
       id: 'title',
       name: 'Title',
@@ -60,43 +60,12 @@ export default {
       description: 'Page tags',
       type: 'list',
       listItemType: 'string',
-      properties: [
+      children: [
 
       ]
     }
   ],
-  validation: {
+  validation: [
 
-  },
-  display:{
-    edit: [
-      // {
-      //   type: 'column',
-      //   children: [
-      //     {
-      //       type: 'row',
-      //       options: {
-      //         fraction: 2/3,
-      //       },
-      //       children: [
-      //         { type: 'property', options: { property: 'title' } }
-      //       ]
-      //     },
-      //     {
-      //       type: 'row',
-      //       options: {
-      //         fraction: 1/3
-      //       },
-      //       children: [
-      //         { type: 'property', options: { property: 'authorName' } }
-      //       ]
-      //     }
-      //   ]
-      // },
-      'title',
-      'authorName',
-      { type: 'property', typeRenderer: 'multiline-string', options: { property: 'body' } },
-      'tags'
-    ]
-  }
+  ],
 }

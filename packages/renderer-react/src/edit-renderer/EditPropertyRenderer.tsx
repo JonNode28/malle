@@ -5,8 +5,7 @@ import { DisplayTypeRendererProps, getPropertyJsonPointer, PropertyTypeRendererP
 import ptr from "json-pointer";
 import RecoilPropertyDataProvider from "./RecoilPropertyDataProvider";
 import React, { ComponentType } from "react";
-import { EditDisplayConfig, ModelConfig } from "microo-core";
-import { ErrorRendererProps } from "../error-boundary/ErrorBoundary";
+import { EditDisplayConfig, ErrorRendererProps, ModelConfig } from "microo-core";
 import DefaultError from "../default-error";
 
 interface EditPropertyRendererProps {
