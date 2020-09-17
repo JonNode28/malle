@@ -61,7 +61,12 @@ export default {
       type: 'list',
       listItemType: 'string',
       children: [
-
+        {
+          id: 'tag',
+          name: 'Tag',
+          description: 'A tag',
+          type: 'string',
+        }
       ]
     }
   ],
