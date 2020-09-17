@@ -1,5 +1,5 @@
-import { JsonSchemaPropertyValidator } from 'microo-validator-jsonschema';
 import { ValidationExecutionStage } from "microo-core";
+import { JsonSchemaNodeValidator } from "microo-validator-jsonschema";
 
 export default {
   id: 'page',
@@ -13,7 +13,7 @@ export default {
       description: 'The page title',
       type: 'string',
       validation: [
-        new JsonSchemaPropertyValidator({
+        new JsonSchemaNodeValidator({
           error: 'Cannot be more than 255 characters long',
           executeOn: [
             ValidationExecutionStage.CLIENT_UPDATE,
@@ -26,7 +26,7 @@ export default {
           },
           displayMode: [ 'INLINE', 'SUMMARY', 'MODAL' ],
         }),
-        new JsonSchemaPropertyValidator({
+        new JsonSchemaNodeValidator({
           error: 'Must be at least 1 character long',
           executeOn: [
             ValidationExecutionStage.CLIENT_UPDATE,
@@ -66,6 +66,21 @@ export default {
           name: 'Tag',
           description: 'A tag',
           type: 'string',
+          validation: [
+            new JsonSchemaNodeValidator({
+              error: 'Cannot be more than 255 characters long',
+              executeOn: [
+                ValidationExecutionStage.CLIENT_UPDATE,
+                ValidationExecutionStage.CLIENT_CREATE,
+                ValidationExecutionStage.SERVER_UPDATE,
+                ValidationExecutionStage.SERVER_CREATE
+              ],
+              schema: {
+                "minLength": 1
+              },
+              displayMode: [ 'INLINE', 'SUMMARY', 'MODAL' ],
+            })
+          ],
         }
       ]
     }

@@ -1,35 +1,21 @@
-import React, { ComponentType, Suspense, useEffect, useState } from "react";
+import React, { ComponentType, useEffect, useState } from "react";
 import s from './EditRenderer.pcss';
-import { expand, isPropertyConfig } from "../util/editDisplayConfig";
-import { getItemId, isEmpty } from "../util/id";
-import { getProp, queryProp } from "../util/propertyConfig";
-import { createNewInstance, createNewInstanceFromNodeConfig, getPropertyJsonPointer } from "../util/model";
-import { DisplayTypeRendererProps } from "./DisplayTypeRendererProps";
-import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
+import { isEmpty } from "../util/id";
+import { createNewInstanceFromNodeConfig } from "../util/model";
 import { useService } from "../data-provider/DataProvider";
-import {  } from "microo-core";
 import DefaultError from "../default-error";
-import ptr from 'json-pointer';
 import {
   RecoilRoot, useRecoilCallback,
 } from 'recoil';
 import {
-  EditDisplayConfig,
-  ModelConfig,
   NodeConfig,
-  PropertyConfig,
-  PropertyValidator,
-  ValidationExecutionStage,
-  ValidationResult,
   ErrorRendererProps
 } from "microo-core";
-import modelDataStore from "../store/modelDataStore";
-import EditModelRenderer from "./EditModelRenderer";
 import nodeRendererStore from "../store/nodeRendererStore";
 import { NodeRendererProps } from "microo-core";
 import RecoilNodeDataProvider from "./RecoilNodeDataProvider";
 
-export interface EditRendererProps {
+export interface NodeEditRendererProps {
   config: NodeConfig
   editingId?: string | number
   errorRenderer?: ComponentType<ErrorRendererProps>
@@ -46,7 +32,7 @@ export default function NodeEditRenderer(
     onSaved,
     cancel,
     typeRenderers,
-  }: EditRendererProps) {
+  }: NodeEditRendererProps) {
 
   const ErrorDisplayComponent: ComponentType<ErrorRendererProps> = errorRenderer || DefaultError;
 

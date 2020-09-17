@@ -33,7 +33,7 @@ export default function ListNodeRenderer(
 
           return nodeData.map((itemData: any, i: number) => {
             return <ChildTypeRenderer
-              key={childConfig.id}
+              key={i}
               config={childConfig}
               ancestryConfig={[...ancestryConfig, childConfig ]}
               jsonPointer={`${jsonPointer}/${i}`}
