@@ -1,7 +1,6 @@
 import React, { ComponentType, useEffect, useState } from "react";
-import s from './EditRenderer.pcss';
+import s from './NodeEditRenderer.pcss';
 import { isEmpty } from "../util/id";
-import { createNewInstanceFromNodeConfig } from "../util/model";
 import { useService } from "../data-provider/DataProvider";
 import DefaultError from "../default-error";
 import {
@@ -45,7 +44,7 @@ export default function NodeEditRenderer(
 
   const [ loading, setLoading ] = useState(true);
   const [ error, setError ] = useState<Error>();
-  const [ startingData, setStartingData ] = useState<Object | null>(null);
+  const [ startingData, setStartingData ] = useState<any>(undefined);
   const save = useRecoilCallback(({ snapshot }) => async () => {
     // const model = await snapshot.getPromise(modelDataStore.get(modelConfig, startingData))
     // console.log('saving model ', model)
@@ -54,8 +53,6 @@ export default function NodeEditRenderer(
   useEffect(() => {
     (async () => {
       if (isEmpty(editingId)) {
-        const newInstance = (createNewInstanceFromNodeConfig(config));
-        setStartingData(newInstance)
         setLoading(false);
       } else {
         try {
@@ -75,29 +72,6 @@ export default function NodeEditRenderer(
       }
     })()
   }, [ editingId ]);
-
-  // async function save(){
-  //   const executionStage = isNew ? ValidationExecutionStage.CLIENT_CREATE : ValidationExecutionStage.CLIENT_UPDATE;
-  //   let validationResults: Array<ValidationResult> = [];
-  //
-  //   for(const propertyConfig of config.properties){
-  //     if(!propertyConfig.validation) continue;
-  //     const validators = Array.isArray(propertyConfig.validation) ? propertyConfig.validation : [ propertyConfig.validation ];
-  //     const relevantValidators = validators.filter(validator => validator.executeOn.indexOf(executionStage) !== -1);
-  //     if(!relevantValidators.length) continue;
-  //     validationResults = validationResults.concat(await Promise.all(relevantValidators.map(validator =>
-  //       validator.execute(executionStage, propertyConfig, config, originalModelData))));
-  //   }
-  //
-  //   const valid = !validationResults.some(result => result.valid);
-  //
-  //   setValidationResults(validationResults);
-  //
-  //   if(!valid) return;
-  //
-  //   await service.save(config.id, originalModelData);
-  //   if (onSaved) onSaved(config.id, originalModelData);
-  // }
 
   if(!startingData) return null
   const TypeRenderer = nodeRendererStore.get(config.type)

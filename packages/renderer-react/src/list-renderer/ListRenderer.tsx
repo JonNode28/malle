@@ -5,10 +5,10 @@ import ErrorBoundary from "../error-boundary";
 import DefaultError from "../default-error";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
-import { ErrorRendererProps, ModelConfig } from "microo-core";
+import { ErrorRendererProps, NodeConfig } from "microo-core";
 
 export interface ListRendererProps {
-  config: ModelConfig
+  config: NodeConfig
   renderItem: ({ item, index}: RenderItemProps) => ReactNode
   renderPagination?: ({ count }: RenderPaginationProps) => ReactNode
   validator?: (data: any) => ValidationResult

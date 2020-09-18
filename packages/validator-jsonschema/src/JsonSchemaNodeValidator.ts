@@ -2,7 +2,6 @@ import JsonSchemaValidator from "./JsonSchemaValidator";
 import { JsonSchemaValidatorOptions } from "./JsonSchemaValidatorOptions";
 import {
   NodeConfig,
-  PropertyConfig,
   ValidationExecutionStage,
   ValidationResult
 } from "microo-core";

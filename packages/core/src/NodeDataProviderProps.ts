@@ -1,4 +1,4 @@
-import { ModelConfig, NodeConfig, PropertyConfig, ValidationResult } from "./";
+import { NodeConfig, ValidationResult } from "./";
 
 export interface NodeDataProviderProps {
   config: NodeConfig

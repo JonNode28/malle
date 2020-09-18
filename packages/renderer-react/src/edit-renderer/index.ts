@@ -1,13 +1,9 @@
-import EditRenderer from "./EditRenderer";
+import NodeEditRenderer from "./NodeEditRenderer";
 import ValidationResultsProvider from "./ValidationResultsProvider";
-import EditPropertyRenderer from "./EditPropertyRenderer";
 import ObjectTypeRenderer from "./ObjectTypeRenderer";
 
-export default EditRenderer;
-export * from './DisplayTypeRendererProps';
-export * from './PropertyTypeRendererProps';
+export default NodeEditRenderer;
 export {
   ValidationResultsProvider,
-  EditPropertyRenderer,
   ObjectTypeRenderer
 }

@@ -1,9 +1,6 @@
-import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
-import { getPropertyJsonPointer } from "../util/model";
+import { useRecoilState } from "recoil";
 import {
-  ModelConfig, NodeConfig, NodeDataProviderProps,
-  PropertyConfig,
-  PropertyValidator,
+  NodeDataProviderProps,
   ValidationExecutionStage,
   ValidationResult
 } from "microo-core";

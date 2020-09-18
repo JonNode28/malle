@@ -1,5 +1,4 @@
-import React, { useMemo } from "react";
-import { PropertyTypeRendererProps } from "malle-renderer-react";
+import React from "react";
 import s from './StringNodeRenderer.pcss'
 import { NodeRendererProps } from "microo-core";
 
@@ -10,7 +9,6 @@ export default function StringNodeRenderer(
     jsonPointer,
     originalNodeData,
     DataProvider,
-    ErrorDisplayComponent
   }: NodeRendererProps
 ){
   return (

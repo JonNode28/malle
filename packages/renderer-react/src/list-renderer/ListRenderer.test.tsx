@@ -1,12 +1,12 @@
 import React from "react";
 import ListRenderer from "./ListRenderer";
-import { act, render, within } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import DataProvider, {ListResult} from "../data-provider";
+import DataProvider from "../data-provider";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
-import { ModelConfig } from "microo-core";
+import { ListResult, NodeConfig } from "microo-core";
 
 function MockPagination({ count }: RenderPaginationProps) {
   return (
@@ -27,15 +27,15 @@ function MockItemRenderer ({ item }: RenderItemProps) {
 
 
 describe('<ListRenderer />', () => {
-  let baseModelConfig: ModelConfig,
-  mockService: any,
-  mockListResult: ListResult;
+  let baseModelConfig: NodeConfig,
+    mockService: any,
+    mockListResult: ListResult;
 
   beforeEach(() => {
     baseModelConfig = {
       id: 'page',
       name: 'Page',
-      properties: [
+      children: [
         { id: 'id', type: 'number' },
         { id: 'somethingElse', type: 'string'},
         { id: 'title', type: 'string' },

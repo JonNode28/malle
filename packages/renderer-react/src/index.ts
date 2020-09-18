@@ -18,4 +18,3 @@ export {
 
 export * from './list-renderer';
 export * from './edit-renderer';
-export * from './util/model';
