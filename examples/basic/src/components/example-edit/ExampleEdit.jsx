@@ -1,11 +1,11 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import s from './ExampleEdit.pcss';
-import { EditRenderer } from "malle-renderer-react";
 import { useParams, useHistory } from "react-router-dom";
-import { ErrorPanel, StringRenderer, ListRenderer } from 'malle-renderer-component-library-react';
+import { ErrorPanel, StringNodeRenderer, ListNodeRenderer } from 'malle-renderer-component-library-react';
 import querystring from 'query-string';
 import { useLocation } from "react-router";
 import { ValidationResultsProvider, ValidationSummary } from "malle-renderer-react";
+import { NodeEditRenderer, ObjectTypeRenderer } from "malle-renderer-react";
 
 export function ExampleEdit({ config, listUri }){
   const { id } = useParams();
@@ -16,12 +16,13 @@ export function ExampleEdit({ config, listUri }){
   return (
     <div className={s.exampleEdit}>
       <ValidationResultsProvider>
-          <EditRenderer
-            modelConfig={config}
-            id={id === 'new' ? null : parseInt(id)}
+          <NodeEditRenderer
+            config={config}
+            editingId={id === 'new' ? null : parseInt(id)}
             errorRenderer={ErrorPanel}
-            propertyTypeRenderers={{
-                'string': StringRenderer,
+            typeRenderers={{
+                'object': ObjectTypeRenderer,
+                'string': StringNodeRenderer,
                 'multiline-string': ({ propData,setPropDataValue, propertyConfig, validationResults }) => {
                     return (
                         <div>
@@ -33,7 +34,7 @@ export function ExampleEdit({ config, listUri }){
                         </div>
                     );
                 },
-                'list': ListRenderer
+                'list': ListNodeRenderer
             }}
             cancel={() => history.push(backUri)}
             onSaved={() => history.push(backUri)}
