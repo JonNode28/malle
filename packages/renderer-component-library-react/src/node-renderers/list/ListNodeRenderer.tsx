@@ -1,6 +1,6 @@
 import React from 'react'
-import { NodeRendererProps } from "microo-core";
-import { nodeRendererStore } from "malle-renderer-react";
+import { NodeConfig, NodeRendererProps } from "microo-core";
+import { nodeRendererStore, createDefault } from "malle-renderer-react";
 
 export default function ListNodeRenderer(
   {
@@ -12,6 +12,7 @@ export default function ListNodeRenderer(
     ErrorDisplayComponent
   }: NodeRendererProps
 ){
+  if(!originalNodeData) originalNodeData = createDefault(config, [])
   return (
     <div>
       <label htmlFor={config.id}>{config.name}</label>
@@ -32,20 +33,79 @@ export default function ListNodeRenderer(
           if(!childRendererRegistration) return null
           const ChildTypeRenderer = childRendererRegistration.renderer
           if(!nodeData || !nodeData.length) return null
-
-          return nodeData.map((itemData: any, i: number) => {
-            return <ChildTypeRenderer
-              key={i}
-              config={childConfig}
-              ancestryConfig={[...ancestryConfig, childConfig ]}
-              jsonPointer={`${jsonPointer}/${i}`}
-              originalNodeData={itemData}
-              DataProvider={DataProvider}
-              ErrorDisplayComponent={ErrorDisplayComponent} />
-          })
+          const childAncestryConfig = [...ancestryConfig, childConfig ]
+          return (
+            <>
+              <div className='list'>
+                {nodeData.map((itemData: any, i: number) => {
+                  return (
+                    <DefaultExistingItemWrapper key={i}>
+                      <ChildTypeRenderer
+                        config={childConfig}
+                        ancestryConfig={childAncestryConfig}
+                        jsonPointer={`${jsonPointer}/${i}`}
+                        originalNodeData={itemData}
+                        DataProvider={DataProvider}
+                        ErrorDisplayComponent={ErrorDisplayComponent} />
+                    </DefaultExistingItemWrapper>
+                  )
+                })}
+              </div>
+              <DefaultNewItemWrapper config={config} onAdd={() => {
+                const newArr = [ ...nodeData, ]
+                setNodeDataValue(newArr)
+              }}>
+                <ChildTypeRenderer
+                  config={childConfig}
+                  ancestryConfig={childAncestryConfig}
+                  jsonPointer={`${jsonPointer}/new`}
+                  DataProvider={DataProvider}
+                  ErrorDisplayComponent={ErrorDisplayComponent} />
+              </DefaultNewItemWrapper>
+            </>
+          )
         }}
       </DataProvider>
 
+    </div>
+  )
+}
+
+interface DefaultExistingItemWrapperProps {
+  children: any
+}
+
+function DefaultExistingItemWrapper(
+  {
+    children
+  }: DefaultExistingItemWrapperProps
+){
+  return (
+
+    <div>
+      {children}
+    </div>
+  )
+}
+
+interface DefaultNewItemWrapperProps {
+  config: NodeConfig
+  onAdd: () => void
+  children: any
+}
+
+function DefaultNewItemWrapper(
+  {
+    config,
+    onAdd,
+    children
+  }: DefaultNewItemWrapperProps
+){
+  return (
+
+    <div>
+      {children}
+      <button type='button' onClick={onAdd}>Add [+]</button>
     </div>
   )
 }

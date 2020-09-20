@@ -3,6 +3,7 @@ import s from './ObjectNodeRenderer.pcss'
 import { NodeConfig, NodeRendererProps, ValidationResult } from "microo-core";
 import { nodeRendererStore } from "malle-renderer-react";
 import ptr from 'json-pointer'
+import { createDefault } from "malle-renderer-react";
 
 export default function ObjectNodeRenderer(
   {
@@ -14,6 +15,7 @@ export default function ObjectNodeRenderer(
     ErrorDisplayComponent
   }: NodeRendererProps
 ){
+  if(!originalNodeData) originalNodeData = createDefault(config, '')
   return (
     <div>
       <label htmlFor={config.id}>{config.name}</label>

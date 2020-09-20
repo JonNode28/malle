@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import s from './StringNodeRenderer.pcss'
 import { NodeRendererProps } from "microo-core";
+import { createDefault } from "malle-renderer-react";
 
 function StringNodeRenderer(
   {
@@ -11,6 +12,9 @@ function StringNodeRenderer(
     DataProvider,
   }: NodeRendererProps
 ){
+  const isNew = typeof originalNodeData === 'undefined'
+  if(isNew) originalNodeData = createDefault(config, '')
+  const [ touched, setTouched ] = useState(false);
   return (
     <DataProvider
       config={config}
@@ -25,9 +29,10 @@ function StringNodeRenderer(
               value={nodeData}
               data-testid='string-input'
               onChange={(e) => {
+                if(!touched) setTouched(true)
                 setNodeDataValue && setNodeDataValue(e.currentTarget.value);
               }} />
-            {validationResults && validationResults.map((result, i) => (
+            {touched && validationResults && validationResults.map((result, i) => (
               <div className={s.error} key={i}>{result.errorMessage}</div>
             ))}
           </>
