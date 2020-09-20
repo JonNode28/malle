@@ -28,7 +28,9 @@ export default function ListNodeRenderer(
           )
           if(config.children.length > 1) throw new Error('Only one child list type is currently supported')
           const childConfig = config.children[0]
-          const ChildTypeRenderer = nodeRendererStore.get(childConfig.type)
+          const childRendererRegistration = nodeRendererStore.get(childConfig.type)
+          if(!childRendererRegistration) return null
+          const ChildTypeRenderer = childRendererRegistration.renderer
           if(!nodeData || !nodeData.length) return null
 
           return nodeData.map((itemData: any, i: number) => {

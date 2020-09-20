@@ -2,7 +2,7 @@ import React from "react";
 import s from './StringNodeRenderer.pcss'
 import { NodeRendererProps } from "microo-core";
 
-export default function StringNodeRenderer(
+function StringNodeRenderer(
   {
     config,
     ancestryConfig,
@@ -37,7 +37,8 @@ export default function StringNodeRenderer(
           )
         }}
       </DataProvider>
-
     </div>
   );
 }
+StringNodeRenderer.type = 'string'
+export default StringNodeRenderer

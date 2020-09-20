@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
-import s from './ObjectTypeRenderer.pcss'
+import s from './ObjectNodeRenderer.pcss'
 import { NodeRendererProps } from "microo-core";
-import nodeRendererStore from "../store/nodeRendererStore";
+import { nodeRendererStore } from "malle-renderer-react";
 import ptr from 'json-pointer'
 
-export default function ObjectTypeRenderer(
+export default function ObjectNodeRenderer(
   {
     config,
     ancestryConfig,
@@ -24,9 +24,11 @@ export default function ObjectTypeRenderer(
         jsonPointer={jsonPointer} >
         {({nodeData, setNodeDataValue, validationResults}) => {
           return (
-            <>
+            <div>
               {config.children && config.children.map(childConfig => {
-                const ChildTypeRenderer = nodeRendererStore.get(childConfig.type)
+                const childRendererRegistration = nodeRendererStore.get(childConfig.type)
+                if(!childRendererRegistration) return null
+                const ChildTypeRenderer = childRendererRegistration.renderer
                 const childJsonPointer = `${jsonPointer}/${childConfig.id}`
                 console.log(childJsonPointer)
                 return <ChildTypeRenderer
@@ -34,6 +36,7 @@ export default function ObjectTypeRenderer(
                   config={childConfig}
                   ancestryConfig={[...ancestryConfig, childConfig ]}
                   jsonPointer={childJsonPointer}
+                  options={childRendererRegistration.options}
                   originalNodeData={ptr.get(nodeData, childJsonPointer)}
                   DataProvider={DataProvider}
                   ErrorDisplayComponent={ErrorDisplayComponent} />
@@ -41,7 +44,7 @@ export default function ObjectTypeRenderer(
               {validationResults && validationResults.map((result, i) => (
                 <div className={s.error} key={i}>{result.errorMessage}</div>
               ))}
-            </>
+            </div>
           )
         }}
       </DataProvider>

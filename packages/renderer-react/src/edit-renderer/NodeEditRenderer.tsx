@@ -8,10 +8,9 @@ import {
 } from 'recoil';
 import {
   NodeConfig,
-  ErrorRendererProps
+  ErrorRendererProps, NodeRendererProps, NodeRendererRegistration,
 } from "microo-core";
 import nodeRendererStore from "../store/nodeRendererStore";
-import { NodeRendererProps } from "microo-core";
 import RecoilNodeDataProvider from "./RecoilNodeDataProvider";
 
 export interface NodeEditRendererProps {
@@ -20,7 +19,8 @@ export interface NodeEditRendererProps {
   errorRenderer?: ComponentType<ErrorRendererProps>
   onSaved?: (modelId: string, instance: any) => void
   cancel: (modelId: string | undefined, instance: any) => void
-  typeRenderers: { [typeId: string]: ComponentType<NodeRendererProps> }
+  typeRegistry: Array<NodeRendererRegistration>
+  children: any
 }
 
 export default function NodeEditRenderer(
@@ -30,7 +30,8 @@ export default function NodeEditRenderer(
     errorRenderer,
     onSaved,
     cancel,
-    typeRenderers,
+    typeRegistry,
+    children
   }: NodeEditRendererProps) {
 
   const ErrorDisplayComponent: ComponentType<ErrorRendererProps> = errorRenderer || DefaultError;
@@ -38,7 +39,7 @@ export default function NodeEditRenderer(
   if (!config) return <ErrorDisplayComponent err={new Error('Configuration is required')}/>;
   if (!cancel) return <ErrorDisplayComponent err={new Error('A cancel function is required')}/>;
 
-  nodeRendererStore.registerMap(typeRenderers)
+  nodeRendererStore.registerAll(typeRegistry)
 
   const service = useService();
 
@@ -74,7 +75,8 @@ export default function NodeEditRenderer(
   }, [ editingId ]);
 
   if(!startingData) return null
-  const TypeRenderer = nodeRendererStore.get(config.type)
+  const registration = nodeRendererStore.get(config.type)
+  const TypeRenderer = registration.renderer
 
   return (
     <div className={s.editRenderer}>
@@ -82,27 +84,28 @@ export default function NodeEditRenderer(
     <RecoilRoot>
       {error && <ErrorDisplayComponent err={error}/>}
 
-  {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
+      {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
 
-  <form onSubmit={e => {
-    e.preventDefault();
-    (async () => {
-      await save()
-    })()
-  }} data-testid='form'>
+      <form onSubmit={e => {
+          e.preventDefault();
+          (async () => {
+            await save()
+          })()
+        }} data-testid='form'>
 
-  <TypeRenderer
-    config={config}
-    ancestryConfig={[]}
-    jsonPointer=''
-    originalNodeData={startingData}
-    DataProvider={RecoilNodeDataProvider}
-    ErrorDisplayComponent={ErrorDisplayComponent}
-    />
-    <button type='submit' data-testid='save'>Save</button>
-    <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
-  </form>
-  </RecoilRoot>
+      <TypeRenderer
+        config={config}
+        ancestryConfig={[]}
+        jsonPointer=''
+        originalNodeData={startingData}
+        options={registration.options}
+        DataProvider={RecoilNodeDataProvider}
+        ErrorDisplayComponent={ErrorDisplayComponent}
+        />
+        <button type='submit' data-testid='save'>Save</button>
+        <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
+      </form>
+    </RecoilRoot>
   </div>
   );
 

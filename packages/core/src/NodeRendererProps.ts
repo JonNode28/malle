@@ -10,6 +10,7 @@ export interface NodeRendererProps {
   ancestryConfig: Array<NodeConfig>
   jsonPointer: string
   originalNodeData: any
+  options?: any
 
   DataProvider: ComponentType<NodeDataProviderProps>
   ErrorDisplayComponent: ComponentType<ErrorRendererProps> | null
