@@ -38,6 +38,9 @@ export default function RecoilNodeDataProvider({ config,  originalNodeData, json
         return a
       }, [])
       setValidationResults(flattenedValidationResults)
+      return () => {
+        propDataStore.remove(config.id, jsonPointer)
+      }
     })()
   }, [ propData ])
 
