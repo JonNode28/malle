@@ -10,49 +10,53 @@ export default function ObjectNodeRenderer(
     config,
     ancestryConfig,
     jsonPointer,
-    originalNodeData,
+    nodeData,
+    validationResults,
     DataProvider,
     ErrorDisplayComponent
   }: NodeRendererProps
-){
-  if(!originalNodeData) originalNodeData = createDefault(config, '')
+) {
+  if (!nodeData) nodeData = createDefault(config, '')
   return (
     <div>
       <label htmlFor={config.id}>{config.name}</label>
       {config.description && <p>{config.description}</p>}
-      <DataProvider
-        config={config}
-        originalNodeData={originalNodeData}
-        jsonPointer={jsonPointer} >
-        {({nodeData, setNodeDataValue, validationResults}) => {
+      <div>
+        {config.children && config.children.map((childConfig, i) => {
+          const childRendererRegistration = nodeRendererStore.get(childConfig.type)
+          if (!childRendererRegistration) return null
+          const ChildTypeRenderer = childRendererRegistration.renderer
+          const childJsonPointer = `${jsonPointer}/${childConfig.id}`
           return (
-            <div>
-              {config.children && config.children.map(childConfig => {
-                const childRendererRegistration = nodeRendererStore.get(childConfig.type)
-                if(!childRendererRegistration) return null
-                const ChildTypeRenderer = childRendererRegistration.renderer
-                const childJsonPointer = `${jsonPointer}/${childConfig.id}`
+
+            <DataProvider
+              key={i}
+              config={childConfig}
+              originalNodeData={ptr.get(nodeData, childJsonPointer)}
+              jsonPointer={jsonPointer}>
+              {({nodeData, setNodeDataValue, validationResults}) => {
                 return (
                   <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
                     <ChildTypeRenderer
                       config={childConfig}
-                      ancestryConfig={[...ancestryConfig, childConfig ]}
+                      ancestryConfig={[ ...ancestryConfig, childConfig ]}
                       jsonPointer={childJsonPointer}
                       options={childRendererRegistration.options}
-                      originalNodeData={ptr.get(nodeData, childJsonPointer)}
+                      nodeData={nodeData}
+                      setNodeDataValue={setNodeDataValue}
+                      validationResults={validationResults}
                       DataProvider={DataProvider}
-                      ErrorDisplayComponent={ErrorDisplayComponent} />
+                      ErrorDisplayComponent={ErrorDisplayComponent}/>
                   </DefaultPropertyWrapper>
                 )
-              })}
-              {validationResults && validationResults.map((result, i) => (
-                <div className={s.error} key={i}>{result.errorMessage}</div>
-              ))}
-            </div>
+              }}
+            </DataProvider>
           )
-        }}
-      </DataProvider>
-
+        })}
+        {validationResults && validationResults.map((result, i) => (
+          <div className={s.error} key={i}>{result.errorMessage}</div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -67,7 +71,7 @@ function DefaultPropertyWrapper(
     config,
     children
   }: DefaultPropertyWrapperProps
-){
+) {
   return (
 
     <div>

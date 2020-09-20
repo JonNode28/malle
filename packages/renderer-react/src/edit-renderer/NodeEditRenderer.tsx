@@ -93,15 +93,25 @@ export default function NodeEditRenderer(
           })()
         }} data-testid='form'>
 
-      <TypeRenderer
-        config={config}
-        ancestryConfig={[]}
-        jsonPointer=''
-        originalNodeData={startingData}
-        options={registration.options}
-        DataProvider={RecoilNodeDataProvider}
-        ErrorDisplayComponent={ErrorDisplayComponent}
-        />
+        <RecoilNodeDataProvider
+          config={config}
+          originalNodeData={startingData}
+          jsonPointer='' >
+          {({nodeData, setNodeDataValue, validationResults}) => {
+            return (
+              <TypeRenderer
+              config={config}
+              ancestryConfig={[]}
+              jsonPointer=''
+              nodeData={nodeData}
+              setNodeDataValue={setNodeDataValue}
+              options={registration.options}
+              DataProvider={RecoilNodeDataProvider}
+              ErrorDisplayComponent={ErrorDisplayComponent}
+            />
+            )
+          }}
+        </RecoilNodeDataProvider>
         <button type='submit' data-testid='save'>Save</button>
         <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
       </form>
