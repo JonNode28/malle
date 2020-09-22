@@ -1,4 +1,4 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import {
   NodeDataProviderProps,
   ValidationExecutionStage,
@@ -24,25 +24,31 @@ export default function RecoilNodeDataProvider({ config,  originalNodeData, json
   const [ validationResults, setValidationResults ] = useState<Array<ValidationResult>>([])
 
   useEffect(() => {
-    if(!onChangeValidators) return
-    (async () => {
-      const results = await Promise.all(onChangeValidators.map(validator =>
-        validator.execute(
-          ValidationExecutionStage.CHANGE,
-          config,
-          propData
-        )))
-      const flattenedValidationResults = results.reduce<ValidationResult[]>((a, c) => {
-        if(Array.isArray(c)) return a.concat(c)
-        a.push(c)
-        return a
-      }, [])
-      setValidationResults(flattenedValidationResults)
-      return () => {
-        propDataStore.remove(config.id, jsonPointer)
-      }
-    })()
+    if(onChangeValidators) {
+      (async () => {
+        const results = await Promise.all(onChangeValidators.map(validator =>
+          validator.execute(
+            ValidationExecutionStage.CHANGE,
+            config,
+            propData
+          )))
+        const flattenedValidationResults = results.reduce<ValidationResult[]>((a, c) => {
+          if (Array.isArray(c)) return a.concat(c)
+          a.push(c)
+          return a
+        }, [])
+        setValidationResults(flattenedValidationResults)
+      })()
+    }
   }, [ propData ])
+
+  useEffect(() => {
+    console.log('Setting up cleanup function...')
+    return () => {
+      console.log(`Cleaning up state for ${jsonPointer}...`)
+      propDataStore.remove(config.id, jsonPointer)
+    }
+  }, [])
 
   //const validationResultsSelector = validationSelectorStore.get(propDataState, modelConfig, propertyConfig)
 
@@ -75,7 +81,9 @@ export default function RecoilNodeDataProvider({ config,  originalNodeData, json
 
   return children({
     nodeData: propData,
-    setNodeDataValue: setPropData,
+    setNodeDataValue: (value) => {
+      setPropData(value)
+    },
     validationResults
   });
 }
