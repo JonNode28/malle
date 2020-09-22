@@ -104,6 +104,7 @@ export default function NodeEditRenderer(
               ancestryConfig={[]}
               jsonPointer=''
               nodeData={nodeData}
+              validationResults={validationResults}
               setNodeDataValue={setNodeDataValue}
               options={registration.options}
               DataProvider={RecoilNodeDataProvider}
