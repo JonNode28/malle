@@ -66,6 +66,7 @@ export default {
           name: 'Tag',
           description: 'A tag',
           type: 'string',
+          default: '',
           validation: [
             new JsonSchemaNodeValidator({
               error: 'Cannot be more than 255 characters long',
