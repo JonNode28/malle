@@ -24,30 +24,32 @@ export default function ListNodeRenderer(
   const childRendererRegistration = nodeRendererStore.get(childConfig.type)
   if (!childRendererRegistration) return null
   const ChildTypeRenderer = childRendererRegistration.renderer
-  if (!nodeData || !nodeData.length) return null
   const childAncestryConfig = [ ...ancestryConfig, childConfig ]
   return (
     <div>
-      <label htmlFor={config.id}>{config.name}</label>
-      {config.description && <p>{config.description}</p>}
       <div className='list'>
-        {nodeData.map((itemData: any, i: number) => {
+        {nodeData && nodeData.map((itemData: any, i: number) => {
           const childJsonPointer = `${jsonPointer}/${i}`
           return (
             <DataProvider
+              key={childJsonPointer}
               config={config}
               originalNodeData={itemData}
               jsonPointer={childJsonPointer}>
-              {({nodeData, setNodeDataValue, validationResults}) => {
+              {(item) => {
                 return (
-                  <DefaultExistingItemWrapper key={i}>
+                  <DefaultExistingItemWrapper onRemove={() => {
+                    const newArr = [...nodeData]
+                    newArr.splice(i, 1)
+                    setNodeDataValue(newArr)
+                  }}>
                     <ChildTypeRenderer
                       config={childConfig}
                       ancestryConfig={childAncestryConfig}
                       jsonPointer={childJsonPointer}
-                      nodeData={nodeData}
-                      setNodeDataValue={setNodeDataValue}
-                      validationResults={validationResults}
+                      nodeData={item.nodeData}
+                      setNodeDataValue={item.setNodeDataValue}
+                      validationResults={item.validationResults}
                       DataProvider={DataProvider}
                       ErrorDisplayComponent={ErrorDisplayComponent}/>
                   </DefaultExistingItemWrapper>
@@ -60,7 +62,7 @@ export default function ListNodeRenderer(
 
       <DataProvider
         config={childConfig}
-        originalNodeData={createDefault}
+        originalNodeData={createDefault(childConfig)}
         jsonPointer={jsonPointer}>
         {(
           {
@@ -82,7 +84,7 @@ export default function ListNodeRenderer(
                 setNodeDataValue={setNewNodeDataValue}
                 validationResults={newValidationResults}
                 DataProvider={DataProvider}
-                ErrorDisplayComponent={ErrorDisplayComponent}/>
+                ErrorDisplayComponent={ErrorDisplayComponent} />
             </DefaultNewItemWrapper>
           )
         }}
@@ -93,11 +95,13 @@ export default function ListNodeRenderer(
 }
 
 interface DefaultExistingItemWrapperProps {
+  onRemove: () => void
   children: any
 }
 
 function DefaultExistingItemWrapper(
   {
+    onRemove,
     children
   }: DefaultExistingItemWrapperProps
 ) {
@@ -105,6 +109,7 @@ function DefaultExistingItemWrapper(
 
     <div>
       {children}
+      <button type='button' onClick={onRemove}>Remove [-]</button>
     </div>
   )
 }
