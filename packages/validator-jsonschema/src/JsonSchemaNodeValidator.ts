@@ -16,7 +16,7 @@ export default class JsonSchemaNodeValidator extends JsonSchemaValidator impleme
   }
   execute(stage: ValidationExecutionStage, config: NodeConfig, nodeData: any): Promise<ValidationResult> {
     const valid = this._validateFn(nodeData);
-    console.log(`${config.id} value of ${JSON.stringify(nodeData)} ${valid?'passed':'failed'} validation: ${JSON.stringify(this._options)}`)
+    //console.log(`${config.id} value of ${JSON.stringify(nodeData)} ${valid?'passed':'failed'} validation: ${JSON.stringify(this._options)}`)
     if(valid){
       return Promise.resolve({
         valid: true,
