@@ -30,10 +30,10 @@ export default function ObjectNodeRenderer(
           return (
 
             <DataProvider
-              key={i}
+              key={childJsonPointer}
               config={childConfig}
               originalNodeData={ptr.get(nodeData, childJsonPointer)}
-              jsonPointer={jsonPointer}>
+              jsonPointer={childJsonPointer}>
               {({nodeData, setNodeDataValue, validationResults}) => {
                 return (
                   <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
