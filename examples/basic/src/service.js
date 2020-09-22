@@ -8,7 +8,9 @@ let pages = [...new Array(numberOfPages)].map((_, i) => {
     body: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean condimentum varius lacus, id rhoncus ante pretium vestibulum. Vestibulum facilisis libero non lacus imperdiet, ac lacinia massa venenatis ${i}`,
     tags: [
         'sport',
-        'adventure'
+        'adventure',
+        'leisure',
+        'hiking'
     ],
     version: 1,
     created: new Date(),
