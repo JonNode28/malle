@@ -1,10 +1,13 @@
 import { NodeConfig } from "microo-core";
 
-export function createDefault(config: NodeConfig, fallbackValue: any): any{
+export function createDefault(config: NodeConfig, fallbackValue: any = undefined): any{
   const defaultType = typeof config.default;
-  switch(defaultType){
-    case 'undefined': return fallbackValue
-    case 'function': return config.default()
-    default: return config.default
+  if(defaultType === 'undefined'){
+    if(typeof fallbackValue === 'undefined'){
+      throw new Error(`A default value is required by the '${config.id}' model`)
+    }
+  } else if(defaultType === 'function'){
+    return config.default()
   }
+  return config.default
 }
