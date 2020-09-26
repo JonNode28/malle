@@ -2,6 +2,7 @@ import { NodeConfig, ValidationResult } from "./";
 
 export interface NodeDataProviderProps {
   config: NodeConfig
+  id: string
   originalNodeData: any
   jsonPointer: string
   children: (props: NodeDataProviderChildFunctionProps) => any

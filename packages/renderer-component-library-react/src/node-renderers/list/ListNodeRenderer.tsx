@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore, createDefault } from "malle-renderer-react";
+import { v4 } from 'uuid'
 
 export default function ListNodeRenderer(
   {
@@ -14,44 +15,54 @@ export default function ListNodeRenderer(
   }: NodeRendererProps
 ) {
   if (!nodeData) nodeData = createDefault(config, [])
-  if (!config.children || !config.children.length) return (
-    <div>
-      No items in list
-    </div>
-  )
+  if(!Array.isArray(nodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
+  if (!config.children || !config.children.length) throw new Error(`'${config.type}' renderer must have at least one child config`)
   if (config.children.length > 1) throw new Error('Only one child list type is currently supported')
+
   const childConfig = config.children[0]
   const childRendererRegistration = nodeRendererStore.get(childConfig.type)
   if (!childRendererRegistration) return null
   const ChildTypeRenderer = childRendererRegistration.renderer
   const childAncestryConfig = [ ...ancestryConfig, childConfig ]
+
+  const originalChildItems = useMemo(() => {
+    if(!Array.isArray(nodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
+    return nodeData.map(originalItemData => ({
+      id: v4() as string,
+      originalItemData
+    }))
+  }, [])
+
+  const [ childItems, setChildItems ] = useState(originalChildItems)
+
+
+
+
+
   return (
     <div>
       <div className='list'>
-        {nodeData && nodeData.map((itemData: any, i: number) => {
+        {childItems && childItems.map((item: any, i: number) => {
           const childJsonPointer = `${jsonPointer}/${i}`
           return (
             <DataProvider
-              key={childJsonPointer}
+              key={item.id}
+              id={item.id}
               config={config}
-              originalNodeData={itemData}
+              originalNodeData={item.originalItemData}
               jsonPointer={childJsonPointer}>
-              {(item) => {
+              {(dataProps) => {
                 return (
                   <DefaultExistingItemWrapper onRemove={() => {
-                    const newArr = [...nodeData]
-                    newArr.splice(i, 1)
-                    setNodeDataValue(newArr)
+                    setChildItems(childItems.filter(childItem => childItem.id !== item.id))
                   }}>
                     <ChildTypeRenderer
+                      {...dataProps}
                       config={childConfig}
                       ancestryConfig={childAncestryConfig}
                       jsonPointer={childJsonPointer}
-                      nodeData={item.nodeData}
-                      setNodeDataValue={item.setNodeDataValue}
-                      validationResults={item.validationResults}
                       DataProvider={DataProvider}
-                      ErrorDisplayComponent={ErrorDisplayComponent}/>
+                      ErrorDisplayComponent={ErrorDisplayComponent} />
                   </DefaultExistingItemWrapper>
                 )
               }}
@@ -62,27 +73,22 @@ export default function ListNodeRenderer(
 
       <DataProvider
         config={childConfig}
+        id={v4()}
         originalNodeData={createDefault(childConfig)}
         jsonPointer={jsonPointer}>
-        {(
-          {
-            nodeData: newNodeData,
-            setNodeDataValue: setNewNodeDataValue,
-            validationResults: newValidationResults
-          }) => {
+        {(dataProps) => {
           return (
             <DefaultNewItemWrapper config={config} onAdd={() => {
-              const newArr = [ ...nodeData, newNodeData ]
-              setNodeDataValue(newArr)
-              setNewNodeDataValue('')
+              setChildItems([...childItems, {
+                id: v4() as string,
+                originalItemData: dataProps.nodeData
+              }])
             }}>
               <ChildTypeRenderer
+                {...dataProps}
                 config={childConfig}
                 ancestryConfig={childAncestryConfig}
                 jsonPointer={`${jsonPointer}/new`}
-                nodeData={newNodeData}
-                setNodeDataValue={setNewNodeDataValue}
-                validationResults={newValidationResults}
                 DataProvider={DataProvider}
                 ErrorDisplayComponent={ErrorDisplayComponent} />
             </DefaultNewItemWrapper>

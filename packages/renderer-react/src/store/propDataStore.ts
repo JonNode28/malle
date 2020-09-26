@@ -1,4 +1,5 @@
 import { atom, RecoilState } from "recoil";
+import * as uuid from 'uuid'
 
 interface PropDataStateMeta {
   state: RecoilState<any>,
@@ -9,21 +10,16 @@ interface PropDataStateMeta {
 const propDataStateMap: { [key: string]: PropDataStateMeta } = {};
 
 export default {
-  has: (modelId: string, jsonPointer: string): boolean => {
-    const key = `${modelId}-${jsonPointer}-c2c87429-dabf-4ea0-b2e1-6e7a6262bc11`
-    const meta = propDataStateMap[key]
-    return !!meta && !meta.deleted
-  },
-  get: (modelId: string, jsonPointer: string, defaultValue?: any) => {
-    const key = `${modelId}-${jsonPointer}-c2c87429-dabf-4ea0-b2e1-6e7a6262bc11`
-    let meta = propDataStateMap[key]
+  get: (storeId: string, defaultValue?: any) => {
+    if(storeId === undefined) throw new Error('Store ID is required')
+    let meta = propDataStateMap[storeId]
     if (!meta) {
       if (defaultValue === undefined) {
         throw new Error(`Can't create Recoil state without a default value`)
       }
-      propDataStateMap[key] = meta = {
+      propDataStateMap[storeId] = meta = {
         state: atom({
-          key,
+          key: storeId,
           default: defaultValue
         }),
         deleted: false,
@@ -32,9 +28,8 @@ export default {
     }
     return meta.state
   },
-  remove: (modelId: string, jsonPointer: string) => {
-    const key = `${modelId}-${jsonPointer}-c2c87429-dabf-4ea0-b2e1-6e7a6262bc11`
-    const meta = propDataStateMap[key]
+  remove: (storeId: string) => {
+    const meta = propDataStateMap[storeId]
     if(meta) meta.deleted = true
   }
 }

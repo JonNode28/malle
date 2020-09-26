@@ -12,6 +12,7 @@ import {
 } from "microo-core";
 import nodeRendererStore from "../store/nodeRendererStore";
 import RecoilNodeDataProvider from "./RecoilNodeDataProvider";
+import { v4 } from "uuid";
 
 export interface NodeEditRendererProps {
   config: NodeConfig
@@ -95,17 +96,16 @@ export default function NodeEditRenderer(
 
         <RecoilNodeDataProvider
           config={config}
+          id={v4()}
           originalNodeData={startingData}
           jsonPointer='' >
-          {({nodeData, setNodeDataValue, validationResults}) => {
+          {(dataProps) => {
             return (
               <TypeRenderer
               config={config}
               ancestryConfig={[]}
               jsonPointer=''
-              nodeData={nodeData}
-              validationResults={validationResults}
-              setNodeDataValue={setNodeDataValue}
+              {...dataProps}
               options={registration.options}
               DataProvider={RecoilNodeDataProvider}
               ErrorDisplayComponent={ErrorDisplayComponent}

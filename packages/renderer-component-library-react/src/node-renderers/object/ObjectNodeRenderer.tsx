@@ -31,20 +31,19 @@ export default function ObjectNodeRenderer(
 
             <DataProvider
               key={childJsonPointer}
+              id={childJsonPointer}
               config={childConfig}
               originalNodeData={ptr.get(nodeData, childJsonPointer)}
               jsonPointer={childJsonPointer}>
-              {({nodeData, setNodeDataValue, validationResults}) => {
+              {(dataProps) => {
                 return (
                   <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
                     <ChildTypeRenderer
+                      {...dataProps}
                       config={childConfig}
                       ancestryConfig={[ ...ancestryConfig, childConfig ]}
                       jsonPointer={childJsonPointer}
                       options={childRendererRegistration.options}
-                      nodeData={nodeData}
-                      setNodeDataValue={setNodeDataValue}
-                      validationResults={validationResults}
                       DataProvider={DataProvider}
                       ErrorDisplayComponent={ErrorDisplayComponent}/>
                   </DefaultPropertyWrapper>

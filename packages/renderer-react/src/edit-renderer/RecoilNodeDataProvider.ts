@@ -7,11 +7,20 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import propDataStore from "../store/propDataStore";
 import { NodeValidator } from "microo-core/dist/NodeValidator";
+import { v4 } from "uuid";
 
-export default function RecoilNodeDataProvider({ config,  originalNodeData, jsonPointer, children }: NodeDataProviderProps){
+export default function RecoilNodeDataProvider(
+  {
+    config,
+    id,
+    originalNodeData,
+    jsonPointer,
+    children
+  }: NodeDataProviderProps
+){
   if(typeof children !== 'function') throw new Error(`<RecoilNodeDataProvider /> must contain a nested function`);
 
-  const propDataState = propDataStore.get(config.id, jsonPointer, originalNodeData)
+  const propDataState = propDataStore.get(id, originalNodeData)
 
   const [ propData, setPropData ] = useRecoilState(propDataState);
 
@@ -46,7 +55,7 @@ export default function RecoilNodeDataProvider({ config,  originalNodeData, json
     console.log('Setting up cleanup function...')
     return () => {
       console.log(`Cleaning up state for ${jsonPointer}...`)
-      propDataStore.remove(config.id, jsonPointer)
+      propDataStore.remove(id)
     }
   }, [])
 
