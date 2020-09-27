@@ -1,5 +1,5 @@
 import React from 'react';
-import DataProvider, {useService} from "./DataProvider";
+import ServiceProvider, {useService} from "./ServiceProvider";
 import {Service} from "./Service";
 import { act, render, within } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
@@ -38,9 +38,9 @@ describe(`<DataProvider />`, () => {
 
   it(`should render children`, () => {
     const { container } = render(
-      <DataProvider service={mockService}>
+      <ServiceProvider service={mockService}>
         <div data-testid='some-child-component'>Some child component</div>
-      </DataProvider>
+      </ServiceProvider>
     );
     const childComponent = screen.queryByTestId('some-child-component');
     expect(childComponent).not.toBeNull();
@@ -56,9 +56,9 @@ describe(`<DataProvider />`, () => {
 
     it(`should return the service passed to the provider`, () => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <MockConsumer/>
-        </DataProvider>
+        </ServiceProvider>
       );
       expect(mockService.get).toHaveBeenCalledWith('model-id', 'instance-id')
     });

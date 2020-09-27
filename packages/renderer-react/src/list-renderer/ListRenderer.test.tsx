@@ -3,7 +3,7 @@ import ListRenderer from "./ListRenderer";
 import { act, render } from '@testing-library/react';
 import { screen } from '@testing-library/dom'
 import '@testing-library/jest-dom/extend-expect'
-import DataProvider from "../data-provider";
+import ServiceProvider from "../service-provider";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
 import { ListResult, NodeConfig } from "microo-core";
@@ -80,13 +80,13 @@ describe('<ListRenderer />', () => {
     mockService.list.mockResolvedValue({ items: [], count: 0, skip: 0, take: 10 });
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={() => <div>Item</div>}
             renderPagination={() => <div>Page</div>}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     expect(mockService.list).toHaveBeenCalledWith('page', 0, 10);
   });
@@ -94,7 +94,7 @@ describe('<ListRenderer />', () => {
     mockService.list.mockResolvedValue({ items: [], count: 0, skip: 0, take: 10 });
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={() => <div>Item</div>}
@@ -102,7 +102,7 @@ describe('<ListRenderer />', () => {
             page={2}
             size={20}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     expect(mockService.list).toHaveBeenCalledWith('page', 20, 20);
   });
@@ -122,13 +122,13 @@ describe('<ListRenderer />', () => {
 
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={MockItemRenderer}
             renderPagination={() => <div>Page</div>}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     const item = screen.getByTestId('item-renderer');
     expect(item).toMatchSnapshot()
@@ -137,13 +137,13 @@ describe('<ListRenderer />', () => {
     mockService.list.mockResolvedValue(mockListResult);
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={() => <div>Item</div>}
             renderPagination={MockPagination}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     const item = screen.getByTestId('pagination');
     expect(item).toMatchSnapshot()
@@ -156,13 +156,13 @@ describe('<ListRenderer />', () => {
     mockService.list.mockResolvedValue(mockListResult);
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={ErroringListItemRenderer}
             renderPagination={MockPagination}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     const item = screen.getByTestId('error');
     expect(item).toMatchSnapshot();
@@ -175,13 +175,13 @@ describe('<ListRenderer />', () => {
     mockService.list.mockResolvedValue(mockListResult);
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={MockItemRenderer}
             renderPagination={ErroringPagination}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     const item = screen.getByTestId('error');
     expect(item).toMatchSnapshot();
@@ -190,13 +190,13 @@ describe('<ListRenderer />', () => {
     mockService.list.mockRejectedValue(new Error('Some data loading issue'));
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             renderItem={MockItemRenderer}
             renderPagination={MockPagination}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     const item = screen.getByTestId('error');
     expect(item).toMatchSnapshot();
@@ -205,14 +205,14 @@ describe('<ListRenderer />', () => {
     mockService.list.mockResolvedValue(mockListResult);
     await act( async() => {
       render(
-        <DataProvider service={mockService}>
+        <ServiceProvider service={mockService}>
           <ListRenderer
             config={baseModelConfig}
             // @ts-ignore
             renderItem={null}
             renderPagination={MockPagination}
           />
-        </DataProvider>);
+        </ServiceProvider>);
     });
     const item = screen.getByTestId('error');
     expect(item).toMatchSnapshot();

@@ -1,7 +1,7 @@
 import React, { ComponentType, useEffect, useState } from "react";
 import s from './NodeEditRenderer.pcss';
 import { isEmpty } from "../util/id";
-import { useService } from "../data-provider/DataProvider";
+import { useService } from "../service-provider/ServiceProvider";
 import DefaultError from "../default-error";
 import {
   RecoilRoot, useRecoilCallback,

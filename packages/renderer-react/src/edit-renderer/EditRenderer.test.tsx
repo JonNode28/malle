@@ -5,7 +5,7 @@ export {}
 // import '@testing-library/jest-dom/extend-expect'
 // import EditRenderer from "./EditRenderer";
 // import { PropertyTypeRendererProps } from "./PropertyTypeRendererProps";
-// import DataProvider from "../data-provider";
+// import ServiceProvider from "../service-provider";
 // import { ModelConfig, ValidationExecutionStage } from "microo-core";
 //
 // describe(`<EditRenderer />`, () => {
@@ -88,9 +88,9 @@ export {}
 //
 //       await act(async() => {
 //         render(
-//           <DataProvider service={mockService}>
+//           <ServiceProvider service={mockService}>
 //             <EditRenderer modelConfig={baseConfig} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//           </DataProvider>);
+//           </ServiceProvider>);
 //       });
 //
 //       const idProp = screen.getByTestId('property-id');
@@ -103,9 +103,9 @@ export {}
 //     it(`should load the item to edit`, async () => {
 //       await act(async() => {
 //         render(
-//           <DataProvider service={mockService}>
+//           <ServiceProvider service={mockService}>
 //             <EditRenderer modelConfig={baseConfig} id={123} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//           </DataProvider>
+//           </ServiceProvider>
 //           );
 //       });
 //       expect(mockService.get).toHaveBeenCalledWith('page', 123);
@@ -116,9 +116,9 @@ export {}
 //       });
 //       await act(async() => {
 //         render(
-//           <DataProvider service={mockService}>
+//           <ServiceProvider service={mockService}>
 //             <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//           </DataProvider>);
+//           </ServiceProvider>);
 //       });
 //       const error = screen.getByTestId('error');
 //       expect(error.textContent).toMatchSnapshot();
@@ -127,9 +127,9 @@ export {}
 //       mockService.get.mockRejectedValue({ message: 'some error message' });
 //       await act(async() => {
 //         render(
-//           <DataProvider service={mockService}>
+//           <ServiceProvider service={mockService}>
 //             <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//           </DataProvider>);
+//           </ServiceProvider>);
 //       });
 //       const error = screen.getByTestId('error');
 //       expect(error.textContent).toMatchSnapshot();
@@ -148,9 +148,9 @@ export {}
 //     })
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const idProp = screen.getByTestId('property-id');
 //     expect(idProp).toHaveValue('some-id');
@@ -160,9 +160,9 @@ export {}
 //   it(`should show loading UI to begin with`, async () => {
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //       const loading = screen.queryByTestId('loading');
 //       expect(loading?.textContent).toMatchSnapshot();
 //     });
@@ -170,9 +170,9 @@ export {}
 //   it(`should hide the loading UI once item has been loaded`, async () => {
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const loading = screen.queryByTestId('loading');
 //     expect(loading).toBeNull();
@@ -190,7 +190,7 @@ export {}
 //     };
 //     await act(async () => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             propertyTypeRenderers={propertyTypeRenderers}
@@ -200,7 +200,7 @@ export {}
 //               )
 //             }}
 //             cancel={() => {}}/>
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const column = screen.getByTestId('col');
 //     expect(column).toMatchSnapshot();
@@ -208,14 +208,14 @@ export {}
 //   it(`should use the provided error renderer when provided`, async () => {
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             // @ts-ignore
 //               modelConfig={null} id={'some-id'}
 //               propertyTypeRenderers={propertyTypeRenderers}
 //               errorRenderer={() => <div data-testid='custom-error'>A custom error display component</div>}
 //               cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const error = screen.getByTestId('custom-error');
 //     expect(error?.textContent).toBe('A custom error display component');
@@ -223,10 +223,10 @@ export {}
 //   it(`should display an appropriate error when no model configuration is provided`, async () => {
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           // @ts-ignore
 //           <EditRenderer modelConfig={null} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const error = screen.getByTestId('error');
 //     expect(error.textContent).toMatchSnapshot();
@@ -234,10 +234,10 @@ export {}
 //   it(`should display an appropriate error when no cancel function is provided`, async() => {
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           // @ts-ignore
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const error = screen.getByTestId('error');
 //     expect(error.textContent).toMatchSnapshot();
@@ -260,9 +260,9 @@ export {}
 //     }
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const error = screen.getByTestId('error');
 //     expect(error?.textContent).toMatchSnapshot();
@@ -285,9 +285,9 @@ export {}
 //     })
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const error = screen.getByTestId('error');
 //     expect(error?.textContent).toMatchSnapshot();
@@ -312,9 +312,9 @@ export {}
 //     }
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     const error = screen.getByTestId('error');
 //     expect(error?.textContent).toMatchSnapshot();
@@ -330,9 +330,9 @@ export {}
 //     });
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>
+//         </ServiceProvider>
 //       );
 //     });
 //     const error = screen.getByTestId('error');
@@ -348,7 +348,7 @@ export {}
 //     }
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             id={'some-id'}
@@ -359,7 +359,7 @@ export {}
 //               }
 //             }}
 //             cancel={() => {}} />
-//         </DataProvider>
+//         </ServiceProvider>
 //       );
 //     });
 //     const error = screen.getByTestId('error');
@@ -378,9 +378,9 @@ export {}
 //     });
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer modelConfig={baseConfig} id={'some-id'} propertyTypeRenderers={propertyTypeRenderers} cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     fireEvent.submit(screen.getByTestId('form'));
 //     expect(mockService.save).toHaveBeenCalledWith(
@@ -404,14 +404,14 @@ export {}
 //     const mockOnSaved = jest.fn();
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             id={'some-id'}
 //             propertyTypeRenderers={propertyTypeRenderers}
 //             cancel={() => {}}
 //             onSaved={mockOnSaved} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     await act(async() => {
 //       fireEvent.submit(screen.getByTestId('form'));
@@ -435,13 +435,13 @@ export {}
 //     const mockCancel = jest.fn();
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             id={'some-id'}
 //             propertyTypeRenderers={propertyTypeRenderers}
 //             cancel={mockCancel}/>
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     fireEvent.click(screen.getByTestId('cancel'));
 //     expect(mockCancel).toHaveBeenCalledWith('page', {
@@ -471,13 +471,13 @@ export {}
 //     });
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             id={'some-id'}
 //             propertyTypeRenderers={propertyTypeRenderers}
 //             cancel={() => {}}/>
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //     await act(async() => {
 //       fireEvent.change(screen.getByTestId('property-title'), { target: { value: '' } });
@@ -494,12 +494,12 @@ export {}
 //     };
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             propertyTypeRenderers={propertyTypeRenderers}
 //             cancel={() => {}}/>
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //
 //     await act(async() => {
@@ -529,13 +529,13 @@ export {}
 //     };
 //     await act(async() => {
 //       render(
-//         <DataProvider service={mockService}>
+//         <ServiceProvider service={mockService}>
 //           <EditRenderer
 //             modelConfig={baseConfig}
 //             propertyTypeRenderers={propertyTypeRenderers}
 //             id={'some-id'}
 //             cancel={() => {}} />
-//         </DataProvider>);
+//         </ServiceProvider>);
 //     });
 //
 //     await act(async() => {

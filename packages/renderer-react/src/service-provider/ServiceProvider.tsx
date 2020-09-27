@@ -14,7 +14,7 @@ export function useService(): Service {
   return service;
 }
 
-export default function DataProvider({ service, children }: DataProviderProps){
+export default function ServiceProvider({ service, children }: DataProviderProps){
   return (
     <Context.Provider value={service}>
       {children}

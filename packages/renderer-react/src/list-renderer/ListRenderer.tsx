@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode, ComponentType, Fragment } from 'react'
 import { getItemId } from '../util/id';
-import { useService } from "../data-provider/DataProvider";
+import { useService } from "../service-provider/ServiceProvider";
 import ErrorBoundary from "../error-boundary";
 import DefaultError from "../default-error";
 import { RenderItemProps } from "./RenderItemProps";
