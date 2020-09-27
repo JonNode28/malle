@@ -19,7 +19,7 @@ export default function RecoilNodeDataProvider(
 ){
   if(typeof children !== 'function') throw new Error(`<RecoilNodeDataProvider /> must contain a nested function`);
 
-  const propDataState = propDataStore.get(id, originalNodeData)
+  const propDataState = propDataStore.get('GETTHEINSTANCEID!', id, originalNodeData)
 
   const [ propData, setPropData ] = useRecoilState(propDataState);
 

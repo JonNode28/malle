@@ -9,18 +9,19 @@ interface PropDataStateMeta {
 const propDataStateMap: { [key: string]: PropDataStateMeta } = {};
 
 export default {
-  get: (storeId: string, defaultValue?: any) => {
+  get: (instanceId: string, storeId: string, defaultValue?: any) => {
     if(storeId === undefined) throw new Error('Store ID is required')
-    let meta = propDataStateMap[storeId]
+    const key = `${instanceId}-${storeId}`
+    let meta = propDataStateMap[key]
     if(meta) return meta.state
 
     if (defaultValue === undefined) {
       throw new Error(`Can't create Recoil state without a default value`)
     }
     console.log(`Creating state '${storeId}'`)
-    propDataStateMap[storeId] = meta = {
+    propDataStateMap[key] = meta = {
       state: atom({
-        key: storeId,
+        key: key,
         default: defaultValue
       }),
       deleted: false,
