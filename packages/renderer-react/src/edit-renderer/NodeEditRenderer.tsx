@@ -11,7 +11,6 @@ import {
   ErrorRendererProps, NodeRendererProps, NodeRendererRegistration,
 } from "microo-core"
 import nodeRendererStore from "../store/nodeRendererStore"
-import RecoilNodeDataProvider from "./RecoilNodeDataProvider"
 import { nanoid } from 'nanoid'
 
 export interface NodeEditRendererProps {
@@ -99,9 +98,8 @@ export default function NodeEditRenderer(
             config={config}
             ancestryConfig={[]}
             jsonPointer=''
-            nodeData={startingData}
+            originalNodeData={startingData}
             options={registration.options}
-            DataProvider={RecoilNodeDataProvider}
             ErrorDisplayComponent={ErrorDisplayComponent}
         />
         <button type='submit' data-testid='save'>Save</button>

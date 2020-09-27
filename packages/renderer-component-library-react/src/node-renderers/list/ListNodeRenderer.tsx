@@ -8,13 +8,12 @@ export default function ListNodeRenderer(
     config,
     ancestryConfig,
     jsonPointer,
-    nodeData,
-    DataProvider,
+    originalNodeData,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
-  if (!nodeData) nodeData = createDefault(config, [])
-  if(!Array.isArray(nodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
+  if (!originalNodeData) originalNodeData = createDefault(config, [])
+  if(!Array.isArray(originalNodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
   if (!config.children || !config.children.length) throw new Error(`'${config.type}' renderer must have at least one child config`)
   if (config.children.length > 1) throw new Error('Only one child list type is currently supported')
 
@@ -25,8 +24,8 @@ export default function ListNodeRenderer(
   const childAncestryConfig = [ ...ancestryConfig, childConfig ]
 
   const originalChildItems = useMemo(() => {
-    if(!Array.isArray(nodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
-    return nodeData.map(originalItemData => ({
+    if(!Array.isArray(originalNodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
+    return originalNodeData.map(originalItemData => ({
       id: nanoid() as string,
       originalItemData
     }))
@@ -49,11 +48,10 @@ export default function ListNodeRenderer(
             }}>
               <ChildTypeRenderer
                 id={item.id}
-                nodeData={item.originalItemData}
+                originalNodeData={item.originalItemData}
                 config={childConfig}
                 ancestryConfig={childAncestryConfig}
                 jsonPointer={childJsonPointer}
-                DataProvider={DataProvider}
                 ErrorDisplayComponent={ErrorDisplayComponent} />
             </DefaultExistingItemWrapper>
           )
@@ -72,7 +70,6 @@ export default function ListNodeRenderer(
           config={childConfig}
           ancestryConfig={childAncestryConfig}
           jsonPointer={`${jsonPointer}/new`}
-          DataProvider={DataProvider}
           ErrorDisplayComponent={ErrorDisplayComponent} />
       </DefaultNewItemWrapper>
     </div>

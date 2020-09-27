@@ -10,12 +10,11 @@ export default function ObjectNodeRenderer(
     config,
     ancestryConfig,
     jsonPointer,
-    nodeData,
-    DataProvider,
+    originalNodeData,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
-  if (!nodeData) nodeData = createDefault(config, {})
+  if (!originalNodeData) originalNodeData = createDefault(config, {})
   return (
     <div>
       <label htmlFor={config.id}>{config.name}</label>
@@ -33,9 +32,8 @@ export default function ObjectNodeRenderer(
                 config={childConfig}
                 ancestryConfig={[ ...ancestryConfig, childConfig ]}
                 jsonPointer={childJsonPointer}
-                nodeData={ptr.get(nodeData, childJsonPointer)}
+                originalNodeData={ptr.get(originalNodeData, childJsonPointer)}
                 options={childRendererRegistration.options}
-                DataProvider={DataProvider}
                 ErrorDisplayComponent={ErrorDisplayComponent}/>
             </DefaultPropertyWrapper>
           )

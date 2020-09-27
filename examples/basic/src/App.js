@@ -4,7 +4,7 @@ import Header from './components/Header';
 import s from './App.pcss'
 import Footer from "./components/Footer";
 import { Route, BrowserRouter as Router, Switch, Link } from "react-router-dom";
-import { DataProvider } from "malle-renderer-react";
+import { ServiceProvider } from "malle-renderer-react";
 import service from './service';
 import ExampleList from "./components/example-list";
 import { ExampleEdit } from "./components/example-edit/ExampleEdit"
@@ -12,7 +12,7 @@ import { ExampleEdit } from "./components/example-edit/ExampleEdit"
 export default function App(){
   return (
     <Fragment>
-        <DataProvider service={service}>
+        <ServiceProvider service={service}>
           <Router>
             <Header />
             <div className={s.content}>
@@ -27,7 +27,7 @@ export default function App(){
             </div>
             <Footer />
           </Router>
-        </DataProvider>
+        </ServiceProvider>
     </Fragment>
   )
 }

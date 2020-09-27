@@ -10,7 +10,7 @@ export interface NodeRendererProps {
   config: NodeConfig
   ancestryConfig: Array<NodeConfig>
   jsonPointer: string
-  nodeData?: any
+  originalNodeData?: any
   /**
    * Used by a node renderer to indicate a completion action.
    * Can be used to add an item to or update an item in a list for example.
@@ -18,6 +18,5 @@ export interface NodeRendererProps {
   done?: () => void
   options?: any
 
-  DataProvider: ComponentType<NodeDataProviderProps>
   ErrorDisplayComponent: ComponentType<ErrorRendererProps> | null
 }
