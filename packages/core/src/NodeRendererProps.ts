@@ -6,12 +6,11 @@ import {
 import { ComponentType } from "react";
 
 export interface NodeRendererProps {
+  id: string
   config: NodeConfig
   ancestryConfig: Array<NodeConfig>
   jsonPointer: string
   nodeData?: any
-  setNodeDataValue: (value: any) => void
-  validationResults: Array<ValidationResult>
   /**
    * Used by a node renderer to indicate a completion action.
    * Can be used to add an item to or update an item in a list for example.

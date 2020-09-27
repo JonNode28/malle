@@ -7,7 +7,6 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import propDataStore from "../store/propDataStore";
 import { NodeValidator } from "microo-core/dist/NodeValidator";
-import { v4 } from "uuid";
 
 export default function RecoilNodeDataProvider(
   {

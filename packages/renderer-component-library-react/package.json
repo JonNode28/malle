@@ -45,9 +45,9 @@
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^25.2.1",
     "@types/json-pointer": "^1.0.30",
+    "@types/nanoid": "^2.1.0",
     "@types/ramda": "^0.27.3",
     "@types/react": "^16.9.25",
-    "@types/uuid": "^8.3.0",
     "classnames": "^2.2.6",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
@@ -58,6 +58,7 @@
     "json-pointer": "^0.6.0",
     "microo-core": "file:../core",
     "microo-theme": "file:../theme",
+    "nanoid": "^3.1.12",
     "postcss-css-variables": "^0.14.0",
     "postcss-import": "^12.0.1",
     "ramda": "^0.27.0",
@@ -74,7 +75,6 @@
     "rollup-plugin-url": "^3.0.1",
     "ts-jest": "^25.3.1",
     "typescript": "^3.8.3",
-    "use-debounce": "^3.4.2",
-    "uuid": "^8.3.0"
+    "use-debounce": "^3.4.2"
   }
 }

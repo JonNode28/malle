@@ -9,10 +9,10 @@ import {
 import {
   NodeConfig,
   ErrorRendererProps, NodeRendererProps, NodeRendererRegistration,
-} from "microo-core";
-import nodeRendererStore from "../store/nodeRendererStore";
-import RecoilNodeDataProvider from "./RecoilNodeDataProvider";
-import { v4 } from "uuid";
+} from "microo-core"
+import nodeRendererStore from "../store/nodeRendererStore"
+import RecoilNodeDataProvider from "./RecoilNodeDataProvider"
+import { nanoid } from 'nanoid'
 
 export interface NodeEditRendererProps {
   config: NodeConfig
@@ -94,25 +94,16 @@ export default function NodeEditRenderer(
           })()
         }} data-testid='form'>
 
-        <RecoilNodeDataProvider
-          config={config}
-          id={v4()}
-          originalNodeData={startingData}
-          jsonPointer='' >
-          {(dataProps) => {
-            return (
-              <TypeRenderer
-              config={config}
-              ancestryConfig={[]}
-              jsonPointer=''
-              {...dataProps}
-              options={registration.options}
-              DataProvider={RecoilNodeDataProvider}
-              ErrorDisplayComponent={ErrorDisplayComponent}
-            />
-            )
-          }}
-        </RecoilNodeDataProvider>
+        <TypeRenderer
+            id={nanoid()}
+            config={config}
+            ancestryConfig={[]}
+            jsonPointer=''
+            nodeData={startingData}
+            options={registration.options}
+            DataProvider={RecoilNodeDataProvider}
+            ErrorDisplayComponent={ErrorDisplayComponent}
+        />
         <button type='submit' data-testid='save'>Save</button>
         <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
       </form>

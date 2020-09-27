@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore, createDefault } from "malle-renderer-react";
-import { v4 } from 'uuid'
+import { nanoid } from 'nanoid'
 
 export default function ListNodeRenderer(
   {
@@ -9,7 +9,6 @@ export default function ListNodeRenderer(
     ancestryConfig,
     jsonPointer,
     nodeData,
-    setNodeDataValue,
     DataProvider,
     ErrorDisplayComponent
   }: NodeRendererProps
@@ -28,74 +27,54 @@ export default function ListNodeRenderer(
   const originalChildItems = useMemo(() => {
     if(!Array.isArray(nodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
     return nodeData.map(originalItemData => ({
-      id: v4() as string,
+      id: nanoid() as string,
       originalItemData
     }))
   }, [])
 
   const [ childItems, setChildItems ] = useState(originalChildItems)
-
-
-
-
-
+  const [ newItemId, setNewItemId ] = useState<string>()
+  useEffect(() => {
+    setNewItemId(nanoid())
+  }, [])
+  if(!newItemId) return null
   return (
     <div>
       <div className='list'>
         {childItems && childItems.map((item: any, i: number) => {
           const childJsonPointer = `${jsonPointer}/${i}`
           return (
-            <DataProvider
-              key={item.id}
-              id={item.id}
-              config={config}
-              originalNodeData={item.originalItemData}
-              jsonPointer={childJsonPointer}>
-              {(dataProps) => {
-                return (
-                  <DefaultExistingItemWrapper onRemove={() => {
-                    setChildItems(childItems.filter(childItem => childItem.id !== item.id))
-                  }}>
-                    <ChildTypeRenderer
-                      {...dataProps}
-                      config={childConfig}
-                      ancestryConfig={childAncestryConfig}
-                      jsonPointer={childJsonPointer}
-                      DataProvider={DataProvider}
-                      ErrorDisplayComponent={ErrorDisplayComponent} />
-                  </DefaultExistingItemWrapper>
-                )
-              }}
-            </DataProvider>
+            <DefaultExistingItemWrapper key={item.id} onRemove={() => {
+              setChildItems(childItems.filter(childItem => childItem.id !== item.id))
+            }}>
+              <ChildTypeRenderer
+                id={item.id}
+                nodeData={item.originalItemData}
+                config={childConfig}
+                ancestryConfig={childAncestryConfig}
+                jsonPointer={childJsonPointer}
+                DataProvider={DataProvider}
+                ErrorDisplayComponent={ErrorDisplayComponent} />
+            </DefaultExistingItemWrapper>
           )
         })}
       </div>
 
-      <DataProvider
-        config={childConfig}
-        id={v4()}
-        originalNodeData={createDefault(childConfig)}
-        jsonPointer={jsonPointer}>
-        {(dataProps) => {
-          return (
-            <DefaultNewItemWrapper config={config} onAdd={() => {
-              setChildItems([...childItems, {
-                id: v4() as string,
-                originalItemData: dataProps.nodeData
-              }])
-            }}>
-              <ChildTypeRenderer
-                {...dataProps}
-                config={childConfig}
-                ancestryConfig={childAncestryConfig}
-                jsonPointer={`${jsonPointer}/new`}
-                DataProvider={DataProvider}
-                ErrorDisplayComponent={ErrorDisplayComponent} />
-            </DefaultNewItemWrapper>
-          )
-        }}
-      </DataProvider>
-
+      <DefaultNewItemWrapper config={config} onAdd={() => {
+        setChildItems([...childItems, {
+          id: newItemId,
+          originalItemData: undefined
+        }])
+        setNewItemId(nanoid())
+      }}>
+        <ChildTypeRenderer
+          id={newItemId}
+          config={childConfig}
+          ancestryConfig={childAncestryConfig}
+          jsonPointer={`${jsonPointer}/new`}
+          DataProvider={DataProvider}
+          ErrorDisplayComponent={ErrorDisplayComponent} />
+      </DefaultNewItemWrapper>
     </div>
   )
 }

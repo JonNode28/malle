@@ -11,12 +11,11 @@ export default function ObjectNodeRenderer(
     ancestryConfig,
     jsonPointer,
     nodeData,
-    validationResults,
     DataProvider,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
-  if (!nodeData) nodeData = createDefault(config, '')
+  if (!nodeData) nodeData = createDefault(config, {})
   return (
     <div>
       <label htmlFor={config.id}>{config.name}</label>
@@ -28,33 +27,19 @@ export default function ObjectNodeRenderer(
           const ChildTypeRenderer = childRendererRegistration.renderer
           const childJsonPointer = `${jsonPointer}/${childConfig.id}`
           return (
-
-            <DataProvider
-              key={childJsonPointer}
-              id={childJsonPointer}
-              config={childConfig}
-              originalNodeData={ptr.get(nodeData, childJsonPointer)}
-              jsonPointer={childJsonPointer}>
-              {(dataProps) => {
-                return (
-                  <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
-                    <ChildTypeRenderer
-                      {...dataProps}
-                      config={childConfig}
-                      ancestryConfig={[ ...ancestryConfig, childConfig ]}
-                      jsonPointer={childJsonPointer}
-                      options={childRendererRegistration.options}
-                      DataProvider={DataProvider}
-                      ErrorDisplayComponent={ErrorDisplayComponent}/>
-                  </DefaultPropertyWrapper>
-                )
-              }}
-            </DataProvider>
+            <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
+              <ChildTypeRenderer
+                id={childJsonPointer}
+                config={childConfig}
+                ancestryConfig={[ ...ancestryConfig, childConfig ]}
+                jsonPointer={childJsonPointer}
+                nodeData={ptr.get(nodeData, childJsonPointer)}
+                options={childRendererRegistration.options}
+                DataProvider={DataProvider}
+                ErrorDisplayComponent={ErrorDisplayComponent}/>
+            </DefaultPropertyWrapper>
           )
         })}
-        {validationResults && validationResults.map((result, i) => (
-          <div className={s.error} key={i}>{result.errorMessage}</div>
-        ))}
       </div>
     </div>
   );
