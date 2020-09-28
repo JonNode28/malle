@@ -2,10 +2,11 @@ import ListRenderer from './list-renderer'
 import EditRenderer from './edit-renderer'
 import NodeEditRenderer from "./edit-renderer/NodeEditRenderer"
 import ValidationSummary from './edit-renderer/ValidationSummary'
-import NodeDataProvider, { recoilNodeDataHook, useNodeData } from "./node-data-provider";
+import NodeDataProvider, { useRecoilNodeData, useNodeData } from "./node-data-provider";
 import ServiceProvider from './service-provider'
 import propDataStore from "./store/propDataStore"
 import nodeRendererStore from "./store/nodeRendererStore"
+import NodeValidationProvider, { useRecoilNodeValidation, useNodeValidation } from './node-validation-provider'
 
 export {
   ListRenderer,
@@ -16,8 +17,11 @@ export {
   propDataStore,
   nodeRendererStore,
   NodeDataProvider,
-  recoilNodeDataHook,
-  useNodeData
+  useRecoilNodeData,
+  useNodeData,
+  NodeValidationProvider,
+  useRecoilNodeValidation,
+  useNodeValidation
 }
 
 export * from './list-renderer'

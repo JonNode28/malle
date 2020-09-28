@@ -6,4 +6,4 @@ export {
   useNodeData
 }
 
-export * from './recoilNodeDataHook'
+export * from './useRecoilNodeData'

@@ -88,7 +88,6 @@ function DefaultExistingItemWrapper(
   }: DefaultExistingItemWrapperProps
 ) {
   return (
-
     <div>
       {children}
       <button type='button' onClick={onRemove}>Remove [-]</button>

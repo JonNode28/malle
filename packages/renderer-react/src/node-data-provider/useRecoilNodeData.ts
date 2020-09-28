@@ -9,7 +9,7 @@ import { useRecoilState } from "recoil";
  * @param storeId
  * @param originalNodeData
  */
-export const recoilNodeDataHook: NodeDataHook = (
+export const useRecoilNodeData: NodeDataHook = (
   config: NodeConfig,
   storeId: string,
   originalNodeData: any) => {
@@ -18,4 +18,4 @@ export const recoilNodeDataHook: NodeDataHook = (
   return useRecoilState(propDataState);
 }
 
-export default recoilNodeDataHook
+export default useRecoilNodeData

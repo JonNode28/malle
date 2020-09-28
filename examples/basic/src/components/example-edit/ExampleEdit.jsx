@@ -14,7 +14,7 @@ import {
   registerObjectNodeRenderer,
   registerListNodeRenderer
 } from "malle-renderer-component-library-react";
-import { NodeDataProvider, recoilNodeDataHook } from "malle-renderer-react";
+import { NodeDataProvider, useRecoilNodeData, NodeValidationProvider, useRecoilNodeValidation } from "malle-renderer-react";
 
 export function ExampleEdit({config, listUri}) {
   const {id} = useParams();
@@ -24,34 +24,36 @@ export function ExampleEdit({config, listUri}) {
   const backUri = `${listUri}${!listUri.endsWith('?') && '?'}page=${page}&size=${size}`
   return (
     <div className={s.exampleEdit}>
-      <NodeDataProvider nodeDataHook={recoilNodeDataHook}>
-        <NodeEditRenderer
-          config={config}
-          editingId={id === 'new' ? null : parseInt(id)}
-          errorRenderer={ErrorPanel}
-          typeRegistry={[
-            registerStringNodeRenderer(),
-            registerObjectNodeRenderer(),
-            registerListNodeRenderer(),
-            {
-              type: 'multiline-string',
-              renderer: ({propData, setPropDataValue, propertyConfig, validationResults}) => {
-                return (
-                  <div>
-                    <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
-                    {propertyConfig.description && <p>{propertyConfig.description}</p>}
-                    <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
-                      setPropDataValue(e.currentTarget.value);
-                    }}/>
-                  </div>
-                );
+      <NodeValidationProvider nodeValidationHook={useRecoilNodeValidation} config={config}>
+        <NodeDataProvider nodeDataHook={useRecoilNodeData} config={config}>
+          <NodeEditRenderer
+            config={config}
+            editingId={id === 'new' ? null : parseInt(id)}
+            errorRenderer={ErrorPanel}
+            typeRegistry={[
+              registerStringNodeRenderer(),
+              registerObjectNodeRenderer(),
+              registerListNodeRenderer(),
+              {
+                type: 'multiline-string',
+                renderer: ({propData, setPropDataValue, propertyConfig, validationResults}) => {
+                  return (
+                    <div>
+                      <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
+                      {propertyConfig.description && <p>{propertyConfig.description}</p>}
+                      <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
+                        setPropDataValue(e.currentTarget.value);
+                      }}/>
+                    </div>
+                  );
+                }
               }
-            }
-          ]}
-          cancel={() => history.push(backUri)}
-          onSaved={() => history.push(backUri)}
-        />
-      </NodeDataProvider>
+            ]}
+            cancel={() => history.push(backUri)}
+            onSaved={() => history.push(backUri)}
+          />
+        </NodeDataProvider>
+      </NodeValidationProvider>
     </div>
   )
 }
