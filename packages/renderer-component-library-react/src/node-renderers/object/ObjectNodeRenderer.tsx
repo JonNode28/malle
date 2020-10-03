@@ -1,8 +1,6 @@
-import React, { useMemo } from "react";
-import s from './ObjectNodeRenderer.pcss'
-import { NodeConfig, NodeRendererProps, ValidationResult } from "microo-core";
+import React from "react";
+import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore } from "malle-renderer-react";
-import ptr from 'json-pointer'
 import { createDefault, useNodeData } from "malle-renderer-react";
 
 export default function ObjectNodeRenderer(
@@ -33,7 +31,7 @@ export default function ObjectNodeRenderer(
                 config={childConfig}
                 ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
                 jsonPointer={childJsonPointer}
-                originalNodeData={ptr.get(originalNodeData, childJsonPointer)}
+                originalNodeData={originalNodeData[childConfig.id]}
                 options={childRendererRegistration.options}
                 ErrorDisplayComponent={ErrorDisplayComponent}/>
             </DefaultPropertyWrapper>
