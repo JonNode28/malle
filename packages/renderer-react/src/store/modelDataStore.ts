@@ -41,19 +41,6 @@ export default {
 
         return getNodeData(config)
 
-
-
-        // console.info('Getting entire model data');
-        // return modelConfig.properties.reduce((a, c): any => {
-        //   const propJsonPointer = getPropertyJsonPointer(c);
-        //   const defaultValue = ptr.has(originalData, propJsonPointer) ? ptr.get(originalData, propJsonPointer) : null
-        //   const state = propDataStore.get(modelConfig.id, propJsonPointer, defaultValue)
-        //   if(!state) return;
-        //   ptr.set(a, propJsonPointer, get(state))
-        //   return a
-        // }, {})
-
-
       }
     });
 

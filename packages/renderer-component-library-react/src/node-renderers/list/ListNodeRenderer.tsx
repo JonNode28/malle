@@ -46,7 +46,7 @@ export default function ListNodeRenderer(
               removeItem(childId)
             }}>
               <ChildTypeRenderer
-                id={childId}
+                itemId={childId}
                 originalNodeData={originalNodeData ? originalNodeData[i] : undefined}
                 config={childConfig}
                 ancestorConfigs={childAncestorConfigs}
@@ -62,7 +62,7 @@ export default function ListNodeRenderer(
         setNewItemId(nanoid())
       }}>
         <ChildTypeRenderer
-          id={newItemId}
+          itemId={newItemId}
           config={childConfig}
           ancestorConfigs={childAncestorConfigs}
           jsonPointer={`${jsonPointer}/new`}

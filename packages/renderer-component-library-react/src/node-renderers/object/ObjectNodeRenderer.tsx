@@ -29,7 +29,7 @@ export default function ObjectNodeRenderer(
           return (
             <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
               <ChildTypeRenderer
-                id={childJsonPointer}
+                itemId={childJsonPointer}
                 config={childConfig}
                 ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
                 jsonPointer={childJsonPointer}

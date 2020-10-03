@@ -1,19 +1,24 @@
 import propDataStore from "../store/propDataStore";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useEffect, useMemo, useState } from "react";
 import { NodeConfig, ValidationExecutionStage, ValidationResult } from "microo-core";
 import { NodeValidator } from "microo-core/dist/NodeValidator";
 import { NodeValidationHook } from "./NodeValidationProvider";
 
-export const useRecoilNodeValidation: NodeValidationHook = (storeId: string, config: NodeConfig, originalNodeData: any) => {
-  if(!propDataStore.has('GETTHEINSTANCEID!', config, storeId)){
-    propDataStore.set('GETTHEINSTANCEID!', config, originalNodeData, storeId)
+export const useRecoilNodeValidation: NodeValidationHook = (
+  instanceId: string | number,
+  config: NodeConfig,
+  originalNodeData: any,
+  storeId?: string
+) => {
+  if(!propDataStore.has(instanceId, config, storeId)){
+    propDataStore.set(instanceId, config, originalNodeData, storeId)
   }
   const propDataState = storeId ?
     propDataStore.getByStoreId(storeId) :
-    propDataStore.getByConfig('GETTHEINSTANCEID!', config)
+    propDataStore.getByConfig(instanceId, config)
 
-  const [ propData, setPropData ] = useRecoilState(propDataState);
+  const propData = useRecoilValue(propDataState)
 
   const onChangeValidators = useMemo(() => {
     if(!config.validation) return null
@@ -41,14 +46,6 @@ export const useRecoilNodeValidation: NodeValidationHook = (storeId: string, con
       })()
     }
   }, [ propData ])
-
-  useEffect(() => {
-    console.log('Setting up cleanup function...')
-    return () => {
-      console.log(`Cleaning up useRecoilNodeValidation state for ${storeId}...`)
-      propDataStore.remove(storeId)
-    }
-  }, [])
 
   return validationResults
 }

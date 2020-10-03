@@ -5,7 +5,6 @@ import {
 import { ComponentType } from "react";
 
 export interface NodeRendererProps {
-  id: string
   config: NodeConfig
   ancestorConfigs: Array<NodeConfig>
   jsonPointer: string
@@ -16,6 +15,10 @@ export interface NodeRendererProps {
    */
   done?: () => void
   options?: any
+  /**
+   * Used to keep track of enumerable items
+   */
+  itemId?: string
 
   ErrorDisplayComponent: ComponentType<ErrorRendererProps> | null
 }

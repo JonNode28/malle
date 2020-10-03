@@ -19,7 +19,11 @@ export interface NodeDataHook {
 
 const Context = createContext<{ instanceId: string | number, nodeDataHook: NodeDataHook } | null>(null);
 
-export function useNodeData<D>(config: NodeConfig, originalNodeData: D, storeId?: string): [D, (nodeData: D) => void] {
+export function useNodeData<D>(
+  config: NodeConfig, 
+  originalNodeData: D,
+  storeId?: string
+): [D, (nodeData: D) => void] {
   const ctx = useContext(Context);
   if (!ctx || !ctx.nodeDataHook) throw new Error(`Couldn't find a NodeDataHook to use.`);
   return ctx.nodeDataHook(ctx.instanceId, config, originalNodeData, storeId);

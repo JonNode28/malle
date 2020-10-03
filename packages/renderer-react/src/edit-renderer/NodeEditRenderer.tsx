@@ -95,7 +95,7 @@ export default function NodeEditRenderer(
         }} data-testid='form'>
 
         <TypeRenderer
-            id={nanoid()}
+            itemId={nanoid()}
             config={config}
             ancestorConfigs={[]}
             jsonPointer=''

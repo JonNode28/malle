@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 import { NodeConfig, ValidationResult } from "microo-core";
 
 interface DataProviderProps {
+  instanceId: string | number,
   nodeValidationHook: NodeValidationHook,
   config: NodeConfig,
   children: any
@@ -9,28 +10,34 @@ interface DataProviderProps {
 
 export interface NodeValidationHook {
   (
-    storeId: string,
+    instanceId: string | number,
     config: NodeConfig,
-    originalNodeData: any
+    originalNodeData: any,
+    storeId?: string,
   ): Array<ValidationResult>
 }
 
-const Context = createContext<NodeValidationHook | null>(null);
+const Context = createContext<{ instanceId: string | number, nodeValidationHook: NodeValidationHook } | null>(null);
 
-export function useNodeValidation(storeId: string, config: NodeConfig, jsonPointer: string, originalNodeData: any): Array<ValidationResult> {
-  const nodeValidationHook = useContext(Context);
-  if (!nodeValidationHook) throw new Error(`Couldn't find a NodeValidationHook to use.`);
-  return nodeValidationHook(storeId, config, originalNodeData);
+export const useNodeValidation = (
+  config: NodeConfig,
+  originalNodeData: any,
+  storeId?: string
+): Array<ValidationResult> => {
+  const ctx = useContext(Context);
+  if (!ctx || !ctx.nodeValidationHook) throw new Error(`Couldn't find a NodeValidationHook to use.`);
+  return ctx.nodeValidationHook(ctx.instanceId, config, originalNodeData, storeId);
 }
 
 export default function NodeValidationProvider(
   {
+    instanceId,
     nodeValidationHook,
     children
   }: DataProviderProps
 ) {
   return (
-    <Context.Provider value={nodeValidationHook}>
+    <Context.Provider value={{ instanceId, nodeValidationHook }}>
       {children}
     </Context.Provider>
   );
