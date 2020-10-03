@@ -94,6 +94,9 @@ export default function NodeEditRenderer(
           })()
         }} data-testid='form'>
 
+        <label htmlFor={config.id}>{config.name}</label>
+        {config.description && <p>{config.description}</p>}
+
         <TypeRenderer
             itemId={nanoid()}
             config={config}

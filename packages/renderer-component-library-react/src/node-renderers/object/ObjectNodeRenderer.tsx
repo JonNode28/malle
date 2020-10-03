@@ -16,8 +16,6 @@ export default function ObjectNodeRenderer(
   useNodeData(config, originalNodeData)
   return (
     <div>
-      <label htmlFor={config.id}>{config.name}</label>
-      {config.description && <p>{config.description}</p>}
       <div>
         {config.children && config.children.map((childConfig, i) => {
           const childRendererRegistration = nodeRendererStore.get(childConfig.type)
