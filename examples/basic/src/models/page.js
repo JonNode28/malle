@@ -34,30 +34,36 @@ export default {
       ]
     },
     {
-      id: 'author',
-      name: 'Author',
-      description: 'The author',
-      type: 'object',
+      id: 'authors',
+      name: 'Authors',
+      description: 'The authors',
+      type: 'list',
       children: [
         {
-          id: 'name',
-          name: 'Name',
-          type: 'string',
-          validation: [
-            new JsonSchemaNodeValidator({
-              error: 'Must be at least 1 character long',
-              executeOn: AllValidationExecutionStages,
-              schema: {
-                "minLength": 1
-              },
-              displayMode: [ 'INLINE', 'SUMMARY', 'MODAL' ],
-            })
+          id: 'author',
+          type: 'object',
+          children: [
+            {
+              id: 'name',
+              name: 'Name',
+              type: 'string',
+              validation: [
+                new JsonSchemaNodeValidator({
+                  error: 'Must be at least 1 character long',
+                  executeOn: AllValidationExecutionStages,
+                  schema: {
+                    "minLength": 1
+                  },
+                  displayMode: [ 'INLINE', 'SUMMARY', 'MODAL' ],
+                })
+              ]
+            },
+            {
+              id: 'location',
+              name: 'Location',
+              type: 'string'
+            }
           ]
-        },
-        {
-          id: 'location',
-          name: 'Location',
-          type: 'string'
         }
       ]
     },
