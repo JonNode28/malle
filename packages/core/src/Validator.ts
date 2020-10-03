@@ -17,6 +17,8 @@ export enum ValidationExecutionStage {
   SERVER_CREATE = 'SERVER_CREATE'
 }
 
+export const AllValidationExecutionStages = Object.values(ValidationExecutionStage)
+
 export enum ValidationErrorDisplayMode {
   INLINE = 'INLINE',
   SUMMARY = 'SUMMARY',
