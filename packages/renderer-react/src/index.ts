@@ -2,7 +2,7 @@ import ListRenderer from './list-renderer'
 import EditRenderer from './edit-renderer'
 import NodeEditRenderer from "./edit-renderer/NodeEditRenderer"
 import ValidationSummary from './edit-renderer/ValidationSummary'
-import NodeDataProvider, { useRecoilNodeData, useNodeData } from "./node-data-provider";
+import NodeDataProvider, { useRecoilNodeData, useNodeData, useArrayNodeIds } from "./node-data-provider";
 import ServiceProvider from './service-provider'
 import propDataStore from "./store/propDataStore"
 import nodeRendererStore from "./store/nodeRendererStore"
@@ -19,6 +19,7 @@ export {
   NodeDataProvider,
   useRecoilNodeData,
   useNodeData,
+  useArrayNodeIds,
   NodeValidationProvider,
   useRecoilNodeValidation,
   useNodeValidation

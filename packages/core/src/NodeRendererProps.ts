@@ -7,7 +7,7 @@ import { ComponentType } from "react";
 export interface NodeRendererProps {
   id: string
   config: NodeConfig
-  ancestryConfig: Array<NodeConfig>
+  ancestorConfigs: Array<NodeConfig>
   jsonPointer: string
   originalNodeData?: any
   /**

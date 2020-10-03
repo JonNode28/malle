@@ -3,18 +3,19 @@ import s from './ObjectNodeRenderer.pcss'
 import { NodeConfig, NodeRendererProps, ValidationResult } from "microo-core";
 import { nodeRendererStore } from "malle-renderer-react";
 import ptr from 'json-pointer'
-import { createDefault } from "malle-renderer-react";
+import { createDefault, useNodeData } from "malle-renderer-react";
 
 export default function ObjectNodeRenderer(
   {
     config,
-    ancestryConfig,
+    ancestorConfigs,
     jsonPointer,
     originalNodeData,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
   if (!originalNodeData) originalNodeData = createDefault(config, {})
+  useNodeData(config, originalNodeData)
   return (
     <div>
       <label htmlFor={config.id}>{config.name}</label>
@@ -30,7 +31,7 @@ export default function ObjectNodeRenderer(
               <ChildTypeRenderer
                 id={childJsonPointer}
                 config={childConfig}
-                ancestryConfig={[ ...ancestryConfig, childConfig ]}
+                ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
                 jsonPointer={childJsonPointer}
                 originalNodeData={ptr.get(originalNodeData, childJsonPointer)}
                 options={childRendererRegistration.options}

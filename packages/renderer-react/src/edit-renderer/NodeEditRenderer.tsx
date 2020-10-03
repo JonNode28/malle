@@ -8,10 +8,12 @@ import {
 } from 'recoil';
 import {
   NodeConfig,
-  ErrorRendererProps, NodeRendererProps, NodeRendererRegistration,
+  ErrorRendererProps,
+  NodeRendererRegistration,
 } from "microo-core"
 import nodeRendererStore from "../store/nodeRendererStore"
 import { nanoid } from 'nanoid'
+import modelDataStore from "../store/modelDataStore";
 
 export interface NodeEditRendererProps {
   config: NodeConfig
@@ -47,8 +49,8 @@ export default function NodeEditRenderer(
   const [ error, setError ] = useState<Error>();
   const [ startingData, setStartingData ] = useState<any>(undefined);
   const save = useRecoilCallback(({ snapshot }) => async () => {
-    // const model = await snapshot.getPromise(modelDataStore.get(modelConfig, startingData))
-    // console.log('saving model ', model)
+    const model = await snapshot.getPromise(modelDataStore.get(typeof editingId === 'undefined' ? 'new' : editingId, config))
+    console.log('saving model ', model)
   })
 
   useEffect(() => {
@@ -81,7 +83,6 @@ export default function NodeEditRenderer(
   return (
     <div className={s.editRenderer}>
 
-    <RecoilRoot>
       {error && <ErrorDisplayComponent err={error}/>}
 
       {loading && <div className={s.editRenderer} data-testid='loading'>loading...</div>}
@@ -96,7 +97,7 @@ export default function NodeEditRenderer(
         <TypeRenderer
             id={nanoid()}
             config={config}
-            ancestryConfig={[]}
+            ancestorConfigs={[]}
             jsonPointer=''
             originalNodeData={startingData}
             options={registration.options}
@@ -105,8 +106,7 @@ export default function NodeEditRenderer(
         <button type='submit' data-testid='save'>Save</button>
         <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
       </form>
-    </RecoilRoot>
-  </div>
+    </div>
   );
 
 }

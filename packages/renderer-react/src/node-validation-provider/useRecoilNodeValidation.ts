@@ -6,7 +6,12 @@ import { NodeValidator } from "microo-core/dist/NodeValidator";
 import { NodeValidationHook } from "./NodeValidationProvider";
 
 export const useRecoilNodeValidation: NodeValidationHook = (storeId: string, config: NodeConfig, originalNodeData: any) => {
-  const propDataState = propDataStore.get('GETTHEINSTANCEID!', storeId, originalNodeData)
+  if(!propDataStore.has('GETTHEINSTANCEID!', config, storeId)){
+    propDataStore.set('GETTHEINSTANCEID!', config, originalNodeData, storeId)
+  }
+  const propDataState = storeId ?
+    propDataStore.getByStoreId(storeId) :
+    propDataStore.getByConfig('GETTHEINSTANCEID!', config)
 
   const [ propData, setPropData ] = useRecoilState(propDataState);
 

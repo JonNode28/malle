@@ -10,10 +10,16 @@ import { useRecoilState } from "recoil";
  * @param originalNodeData
  */
 export const useRecoilNodeData: NodeDataHook = (
+  instanceId: string | number,
   config: NodeConfig,
-  storeId: string,
-  originalNodeData: any) => {
-  const propDataState = propDataStore.get('GETTHEINSTANCEID!', storeId, originalNodeData)
+  originalNodeData: any,
+  storeId?: string) => {
+  if(!propDataStore.has(instanceId, config, storeId)){
+    propDataStore.set(instanceId, config, originalNodeData, storeId)
+  }
+  const propDataState = storeId ?
+    propDataStore.getByStoreId(storeId) :
+    propDataStore.getByConfig(instanceId, config)
 
   return useRecoilState(propDataState);
 }

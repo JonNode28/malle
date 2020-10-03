@@ -9,15 +9,14 @@ function StringNodeRenderer(
   {
     id,
     config,
-    ancestryConfig,
     jsonPointer,
     originalNodeData,
   }: NodeRendererProps
 ){
   const isNew = typeof originalNodeData === 'undefined'
   if(isNew) originalNodeData = createDefault(config, '')
-  const [ touched, setTouched ] = useState(false);
-  const [ nodeData, setNodeData ] = useNodeData(id, '', originalNodeData)
+  const [ touched, setTouched ] = useState(false)
+  const [ nodeData, setNodeData ] = useNodeData(config, originalNodeData, id)
   const validationResults = useNodeValidation(id, config, jsonPointer, originalNodeData)
   return (
     <>

@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore, createDefault } from "malle-renderer-react";
 import { nanoid } from 'nanoid'
+import { useArrayNodeIds } from "malle-renderer-react";
 
 export default function ListNodeRenderer(
   {
     config,
-    ancestryConfig,
+    ancestorConfigs,
     jsonPointer,
     originalNodeData,
     ErrorDisplayComponent
@@ -21,18 +22,16 @@ export default function ListNodeRenderer(
   const childRendererRegistration = nodeRendererStore.get(childConfig.type)
   if (!childRendererRegistration) return null
   const ChildTypeRenderer = childRendererRegistration.renderer
-  const childAncestryConfig = [ ...ancestryConfig, childConfig ]
+  const childAncestorConfigs = [ ...ancestorConfigs, config ]
 
-  const originalChildItems = useMemo(() => {
-    if(!Array.isArray(originalNodeData)) throw new Error(`'${config.type}' renderer only works with arrays`)
-    return originalNodeData.map(originalItemData => ({
-      id: nanoid() as string,
-      originalItemData
-    }))
-  }, [])
+  const {
+    childIds,
+    removeItem,
+    addItem,
+  } = useArrayNodeIds(config, originalNodeData)
 
-  const [ childItems, setChildItems ] = useState(originalChildItems)
   const [ newItemId, setNewItemId ] = useState<string>()
+
   useEffect(() => {
     setNewItemId(nanoid())
   }, [])
@@ -40,17 +39,17 @@ export default function ListNodeRenderer(
   return (
     <div>
       <div className='list'>
-        {childItems && childItems.map((item: any, i: number) => {
+        {childIds && childIds.map((childId: any, i: number) => {
           const childJsonPointer = `${jsonPointer}/${i}`
           return (
-            <DefaultExistingItemWrapper key={item.id} onRemove={() => {
-              setChildItems(childItems.filter(childItem => childItem.id !== item.id))
+            <DefaultExistingItemWrapper key={childId} onRemove={() => {
+              removeItem(childId)
             }}>
               <ChildTypeRenderer
-                id={item.id}
-                originalNodeData={item.originalItemData}
+                id={childId}
+                originalNodeData={originalNodeData ? originalNodeData[i] : undefined}
                 config={childConfig}
-                ancestryConfig={childAncestryConfig}
+                ancestorConfigs={childAncestorConfigs}
                 jsonPointer={childJsonPointer}
                 ErrorDisplayComponent={ErrorDisplayComponent} />
             </DefaultExistingItemWrapper>
@@ -59,16 +58,13 @@ export default function ListNodeRenderer(
       </div>
 
       <DefaultNewItemWrapper config={config} onAdd={() => {
-        setChildItems([...childItems, {
-          id: newItemId,
-          originalItemData: undefined
-        }])
+        addItem(newItemId)
         setNewItemId(nanoid())
       }}>
         <ChildTypeRenderer
           id={newItemId}
           config={childConfig}
-          ancestryConfig={childAncestryConfig}
+          ancestorConfigs={childAncestorConfigs}
           jsonPointer={`${jsonPointer}/new`}
           ErrorDisplayComponent={ErrorDisplayComponent} />
       </DefaultNewItemWrapper>

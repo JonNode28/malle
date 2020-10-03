@@ -15,6 +15,7 @@ import {
   registerListNodeRenderer
 } from "malle-renderer-component-library-react";
 import { NodeDataProvider, useRecoilNodeData, NodeValidationProvider, useRecoilNodeValidation } from "malle-renderer-react";
+import { RecoilRoot } from "recoil";
 
 export function ExampleEdit({config, listUri}) {
   const {id} = useParams();
@@ -22,37 +23,40 @@ export function ExampleEdit({config, listUri}) {
   const location = useLocation();
   const {page, size} = querystring.parse(location.search);
   const backUri = `${listUri}${!listUri.endsWith('?') && '?'}page=${page}&size=${size}`
+  const editingId = parseInt(id)
   return (
     <div className={s.exampleEdit}>
       <NodeValidationProvider nodeValidationHook={useRecoilNodeValidation} config={config}>
-        <NodeDataProvider nodeDataHook={useRecoilNodeData} config={config}>
-          <NodeEditRenderer
-            config={config}
-            editingId={id === 'new' ? null : parseInt(id)}
-            errorRenderer={ErrorPanel}
-            typeRegistry={[
-              registerStringNodeRenderer(),
-              registerObjectNodeRenderer(),
-              registerListNodeRenderer(),
-              {
-                type: 'multiline-string',
-                renderer: ({propData, setPropDataValue, propertyConfig, validationResults}) => {
-                  return (
-                    <div>
-                      <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
-                      {propertyConfig.description && <p>{propertyConfig.description}</p>}
-                      <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
-                        setPropDataValue(e.currentTarget.value);
-                      }}/>
-                    </div>
-                  );
+        <RecoilRoot>
+          <NodeDataProvider instanceId={editingId} nodeDataHook={useRecoilNodeData} config={config}>
+            <NodeEditRenderer
+              config={config}
+              editingId={editingId}
+              errorRenderer={ErrorPanel}
+              typeRegistry={[
+                registerStringNodeRenderer(),
+                registerObjectNodeRenderer(),
+                registerListNodeRenderer(),
+                {
+                  type: 'multiline-string',
+                  renderer: ({propData, setPropDataValue, propertyConfig, validationResults}) => {
+                    return (
+                      <div>
+                        <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
+                        {propertyConfig.description && <p>{propertyConfig.description}</p>}
+                        <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
+                          setPropDataValue(e.currentTarget.value);
+                        }}/>
+                      </div>
+                    );
+                  }
                 }
-              }
-            ]}
-            cancel={() => history.push(backUri)}
-            onSaved={() => history.push(backUri)}
-          />
-        </NodeDataProvider>
+              ]}
+              cancel={() => history.push(backUri)}
+              onSaved={() => history.push(backUri)}
+            />
+          </NodeDataProvider>
+        </RecoilRoot>
       </NodeValidationProvider>
     </div>
   )

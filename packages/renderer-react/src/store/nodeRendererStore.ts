@@ -1,5 +1,4 @@
-import { ComponentType } from "react";
-import { NodeRendererProps, NodeRendererRegistration } from "microo-core";
+import { NodeRendererRegistration } from "microo-core";
 
 const nodeRendererMap: { [key: string]: NodeRendererRegistration } = {};
 

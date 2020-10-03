@@ -1,9 +1,10 @@
-import NodeDataProvider, { useNodeData } from "./NodeDataProvider";
+import NodeDataProvider, { useNodeData, useArrayNodeIds } from "./NodeDataProvider";
 
 export default NodeDataProvider;
 
 export {
-  useNodeData
+  useNodeData,
+  useArrayNodeIds
 }
 
 export * from './useRecoilNodeData'
