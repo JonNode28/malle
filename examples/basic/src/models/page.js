@@ -1,5 +1,6 @@
 import { ValidationExecutionStage } from "microo-core";
 import { JsonSchemaNodeValidator } from "microo-validator-jsonschema";
+import { AllValidationExecutionStages } from "microo-core";
 
 export default {
   id: 'page',
@@ -15,12 +16,7 @@ export default {
       validation: [
         new JsonSchemaNodeValidator({
           error: 'Cannot be more than 255 characters long',
-          executeOn: [
-            ValidationExecutionStage.CLIENT_UPDATE,
-            ValidationExecutionStage.CLIENT_CREATE,
-            ValidationExecutionStage.SERVER_UPDATE,
-            ValidationExecutionStage.SERVER_CREATE
-          ],
+          executeOn: AllValidationExecutionStages,
           schema: {
             "maxLength": 255
           },
@@ -28,12 +24,7 @@ export default {
         }),
         new JsonSchemaNodeValidator({
           error: 'Must be at least 1 character long',
-          executeOn: [
-            ValidationExecutionStage.CLIENT_UPDATE,
-            ValidationExecutionStage.CLIENT_CREATE,
-            ValidationExecutionStage.SERVER_UPDATE,
-            ValidationExecutionStage.SERVER_CREATE
-          ],
+          executeOn: AllValidationExecutionStages,
           schema: {
             "minLength": 1
           },
@@ -43,10 +34,32 @@ export default {
       ]
     },
     {
-      id: 'authorName',
+      id: 'author',
       name: 'Author',
-      description: 'The name of the author',
-      type: 'string',
+      description: 'The author',
+      type: 'object',
+      children: [
+        {
+          id: 'name',
+          name: 'Name',
+          type: 'string',
+          validation: [
+            new JsonSchemaNodeValidator({
+              error: 'Must be at least 1 character long',
+              executeOn: AllValidationExecutionStages,
+              schema: {
+                "minLength": 1
+              },
+              displayMode: [ 'INLINE', 'SUMMARY', 'MODAL' ],
+            })
+          ]
+        },
+        {
+          id: 'location',
+          name: 'Location',
+          type: 'string'
+        }
+      ]
     },
     {
       id: 'body',
@@ -70,12 +83,7 @@ export default {
           validation: [
             new JsonSchemaNodeValidator({
               error: 'Cannot be more than 255 characters long',
-              executeOn: [
-                ValidationExecutionStage.CLIENT_UPDATE,
-                ValidationExecutionStage.CLIENT_CREATE,
-                ValidationExecutionStage.SERVER_UPDATE,
-                ValidationExecutionStage.SERVER_CREATE
-              ],
+              executeOn: AllValidationExecutionStages,
               schema: {
                 "minLength": 1
               },
