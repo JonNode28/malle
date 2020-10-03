@@ -23,7 +23,7 @@ export const useRecoilNodeValidation: NodeValidationHook = (
   const onChangeValidators = useMemo(() => {
     if(!config.validation) return null
     let validations:Array<NodeValidator> = Array.isArray(config.validation) ? config.validation : [ config.validation ]
-    return validations.filter(validation => validation.executeOn.indexOf(ValidationExecutionStage.CHANGE))
+    return validations.filter(validation => validation.executeOn.includes(ValidationExecutionStage.CHANGE))
   }, [ config ])
 
   const [ validationResults, setValidationResults ] = useState<Array<ValidationResult>>([])
