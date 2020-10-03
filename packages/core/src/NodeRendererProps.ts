@@ -7,7 +7,6 @@ import { ComponentType } from "react";
 export interface NodeRendererProps {
   config: NodeConfig
   ancestorConfigs: Array<NodeConfig>
-  jsonPointer: string
   originalNodeData?: any
   /**
    * Used by a node renderer to indicate a completion action.

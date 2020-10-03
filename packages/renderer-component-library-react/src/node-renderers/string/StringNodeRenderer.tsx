@@ -8,7 +8,6 @@ import { useNodeValidation } from "malle-renderer-react";
 function StringNodeRenderer(
   {
     config,
-    jsonPointer,
     originalNodeData,
     itemId
   }: NodeRendererProps
@@ -22,7 +21,6 @@ function StringNodeRenderer(
     <>
       <input
         type='text'
-        id={config.id}
         value={nodeData}
         data-testid='string-input'
         onChange={(e) => {

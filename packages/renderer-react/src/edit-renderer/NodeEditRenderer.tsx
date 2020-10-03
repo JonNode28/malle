@@ -101,7 +101,6 @@ export default function NodeEditRenderer(
             itemId={nanoid()}
             config={config}
             ancestorConfigs={[]}
-            jsonPointer=''
             originalNodeData={startingData}
             options={registration.options}
             ErrorDisplayComponent={ErrorDisplayComponent}

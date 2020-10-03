@@ -8,8 +8,8 @@ export default function ListNodeRenderer(
   {
     config,
     ancestorConfigs,
-    jsonPointer,
     originalNodeData,
+    itemId,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
@@ -40,17 +40,16 @@ export default function ListNodeRenderer(
     <div>
       <div className='list'>
         {childIds && childIds.map((childId: any, i: number) => {
-          const childJsonPointer = `${jsonPointer}/${i}`
+          const childItemId = `${itemId}/${childId}`
           return (
             <DefaultExistingItemWrapper key={childId} onRemove={() => {
               removeItem(childId)
             }}>
               <ChildTypeRenderer
-                itemId={childId}
+                itemId={childItemId}
                 originalNodeData={originalNodeData ? originalNodeData[i] : undefined}
                 config={childConfig}
                 ancestorConfigs={childAncestorConfigs}
-                jsonPointer={childJsonPointer}
                 ErrorDisplayComponent={ErrorDisplayComponent} />
             </DefaultExistingItemWrapper>
           )
@@ -65,7 +64,6 @@ export default function ListNodeRenderer(
           itemId={newItemId}
           config={childConfig}
           ancestorConfigs={childAncestorConfigs}
-          jsonPointer={`${jsonPointer}/new`}
           ErrorDisplayComponent={ErrorDisplayComponent} />
       </DefaultNewItemWrapper>
     </div>

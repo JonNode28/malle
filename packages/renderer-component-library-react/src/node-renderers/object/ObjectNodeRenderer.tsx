@@ -7,8 +7,8 @@ export default function ObjectNodeRenderer(
   {
     config,
     ancestorConfigs,
-    jsonPointer,
     originalNodeData,
+    itemId,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
@@ -21,14 +21,13 @@ export default function ObjectNodeRenderer(
           const childRendererRegistration = nodeRendererStore.get(childConfig.type)
           if (!childRendererRegistration) return null
           const ChildTypeRenderer = childRendererRegistration.renderer
-          const childJsonPointer = `${jsonPointer}/${childConfig.id}`
+          const childJsonPointer = `${itemId}/${childConfig.id}`
           return (
             <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
               <ChildTypeRenderer
                 itemId={childJsonPointer}
                 config={childConfig}
                 ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
-                jsonPointer={childJsonPointer}
                 originalNodeData={originalNodeData[childConfig.id]}
                 options={childRendererRegistration.options}
                 ErrorDisplayComponent={ErrorDisplayComponent}/>
