@@ -15,12 +15,10 @@ export const useRecoilNodeData: NodeDataHook = (
   config: NodeConfig,
   originalNodeData: any,
   storeId?: string) => {
-  if(!propDataStore.has(instanceId, config, storeId)){
-    propDataStore.set(instanceId, config, originalNodeData, storeId)
-  }
+
   const propDataState = propDataStore.get(instanceId, config, originalNodeData, storeId)
 
-  return useRecoilState(propDataState);
+  return useRecoilState(propDataState)
 }
 
 export default useRecoilNodeData

@@ -27,6 +27,7 @@ export default {
           if(nodeRenderer.jsonType === JsonType.ARRAY){
             return (nodeData as Array<string>).map(childId => {
               const childState = propDataStore.getByStoreId(childId)
+              if(!childState) throw new Error('Missing state. Should not happen')
               return get(childState)
             })
           } else if(nodeRenderer.jsonType === JsonType.OBJECT){

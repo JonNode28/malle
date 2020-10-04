@@ -14,11 +14,21 @@ const propDataStoreStateMetaMap: Map<string, PropDataStateMeta>
 const propDataInstanceConfigStateMetaMap: Map<string | number, Map<NodeConfig, PropDataStateMeta>>
   = new Map<string | number, Map<NodeConfig, PropDataStateMeta>>()
 
-export const get = (instanceId: string | number, config: NodeConfig, originalValue: any, storeId?: string) => {
+export const get = (
+  instanceId: string | number,
+  config: NodeConfig,
+  originalValue: any,
+  storeId?: string
+): RecoilState<any> => {
   if(!has(instanceId, config, storeId)){
+    console.log(`Creating state for ${storeId || config.id}`)
     set(instanceId, config, originalValue, storeId)
   }
-  if (typeof storeId !== 'undefined') return getByStoreId(storeId)
+  if (typeof storeId !== 'undefined') {
+    const state = getByStoreId(storeId)
+    if(!state) throw new Error('Empty state. Should never happen')
+    return state
+  }
   return getByConfig(instanceId, config)
 }
 export const getByConfig = (instanceId: string | number, config: NodeConfig) => {
@@ -27,7 +37,7 @@ export const getByConfig = (instanceId: string | number, config: NodeConfig) => 
 export const getByStoreId = (storeId: string) => {
   if (!storeId) throw new Error('Store ID is required')
   let meta = propDataStoreStateMetaMap.get(storeId)
-  if (!meta) throw new Error('No prop state in store')
+  if (!meta) return null
   return meta.state
 }
 export const set = (instanceId: string | number, config: NodeConfig, defaultValue?: any, storeId?: string) => {
