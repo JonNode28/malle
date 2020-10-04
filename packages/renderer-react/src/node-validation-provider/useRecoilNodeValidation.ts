@@ -11,12 +11,7 @@ export const useRecoilNodeValidation: NodeValidationHook = (
   originalNodeData: any,
   storeId?: string
 ) => {
-  if(!propDataStore.has(instanceId, config, storeId)){
-    propDataStore.set(instanceId, config, originalNodeData, storeId)
-  }
-  const propDataState = storeId ?
-    propDataStore.getByStoreId(storeId) :
-    propDataStore.getByConfig(instanceId, config)
+  const propDataState = propDataStore.get(instanceId, config, originalNodeData, storeId)
 
   const propData = useRecoilValue(propDataState)
 
