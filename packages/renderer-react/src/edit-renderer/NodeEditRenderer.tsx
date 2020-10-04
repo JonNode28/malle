@@ -94,7 +94,7 @@ export default function NodeEditRenderer(
           })()
         }} data-testid='form'>
 
-        <label htmlFor={config.id}>{config.name}</label>
+        <h1>{config.name}</h1>
         {config.description && <p>{config.description}</p>}
 
         <TypeRenderer
@@ -105,8 +105,11 @@ export default function NodeEditRenderer(
             options={registration.options}
             ErrorDisplayComponent={ErrorDisplayComponent}
         />
-        <button type='submit' data-testid='save'>Save</button>
-        <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
+
+        <div className={s.controls}>
+          <button type='submit' data-testid='save'>Save</button>
+          <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
+        </div>
       </form>
     </div>
   );

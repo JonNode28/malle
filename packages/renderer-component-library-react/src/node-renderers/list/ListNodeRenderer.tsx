@@ -3,6 +3,7 @@ import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore, createDefault } from "malle-renderer-react";
 import { nanoid } from 'nanoid'
 import { useArrayNodeIds } from "malle-renderer-react";
+import s from './ListNodeRenderer.pcss'
 
 export default function ListNodeRenderer(
   {
@@ -37,8 +38,8 @@ export default function ListNodeRenderer(
   }, [])
   if(!newItemId) return null
   return (
-    <div>
-      <div className='list'>
+    <div className={s.listNodeRenderer}>
+      <div className={s.items}>
         {childIds && childIds.map((childId: any, i: number) => {
           const childItemId = `${itemId}/${childId}`
           return (
@@ -55,7 +56,6 @@ export default function ListNodeRenderer(
           )
         })}
       </div>
-
       <DefaultNewItemWrapper config={config} onAdd={() => {
         addItem(newItemId)
         setNewItemId(nanoid())

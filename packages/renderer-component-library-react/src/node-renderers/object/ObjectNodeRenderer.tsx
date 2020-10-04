@@ -2,6 +2,7 @@ import React from "react";
 import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore } from "malle-renderer-react";
 import { createDefault, useNodeData } from "malle-renderer-react";
+import s from './ObjectNodeRenderer.pcss'
 
 export default function ObjectNodeRenderer(
   {
@@ -15,26 +16,24 @@ export default function ObjectNodeRenderer(
   if (!originalNodeData) originalNodeData = createDefault(config, {})
   useNodeData(config, originalNodeData)
   return (
-    <div>
-      <div>
-        {config.children && config.children.map((childConfig, i) => {
-          const childRendererRegistration = nodeRendererStore.get(childConfig.type)
-          if (!childRendererRegistration) return null
-          const ChildTypeRenderer = childRendererRegistration.renderer
-          const childJsonPointer = `${itemId}/${childConfig.id}`
-          return (
-            <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
-              <ChildTypeRenderer
-                itemId={childJsonPointer}
-                config={childConfig}
-                ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
-                originalNodeData={originalNodeData[childConfig.id]}
-                options={childRendererRegistration.options}
-                ErrorDisplayComponent={ErrorDisplayComponent}/>
-            </DefaultPropertyWrapper>
-          )
-        })}
-      </div>
+    <div className={s.objectNodeRenderer}>
+      {config.children && config.children.map((childConfig, i) => {
+        const childRendererRegistration = nodeRendererStore.get(childConfig.type)
+        if (!childRendererRegistration) return null
+        const ChildTypeRenderer = childRendererRegistration.renderer
+        const childJsonPointer = `${itemId}/${childConfig.id}`
+        return (
+          <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
+            <ChildTypeRenderer
+              itemId={childJsonPointer}
+              config={childConfig}
+              ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
+              originalNodeData={originalNodeData[childConfig.id]}
+              options={childRendererRegistration.options}
+              ErrorDisplayComponent={ErrorDisplayComponent}/>
+          </DefaultPropertyWrapper>
+        )
+      })}
     </div>
   );
 }
@@ -52,9 +51,9 @@ function DefaultPropertyWrapper(
 ) {
   return (
 
-    <div>
+    <div className={s.defaultWrapper}>
       <label htmlFor={config.id}>{config.name}</label>
-      {config.description && <p>{config.description}</p>}
+      {config.description && <p className={s.description}>{config.description}</p>}
       {children}
     </div>
   )
