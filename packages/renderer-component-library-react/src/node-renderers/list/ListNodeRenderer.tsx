@@ -61,7 +61,7 @@ export default function ListNodeRenderer(
         setNewItemId(nanoid())
       }}>
         <ChildTypeRenderer
-          itemId={newItemId}
+          itemId={`${itemId}/${newItemId}`}
           config={childConfig}
           ancestorConfigs={childAncestorConfigs}
           ErrorDisplayComponent={ErrorDisplayComponent} />
