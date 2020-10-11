@@ -14,7 +14,13 @@ import {
   registerObjectNodeRenderer,
   registerListNodeRenderer
 } from "malle-renderer-component-library-react";
-import { NodeDataProvider, useRecoilNodeData, NodeValidationProvider, useRecoilNodeValidation } from "malle-renderer-react";
+import {
+  NodeDataProvider,
+  useRecoilNodeData,
+  useRecoilArrayNodeData,
+  NodeValidationProvider,
+  useRecoilNodeValidation
+} from "malle-renderer-react";
 import { RecoilRoot } from "recoil";
 
 export function ExampleEdit({config, listUri}) {
@@ -26,9 +32,42 @@ export function ExampleEdit({config, listUri}) {
   const editingId = parseInt(id)
   return (
     <div className={s.exampleEdit}>
-      <NodeValidationProvider nodeValidationHook={useRecoilNodeValidation} config={config}>
+      <NodeValidationProvider
+        instanceId={editingId}
+        nodeValidationHook={useRecoilNodeValidation}
+        config={config}>
         <RecoilRoot>
-          <NodeDataProvider instanceId={editingId} nodeDataHook={useRecoilNodeData} config={config}>
+          <NodeDataProvider
+            instanceId={editingId}
+            nodeDataHook={useRecoilNodeData}
+            arrayNodeDataHook={useRecoilArrayNodeData}
+            config={config}>
+            <NodeEditRenderer
+              config={config}
+              editingId={editingId}
+              errorRenderer={ErrorPanel}
+              typeRegistry={[
+                registerStringNodeRenderer(),
+                registerObjectNodeRenderer(),
+                registerListNodeRenderer(),
+                {
+                  type: 'multiline-string',
+                  renderer: ({propData, setPropDataValue, propertyConfig, validationResults}) => {
+                    return (
+                      <div>
+                        <label htmlFor={propertyConfig.id}>{propertyConfig.name}</label>
+                        {propertyConfig.description && <p>{propertyConfig.description}</p>}
+                        <textarea id={propertyConfig.id} value={propData} onChange={(e) => {
+                          setPropDataValue(e.currentTarget.value);
+                        }}/>
+                      </div>
+                    );
+                  }
+                }
+              ]}
+              cancel={() => history.push(backUri)}
+              onSaved={() => history.push(backUri)}
+            />
             <NodeEditRenderer
               config={config}
               editingId={editingId}

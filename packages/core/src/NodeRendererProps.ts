@@ -15,9 +15,13 @@ export interface NodeRendererProps {
   done?: () => void
   options?: any
   /**
-   * Used to keep track of enumerable items
+   * Track new items in an enumerable before they're added
    */
-  itemId?: string
+  committed: boolean
+  /**
+   * Used for enumerable items
+   */
+  index?: number
 
   ErrorDisplayComponent: ComponentType<ErrorRendererProps> | null
 }

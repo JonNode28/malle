@@ -8,15 +8,17 @@ import { useNodeValidation } from "malle-renderer-react";
 function StringNodeRenderer(
   {
     config,
+    ancestorConfigs,
     originalNodeData,
-    itemId
+    committed = true,
+    index
   }: NodeRendererProps
 ){
   const isNew = typeof originalNodeData === 'undefined'
   if(isNew) originalNodeData = createDefault(config, '')
   const [ touched, setTouched ] = useState(false)
-  const [ nodeData, setNodeData ] = useNodeData(config, originalNodeData, itemId)
-  const validationResults = useNodeValidation(config, originalNodeData, itemId)
+  const [ nodeData, setNodeData ] = useNodeData(config, ancestorConfigs, originalNodeData, committed, index)
+  const validationResults = useNodeValidation(config, index)
   return (
     <>
       <input

@@ -4,7 +4,6 @@ import { NodeConfig, ValidationResult } from "microo-core";
 interface DataProviderProps {
   instanceId: string | number,
   nodeValidationHook: NodeValidationHook,
-  config: NodeConfig,
   children: any
 }
 
@@ -12,8 +11,7 @@ export interface NodeValidationHook {
   (
     instanceId: string | number,
     config: NodeConfig,
-    originalNodeData: any,
-    storeId?: string,
+    index?: number,
   ): Array<ValidationResult>
 }
 
@@ -21,12 +19,11 @@ const Context = createContext<{ instanceId: string | number, nodeValidationHook:
 
 export const useNodeValidation = (
   config: NodeConfig,
-  originalNodeData: any,
-  storeId?: string
+  index?: number
 ): Array<ValidationResult> => {
   const ctx = useContext(Context);
   if (!ctx || !ctx.nodeValidationHook) throw new Error(`Couldn't find a NodeValidationHook to use.`);
-  return ctx.nodeValidationHook(ctx.instanceId, config, originalNodeData, storeId);
+  return ctx.nodeValidationHook(ctx.instanceId, config, index);
 }
 
 export default function NodeValidationProvider(

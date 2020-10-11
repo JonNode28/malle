@@ -17,31 +17,29 @@ export default {
     modelDataMap[key] = modelDataSelector = selector<any>({
       key: 'ModelDataSelector',
       get: ({ get }) => {
-
         function getNodeData(nodeConfig: NodeConfig){
-          const nodeState = propDataStore.getByConfig(instanceId, nodeConfig)
-          const nodeData = get(nodeState)
-          if(!nodeConfig.children || !nodeData) return nodeData
-
           const nodeRenderer = nodeRendererStore.get(nodeConfig.type)
+          if(!nodeRenderer) throw new Error(`No renderer for '${nodeConfig.id}' node of type '${nodeConfig.type}'`)
           if(nodeRenderer.jsonType === JsonType.ARRAY){
-            return (nodeData as Array<string>).map(childId => {
-              const childState = propDataStore.getByStoreId(childId)
+            if(!nodeConfig.children) throw new Error(`'${nodeConfig.id}' seems to be an array type but has no child config. At least one is required.`)
+            const nodeChildStates = propDataStore.getAll(instanceId, nodeConfig)
+            return (nodeChildStates).map(childState => {
               if(!childState) throw new Error('Missing state. Should not happen')
               return get(childState)
             })
           } else if(nodeRenderer.jsonType === JsonType.OBJECT){
-            return nodeConfig.children.reduce<{ [key: string]: any }>((a, c) => {
+            if(!nodeConfig.children) throw new Error(`'${nodeConfig.id}' seems to be an object type but has no child config. At least one is required.`)
+            return nodeConfig.children?.reduce<{ [key: string]: any }>((a, c) => {
               a[c.id] = getNodeData(c)
               return a
             }, {})
           } else {
-            throw new Error(`'${nodeRenderer.jsonType}' config shouldn't have children`)
+            const nodeState = propDataStore.get(instanceId, nodeConfig)
+            if(!nodeState) throw new Error(`No state for node ${instanceId}/${nodeConfig.id}`)
+            return get(nodeState)
           }
         }
-
         return getNodeData(config)
-
       }
     });
 

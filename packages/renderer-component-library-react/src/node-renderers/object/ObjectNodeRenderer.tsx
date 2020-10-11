@@ -9,28 +9,28 @@ export default function ObjectNodeRenderer(
     config,
     ancestorConfigs,
     originalNodeData,
-    itemId,
+    index,
+    committed,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
   if (!originalNodeData) originalNodeData = createDefault(config, {})
-  useNodeData(config, originalNodeData)
+  useNodeData(config, ancestorConfigs, originalNodeData, committed, index)
   return (
     <div className={s.objectNodeRenderer}>
       {config.children && config.children.map((childConfig, i) => {
         const childRendererRegistration = nodeRendererStore.get(childConfig.type)
         if (!childRendererRegistration) return null
         const ChildTypeRenderer = childRendererRegistration.renderer
-        const childJsonPointer = `${itemId}/${childConfig.id}`
         return (
           <DefaultPropertyWrapper config={childConfig} key={childConfig.id}>
             <ChildTypeRenderer
-              itemId={childJsonPointer}
+              committed={committed}
               config={childConfig}
               ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
               originalNodeData={originalNodeData[childConfig.id]}
               options={childRendererRegistration.options}
-              ErrorDisplayComponent={ErrorDisplayComponent}/>
+              ErrorDisplayComponent={ErrorDisplayComponent} />
           </DefaultPropertyWrapper>
         )
       })}

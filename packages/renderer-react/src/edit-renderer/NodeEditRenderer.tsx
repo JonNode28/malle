@@ -98,7 +98,7 @@ export default function NodeEditRenderer(
         {config.description && <p>{config.description}</p>}
 
         <TypeRenderer
-            itemId={nanoid()}
+            committed={true}
             config={config}
             ancestorConfigs={[]}
             originalNodeData={startingData}

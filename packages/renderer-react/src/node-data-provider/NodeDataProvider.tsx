@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { NodeConfig } from "microo-core";
 import { nanoid } from "nanoid";
+import useRecoilArrayNodeData from "./useRecoilArrayNodeData";
 
 interface DataProviderProps {
   instanceId: string | number,
   nodeDataHook: NodeDataHook,
+  arrayNodeDataHook: ArrayNodeDataHook,
   children: any
 }
 
@@ -12,58 +14,73 @@ export interface NodeDataHook {
   (
     instanceId: string | number,
     config: NodeConfig,
+    ancestorConfig: Array<NodeConfig>,
     originalNodeData: any,
-    storeId?: string,
+    committed: boolean,
+    index?: number,
   ): [ any, (value: any) => void ]
 }
-
-const Context = createContext<{ instanceId: string | number, nodeDataHook: NodeDataHook } | null>(null);
-
-export function useNodeData<D>(
-  config: NodeConfig, 
-  originalNodeData: D,
-  storeId?: string
-): [D, (nodeData: D) => void] {
-  const ctx = useContext(Context);
-  if (!ctx || !ctx.nodeDataHook) throw new Error(`Couldn't find a NodeDataHook to use.`);
-  return ctx.nodeDataHook(ctx.instanceId, config, originalNodeData, storeId);
+export interface ArrayNodeDataHook {
+  (
+    instanceId: string | number,
+    config: NodeConfig,
+    ancestorConfigs: Array<NodeConfig>,
+    originalNodeData: Array<any>,
+    committed: boolean,
+    index?: number,
+  ): {
+    childIds: Array<string>,
+    removeItem: (index: number) => void,
+    commitItem: (index: number) => void
+  }
 }
 
-export function useArrayNodeIds<D>(
-  parentConfig: NodeConfig,
-  originalChildData: Array<D>
+const Context = createContext<{
+  instanceId: string | number,
+  nodeDataHook: NodeDataHook,
+  arrayNodeDataHook: ArrayNodeDataHook
+} | null>(null);
+
+export function useNodeData<D>(
+  config: NodeConfig,
+  ancestorConfigs: Array<NodeConfig>,
+  originalNodeData: D,
+  committed: boolean = true,
+  index?: number
+): [D, (nodeData: D) => void] {
+  const ctx = useContext(Context);
+  if (!ctx || !ctx.nodeDataHook) throw new Error(`Couldn't find a NodeDataHook or context to use.`);
+  return ctx.nodeDataHook(ctx.instanceId, config, ancestorConfigs, originalNodeData, committed, index);
+}
+
+export function useArrayNodeData<D>(
+  config: NodeConfig,
+  ancestorConfigs: Array<NodeConfig>,
+  originalChildData: Array<D>,
+  committed: boolean,
+  index?: number,
 ): {
   childIds: Array<string>,
-  removeItem: (id: string) => void,
-  addItem: (id: string, index?: number) => void
+  removeItem: (index: number) => void,
+  commitItem: (index: number) => void
 } {
-  if(!Array.isArray(originalChildData)) throw new Error(`'${parentConfig.type}' renderer only works with arrays`)
-  const originalChildIds = useMemo<Array<string>>(() => {
-    return originalChildData.map(() => nanoid())
-  }, [])
-  const [ childIds, setChildMetaData ] = useNodeData(parentConfig, originalChildIds)
-  return {
-    childIds,
-    removeItem: (id: string) => {
-      setChildMetaData(childIds.filter(childId => childId !== id))
-    },
-    addItem: (id, index?) => {
-      const clone = [...childIds]
-      clone.splice(index || childIds.length, 0, id)
-      setChildMetaData(clone)
-    }
-  }
+  const ctx = useContext(Context);
+  if (!ctx || !ctx.arrayNodeDataHook) throw new Error(`Couldn't find an ArrayNodeDataHook or context to use.`);
+  if(!Array.isArray(originalChildData)) throw new Error(`'${config.type}' renderer only works with arrays`)
+
+  return ctx.arrayNodeDataHook(ctx.instanceId, config, ancestorConfigs, originalChildData, committed, index)
 }
 
 export default function NodeDataProvider(
   {
     instanceId,
     nodeDataHook,
+    arrayNodeDataHook,
     children
   }: DataProviderProps
 ) {
   return (
-    <Context.Provider value={{ instanceId, nodeDataHook }}>
+    <Context.Provider value={{ instanceId, nodeDataHook, arrayNodeDataHook }}>
       {children}
     </Context.Provider>
   );

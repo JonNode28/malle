@@ -8,11 +8,12 @@ import { NodeValidationHook } from "./NodeValidationProvider";
 export const useRecoilNodeValidation: NodeValidationHook = (
   instanceId: string | number,
   config: NodeConfig,
-  originalNodeData: any,
-  storeId?: string
+  index?: number
 ) => {
-  const propDataState = propDataStore.get(instanceId, config, originalNodeData, storeId)
-
+  return []
+  if(!propDataStore.has(instanceId, config, index)) return []
+  const propDataState = propDataStore.get(instanceId, config, index)
+  if(!propDataState) return []
   const propData = useRecoilValue(propDataState)
 
   const onChangeValidators = useMemo(() => {

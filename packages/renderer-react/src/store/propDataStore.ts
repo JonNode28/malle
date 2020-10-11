@@ -5,88 +5,160 @@ import { nanoid } from "nanoid";
 interface PropDataStateMeta {
   state: RecoilState<any>,
   deleted: boolean,
+  committed: boolean,
   config: NodeConfig,
   default: any
 }
 
-const propDataStoreStateMetaMap: Map<string, PropDataStateMeta>
-  = new Map<string, PropDataStateMeta>()
-const propDataInstanceConfigStateMetaMap: Map<string | number, Map<NodeConfig, PropDataStateMeta>>
-  = new Map<string | number, Map<NodeConfig, PropDataStateMeta>>()
+interface Node {
+  meta: PropDataStateMeta | null,
+  children: Array<PropDataStateMeta> | null
+}
+
+const propDataInstanceConfigStateMetaMap: Map<string | number, Map<NodeConfig, Node>>
+  = new Map<string | number, Map<NodeConfig, Node>>()
 
 export const get = (
   instanceId: string | number,
   config: NodeConfig,
-  originalValue: any,
-  storeId?: string
+  index?: number
 ): RecoilState<any> => {
-  if(!has(instanceId, config, storeId)){
-    console.log(`Creating state for ${storeId || config.id}`)
-    set(instanceId, config, originalValue, storeId)
+  if(!has(instanceId, config, index)) throw new Error('Missing state')
+  const configStateMetaNode = getConfigStateMeta(instanceId, config)
+  if(!configStateMetaNode) throw new Error('Should never happen')
+  if(index === undefined){
+    if(!configStateMetaNode.meta) throw new Error('No meta')
+    return configStateMetaNode.meta.state
+  } else {
+    if(!configStateMetaNode.children || !configStateMetaNode.children.length) throw new Error('No children')
+    console.log(`Get ${instanceId}/${config.id}/[${index}]`)
+    return configStateMetaNode.children[index].state
   }
-  if (typeof storeId !== 'undefined') {
-    const state = getByStoreId(storeId)
-    if(!state) throw new Error('Empty state. Should never happen')
-    return state
-  }
-  return getByConfig(instanceId, config)
 }
-export const getByConfig = (instanceId: string | number, config: NodeConfig) => {
-  return getMeta(instanceId, config)?.state
+
+export const getAll = (
+  instanceId: string | number,
+  config: NodeConfig
+): Array<RecoilState<any>> => {
+  if(!has(instanceId, config)) throw Error(`No state found for ${instanceId}/${config.id}`)
+  const configStateMetaNode = getConfigStateMeta(instanceId, config)
+  if(!configStateMetaNode || !configStateMetaNode.children || !configStateMetaNode.children.length) throw new Error('No children')
+  return configStateMetaNode.children
+    .filter(meta => meta.committed)
+    .map(meta => meta.state)
 }
-export const getByStoreId = (storeId: string) => {
-  if (!storeId) throw new Error('Store ID is required')
-  let meta = propDataStoreStateMetaMap.get(storeId)
-  if (!meta) return null
-  return meta.state
-}
-export const set = (instanceId: string | number, config: NodeConfig, defaultValue?: any, storeId?: string) => {
+
+export const set = (
+  instanceId: string | number,
+  config: NodeConfig,
+  committed: boolean,
+  originalValue?: any,
+) => {
   if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
   const meta = {
     state: atom({
-      key: storeId || nanoid(),
-      default: defaultValue
+      key: nanoid(),
+      default: originalValue
     }),
     deleted: false,
+    committed,
     config,
-    default: defaultValue
+    default: originalValue
   }
-  let instanceConfigStateMetaMap = propDataInstanceConfigStateMetaMap.get(instanceId)
-  if (!instanceConfigStateMetaMap) {
-    instanceConfigStateMetaMap = new Map<NodeConfig, PropDataStateMeta>()
-    propDataInstanceConfigStateMetaMap.set(instanceId, instanceConfigStateMetaMap)
+  let configStateMeta = ensureGetConfigStateMetaNode(instanceId, config)
+  configStateMeta.meta = meta
+}
+export const setItem = (
+  instanceId: string | number,
+  parentConfig: NodeConfig,
+  itemConfig: NodeConfig,
+  committed: boolean,
+  index?: number,
+  originalValue?: any,
+) => {
+  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
+  console.log(`Set ${instanceId}/${parentConfig.id}/[${index}] = ${originalValue} (committed: ${committed})`)
+  const meta = {
+    state: atom({
+      key: nanoid(),
+      default: originalValue
+    }),
+    deleted: false,
+    committed,
+    config: itemConfig,
+    default: originalValue
   }
-  instanceConfigStateMetaMap.set(config, meta)
-  if (storeId) {
-    propDataStoreStateMetaMap.set(storeId, meta)
+  if(!has(instanceId, parentConfig)) throw new Error('No meta. Array should be set using set() before child operations are performed')
+  let parentConfigStateMetaNode = ensureGetConfigStateMetaNode(instanceId, parentConfig)
+  if(!parentConfigStateMetaNode.children) parentConfigStateMetaNode.children = []
+  parentConfigStateMetaNode.children[index || parentConfigStateMetaNode.children.length] = meta
+}
+
+export const commitItem = (
+  instanceId: string | number,
+  parentConfig: NodeConfig,
+  index: number
+) => {
+  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
+  console.log(`Committing ${instanceId}/${parentConfig.id}/[${index}]`)
+  if(!has(instanceId, parentConfig)) throw new Error('No meta. Array should be set using set() before child operations are performed')
+  let parentConfigStateMetaNode = ensureGetConfigStateMetaNode(instanceId, parentConfig)
+  if(!parentConfigStateMetaNode.children) throw new Error('No children')
+  if(!parentConfigStateMetaNode.children[index]) throw new Error(`No child at ${index} to commit`)
+  parentConfigStateMetaNode.children[index].committed = true
+}
+
+export const has = (instanceId: string | number, config: NodeConfig, index?: number): boolean => {
+  let instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
+  if (!instanceConfigStateMeta) return false
+  let configStateMeta = instanceConfigStateMeta.get(config)
+  if(!configStateMeta) return false
+  if(index === undefined){
+    return !!configStateMeta.meta
+  } else {
+    return !!(configStateMeta.children && configStateMeta.children[index])
   }
 }
-export const has = (instanceId: string | number, config: NodeConfig, storeId?: string): boolean => {
-  if (storeId) return propDataStoreStateMetaMap.has(storeId)
-  const instance = propDataInstanceConfigStateMetaMap.get(instanceId)
-  if (!instance) return false
-  return instance.has(config)
+
+export const removeItem = (instanceId: string | number, parentConfig: NodeConfig, index: number) => {
+  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
+  if(!parentConfig) throw new Error('Parent config is required')
+  let configStateMeta = ensureGetConfigStateMetaNode(instanceId, parentConfig)
+  if(!configStateMeta.children) return
+  configStateMeta.children.splice(index, 1)
 }
-export const remove = (storeId: string) => {
-  const meta = propDataStoreStateMetaMap.get(storeId)
-  if (meta) meta.deleted = true
+
+const getConfigStateMeta = (instanceId: string | number, config: NodeConfig) => {
+  const instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
+  if(!instanceConfigStateMeta) return null
+  const configStateMeta = instanceConfigStateMeta.get(config)
+  if(configStateMeta === undefined) return null
+  return configStateMeta
+}
+
+const ensureGetConfigStateMetaNode = (instanceId: string | number, config: NodeConfig) => {
+  let instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
+  if (!instanceConfigStateMeta) {
+    instanceConfigStateMeta = new Map<NodeConfig, Node>()
+    propDataInstanceConfigStateMetaMap.set(instanceId, instanceConfigStateMeta)
+  }
+  let configStateMeta = instanceConfigStateMeta.get(config)
+  if(!configStateMeta){
+    configStateMeta = {
+      meta: null,
+      children: []
+    }
+    instanceConfigStateMeta.set(config, configStateMeta)
+  }
+  return configStateMeta
 }
 
 export default {
   get,
-  getByConfig,
-  getByStoreId,
+  getAll,
   set,
+  setItem,
+  commitItem,
   has,
-  remove,
-}
-
-function getMeta(instanceId: string | number, config: NodeConfig) {
-  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
-  if (!config) throw new Error('config is required')
-  const instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
-  if (!instanceConfigStateMeta) throw new Error(`Instance '${instanceId}' doesn't exist in store`)
-  const meta = instanceConfigStateMeta.get(config)
-  if (!meta) throw new Error(`Instance '${instanceId}' doesn't have state for '${config.id}'`)
-  return meta
+  removeItem
 }

@@ -1,16 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NodeConfig, NodeRendererProps } from "microo-core";
 import { nodeRendererStore, createDefault } from "malle-renderer-react";
-import { nanoid } from 'nanoid'
-import { useArrayNodeIds } from "malle-renderer-react";
 import s from './ListNodeRenderer.pcss'
+import { useArrayNodeData } from "malle-renderer-react";
+import { nanoid } from "nanoid";
 
 export default function ListNodeRenderer(
   {
     config,
     ancestorConfigs,
     originalNodeData,
-    itemId,
+    committed,
+    index,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
@@ -28,26 +29,20 @@ export default function ListNodeRenderer(
   const {
     childIds,
     removeItem,
-    addItem,
-  } = useArrayNodeIds(config, originalNodeData)
+    commitItem,
+  } = useArrayNodeData(config, ancestorConfigs, originalNodeData, committed, index)
 
-  const [ newItemId, setNewItemId ] = useState<string>()
-
-  useEffect(() => {
-    setNewItemId(nanoid())
-  }, [])
-  if(!newItemId) return null
   return (
     <div className={s.listNodeRenderer}>
       <div className={s.items}>
         {childIds && childIds.map((childId: any, i: number) => {
-          const childItemId = `${itemId}/${childId}`
           return (
             <DefaultExistingItemWrapper key={childId} onRemove={() => {
-              removeItem(childId)
+              removeItem(i)
             }}>
               <ChildTypeRenderer
-                itemId={childItemId}
+                index={i}
+                committed={committed}
                 originalNodeData={originalNodeData ? originalNodeData[i] : undefined}
                 config={childConfig}
                 ancestorConfigs={childAncestorConfigs}
@@ -57,11 +52,11 @@ export default function ListNodeRenderer(
         })}
       </div>
       <DefaultNewItemWrapper config={config} onAdd={() => {
-        addItem(newItemId)
-        setNewItemId(nanoid())
+        commitItem(childIds.length)
       }}>
         <ChildTypeRenderer
-          itemId={`${itemId}/${newItemId}`}
+          index={childIds.length}
+          committed={false}
           config={childConfig}
           ancestorConfigs={childAncestorConfigs}
           ErrorDisplayComponent={ErrorDisplayComponent} />
