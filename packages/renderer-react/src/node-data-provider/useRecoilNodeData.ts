@@ -5,20 +5,16 @@ import { useRecoilState } from "recoil";
 
 /**
  * TODO: Split out into separate recoil package if successful
- * @param instanceId
+ * @param path
  * @param config
- * @param ancestorConfigs
  * @param originalNodeData
  * @param committed
- * @param path
  */
 export const useRecoilNodeData: NodeDataHook = (
-  instanceId,
+  path,
   config,
-  ancestorConfigs,
   originalNodeData,
-  committed = true,
-  path,) => {
+  committed = true,) => {
 
   let propDataState;
   if(!propDataStore.has(path)){

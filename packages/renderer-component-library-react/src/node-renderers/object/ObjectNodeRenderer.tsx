@@ -7,7 +7,6 @@ import s from './ObjectNodeRenderer.pcss'
 export default function ObjectNodeRenderer(
   {
     config,
-    ancestorConfigs,
     originalNodeData,
     path,
     committed,
@@ -15,7 +14,7 @@ export default function ObjectNodeRenderer(
   }: NodeRendererProps
 ) {
   if (!originalNodeData) originalNodeData = createDefault(config, {})
-  useNodeData(config, ancestorConfigs, originalNodeData, committed, path)
+  useNodeData(path, config, originalNodeData, committed)
   return (
     <div className={s.objectNodeRenderer}>
       {config.children && config.children.map((childConfig, i) => {
@@ -28,7 +27,6 @@ export default function ObjectNodeRenderer(
               committed={committed}
               config={childConfig}
               path={[ ...path, childConfig.id ]}
-              ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
               originalNodeData={originalNodeData[childConfig.id]}
               options={childRendererRegistration.options}
               ErrorDisplayComponent={ErrorDisplayComponent} />

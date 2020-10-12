@@ -101,7 +101,6 @@ export default function NodeEditRenderer(
             committed={true}
             path={[config.id, editingId || 'new']}
             config={config}
-            ancestorConfigs={[]}
             originalNodeData={startingData}
             options={registration.options}
             ErrorDisplayComponent={ErrorDisplayComponent}

@@ -8,7 +8,6 @@ import { nanoid } from "nanoid";
 export default function ListNodeRenderer(
   {
     config,
-    ancestorConfigs,
     originalNodeData,
     committed,
     path,
@@ -24,13 +23,12 @@ export default function ListNodeRenderer(
   const childRendererRegistration = nodeRendererStore.get(childConfig.type)
   if (!childRendererRegistration) return null
   const ChildTypeRenderer = childRendererRegistration.renderer
-  const childAncestorConfigs = [ ...ancestorConfigs, config ]
 
   const {
     childIds,
     removeItem,
     commitItem,
-  } = useArrayNodeData(config, ancestorConfigs, originalNodeData, committed, path)
+  } = useArrayNodeData(path, config, originalNodeData, committed)
 
   return (
     <div className={s.listNodeRenderer}>
@@ -45,7 +43,6 @@ export default function ListNodeRenderer(
                 committed={committed}
                 originalNodeData={originalNodeData ? originalNodeData[i] : undefined}
                 config={childConfig}
-                ancestorConfigs={childAncestorConfigs}
                 ErrorDisplayComponent={ErrorDisplayComponent} />
             </DefaultExistingItemWrapper>
           )
@@ -58,7 +55,6 @@ export default function ListNodeRenderer(
           path={[ ...path, childIds.length ]}
           committed={false}
           config={childConfig}
-          ancestorConfigs={childAncestorConfigs}
           ErrorDisplayComponent={ErrorDisplayComponent} />
       </DefaultNewItemWrapper>
     </div>

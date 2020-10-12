@@ -8,20 +8,16 @@ import useRecoilNodeData from "./useRecoilNodeData";
 
 /**
  * TODO: Split out into separate recoil package if successful
- * @param instanceId
+ * @param path
  * @param config
- * @param ancestorConfigs
  * @param originalNodeData
  * @param committed
- * @param path
  */
 export const useRecoilArrayNodeData: ArrayNodeDataHook = (
-  instanceId,
+  path,
   config,
-  ancestorConfigs,
   originalNodeData,
   committed = true,
-  path,
 ) => {
 
   const originalChildIds = useMemo<Array<string>>(() => {
@@ -30,7 +26,7 @@ export const useRecoilArrayNodeData: ArrayNodeDataHook = (
     })
   }, [])
 
-  const [ childIds, setChildIds ] = useRecoilNodeData(instanceId, config, ancestorConfigs, originalChildIds, committed, path)
+  const [ childIds, setChildIds ] = useRecoilNodeData(path, config, originalChildIds, committed)
 
 
 
