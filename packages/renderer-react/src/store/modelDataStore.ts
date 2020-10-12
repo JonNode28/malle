@@ -24,10 +24,12 @@ export default {
           if(nodeRenderer.jsonType === JsonType.ARRAY){
             if(!nodeConfig.children) throw new Error(`'${nodeConfig.id}' seems to be an array type but has no child config. At least one is required.`)
             const nodeChildStates = propDataStore.getAll(path)
-            return (nodeChildStates).map(childState => {
-              if(!childState) throw new Error('Missing state. Should not happen')
-              return get(childState)
-            })
+            const childData: Array<any> = nodeChildStates
+              .map((childState, i) => {
+                if(!childState) throw new Error('Missing state. Should not happen')
+                return getNodeData([ ...path, i ])
+              })
+            return childData
           } else if(nodeRenderer.jsonType === JsonType.OBJECT){
             if(!nodeConfig.children) throw new Error(`'${nodeConfig.id}' seems to be an object type but has no child config. At least one is required.`)
             return nodeConfig.children?.reduce<{ [key: string]: any }>((a, c) => {
