@@ -1,6 +1,6 @@
 import {
   NodeConfig,
-  ErrorRendererProps
+  ErrorRendererProps, PathSegment
 } from "./";
 import { ComponentType } from "react";
 
@@ -19,9 +19,9 @@ export interface NodeRendererProps {
    */
   committed: boolean
   /**
-   * Used for enumerable items
+   * To track current location in graph
    */
-  index?: number
+  path: Array<PathSegment>
 
   ErrorDisplayComponent: ComponentType<ErrorRendererProps> | null
 }

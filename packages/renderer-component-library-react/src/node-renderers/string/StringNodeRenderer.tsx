@@ -11,14 +11,14 @@ function StringNodeRenderer(
     ancestorConfigs,
     originalNodeData,
     committed = true,
-    index
+    path
   }: NodeRendererProps
 ){
   const isNew = typeof originalNodeData === 'undefined'
   if(isNew) originalNodeData = createDefault(config, '')
   const [ touched, setTouched ] = useState(false)
-  const [ nodeData, setNodeData ] = useNodeData(config, ancestorConfigs, originalNodeData, committed, index)
-  const validationResults = useNodeValidation(config, index)
+  const [ nodeData, setNodeData ] = useNodeData(config, ancestorConfigs, originalNodeData, committed, path)
+  const validationResults = useNodeValidation(path)
   return (
     <>
       <input

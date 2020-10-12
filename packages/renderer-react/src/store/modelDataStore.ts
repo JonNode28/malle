@@ -1,6 +1,6 @@
 import { RecoilValueReadOnly, selector } from "recoil";
 import propDataStore from "./propDataStore";
-import { JsonType, NodeConfig } from "microo-core";
+import { JsonType, NodeConfig, PathSegment } from "microo-core";
 import * as nodeRendererStore from "./nodeRendererStore";
 
 const modelDataMap: { [key: string]: RecoilValueReadOnly<any> } = {};
@@ -17,12 +17,13 @@ export default {
     modelDataMap[key] = modelDataSelector = selector<any>({
       key: 'ModelDataSelector',
       get: ({ get }) => {
-        function getNodeData(nodeConfig: NodeConfig){
+        function getNodeData(path: Array<PathSegment>){
+          const nodeConfig = propDataStore.getConfig(path)
           const nodeRenderer = nodeRendererStore.get(nodeConfig.type)
           if(!nodeRenderer) throw new Error(`No renderer for '${nodeConfig.id}' node of type '${nodeConfig.type}'`)
           if(nodeRenderer.jsonType === JsonType.ARRAY){
             if(!nodeConfig.children) throw new Error(`'${nodeConfig.id}' seems to be an array type but has no child config. At least one is required.`)
-            const nodeChildStates = propDataStore.getAll(instanceId, nodeConfig)
+            const nodeChildStates = propDataStore.getAll(path)
             return (nodeChildStates).map(childState => {
               if(!childState) throw new Error('Missing state. Should not happen')
               return get(childState)
@@ -30,16 +31,15 @@ export default {
           } else if(nodeRenderer.jsonType === JsonType.OBJECT){
             if(!nodeConfig.children) throw new Error(`'${nodeConfig.id}' seems to be an object type but has no child config. At least one is required.`)
             return nodeConfig.children?.reduce<{ [key: string]: any }>((a, c) => {
-              a[c.id] = getNodeData(c)
+              a[c.id] = getNodeData([ ...path, c.id ])
               return a
             }, {})
           } else {
-            const nodeState = propDataStore.get(instanceId, nodeConfig)
-            if(!nodeState) throw new Error(`No state for node ${instanceId}/${nodeConfig.id}`)
+            const nodeState = propDataStore.get(path)
             return get(nodeState)
           }
         }
-        return getNodeData(config)
+        return getNodeData([ config.id, instanceId ])
       }
     });
 

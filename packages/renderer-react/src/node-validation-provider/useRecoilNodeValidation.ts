@@ -1,20 +1,19 @@
 import propDataStore from "../store/propDataStore";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useEffect, useMemo, useState } from "react";
-import { NodeConfig, ValidationExecutionStage, ValidationResult } from "microo-core";
+import { NodeConfig, PathSegment, ValidationExecutionStage, ValidationResult } from "microo-core";
 import { NodeValidator } from "microo-core/dist/NodeValidator";
 import { NodeValidationHook } from "./NodeValidationProvider";
 
 export const useRecoilNodeValidation: NodeValidationHook = (
-  instanceId: string | number,
-  config: NodeConfig,
-  index?: number
+  path: Array<PathSegment>
 ) => {
   return []
-  if(!propDataStore.has(instanceId, config, index)) return []
-  const propDataState = propDataStore.get(instanceId, config, index)
+  if(!propDataStore.has(path)) return []
+  const propDataState = propDataStore.get(path)
   if(!propDataState) return []
   const propData = useRecoilValue(propDataState)
+  const config = propDataStore.getConfig(path)
 
   const onChangeValidators = useMemo(() => {
     if(!config.validation) return null

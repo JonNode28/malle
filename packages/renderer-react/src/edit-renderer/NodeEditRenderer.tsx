@@ -99,6 +99,7 @@ export default function NodeEditRenderer(
 
         <TypeRenderer
             committed={true}
+            path={[config.id, editingId || 'new']}
             config={config}
             ancestorConfigs={[]}
             originalNodeData={startingData}

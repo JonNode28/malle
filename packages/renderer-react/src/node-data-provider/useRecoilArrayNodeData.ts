@@ -1,4 +1,4 @@
-import { NodeConfig } from "microo-core";
+import { NodeConfig, PathSegment } from "microo-core";
 import { ArrayNodeDataHook } from "./NodeDataProvider";
 import propDataStore from "../store/propDataStore";
 import { useRecoilState } from "recoil";
@@ -13,7 +13,7 @@ import useRecoilNodeData from "./useRecoilNodeData";
  * @param ancestorConfigs
  * @param originalNodeData
  * @param committed
- * @param index
+ * @param path
  */
 export const useRecoilArrayNodeData: ArrayNodeDataHook = (
   instanceId,
@@ -21,7 +21,7 @@ export const useRecoilArrayNodeData: ArrayNodeDataHook = (
   ancestorConfigs,
   originalNodeData,
   committed = true,
-  index?
+  path,
 ) => {
 
   const originalChildIds = useMemo<Array<string>>(() => {
@@ -30,7 +30,7 @@ export const useRecoilArrayNodeData: ArrayNodeDataHook = (
     })
   }, [])
 
-  const [ childIds, setChildIds ] = useRecoilNodeData(instanceId, config, ancestorConfigs, originalChildIds, committed, index)
+  const [ childIds, setChildIds ] = useRecoilNodeData(instanceId, config, ancestorConfigs, originalChildIds, committed, path)
 
 
 
@@ -39,13 +39,15 @@ export const useRecoilArrayNodeData: ArrayNodeDataHook = (
     removeItem: (index: number) => {
       const clone = [...childIds]
       clone.splice(index, 1)
-      propDataStore.removeItem(instanceId, config, index)
+      const childPath = [ ...path, index ]
+      propDataStore.remove(childPath)
       setChildIds(clone)
     },
     commitItem: (index: number) => {
       const clone = [...childIds]
       clone.splice(index, 0, nanoid())
-      propDataStore.commitItem(instanceId, config, index)
+      const childPath = [ ...path, index ]
+      propDataStore.commitItem(childPath)
       setChildIds(clone)
     }
   }

@@ -9,13 +9,13 @@ export default function ObjectNodeRenderer(
     config,
     ancestorConfigs,
     originalNodeData,
-    index,
+    path,
     committed,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
   if (!originalNodeData) originalNodeData = createDefault(config, {})
-  useNodeData(config, ancestorConfigs, originalNodeData, committed, index)
+  useNodeData(config, ancestorConfigs, originalNodeData, committed, path)
   return (
     <div className={s.objectNodeRenderer}>
       {config.children && config.children.map((childConfig, i) => {
@@ -27,6 +27,7 @@ export default function ObjectNodeRenderer(
             <ChildTypeRenderer
               committed={committed}
               config={childConfig}
+              path={[ ...path, childConfig.id ]}
               ancestorConfigs={[ ...ancestorConfigs, childConfig ]}
               originalNodeData={originalNodeData[childConfig.id]}
               options={childRendererRegistration.options}

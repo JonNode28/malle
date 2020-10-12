@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { NodeConfig } from "microo-core";
+import { NodeConfig, PathSegment } from "microo-core";
 import { nanoid } from "nanoid";
 import useRecoilArrayNodeData from "./useRecoilArrayNodeData";
 
@@ -17,7 +17,7 @@ export interface NodeDataHook {
     ancestorConfig: Array<NodeConfig>,
     originalNodeData: any,
     committed: boolean,
-    index?: number,
+    path: Array<PathSegment>,
   ): [ any, (value: any) => void ]
 }
 export interface ArrayNodeDataHook {
@@ -27,7 +27,7 @@ export interface ArrayNodeDataHook {
     ancestorConfigs: Array<NodeConfig>,
     originalNodeData: Array<any>,
     committed: boolean,
-    index?: number,
+    path: Array<PathSegment>,
   ): {
     childIds: Array<string>,
     removeItem: (index: number) => void,
@@ -46,11 +46,11 @@ export function useNodeData<D>(
   ancestorConfigs: Array<NodeConfig>,
   originalNodeData: D,
   committed: boolean = true,
-  index?: number
+  path: Array<PathSegment>,
 ): [D, (nodeData: D) => void] {
   const ctx = useContext(Context);
   if (!ctx || !ctx.nodeDataHook) throw new Error(`Couldn't find a NodeDataHook or context to use.`);
-  return ctx.nodeDataHook(ctx.instanceId, config, ancestorConfigs, originalNodeData, committed, index);
+  return ctx.nodeDataHook(ctx.instanceId, config, ancestorConfigs, originalNodeData, committed, path);
 }
 
 export function useArrayNodeData<D>(
@@ -58,7 +58,7 @@ export function useArrayNodeData<D>(
   ancestorConfigs: Array<NodeConfig>,
   originalChildData: Array<D>,
   committed: boolean,
-  index?: number,
+  path: Array<PathSegment>,
 ): {
   childIds: Array<string>,
   removeItem: (index: number) => void,
@@ -68,7 +68,7 @@ export function useArrayNodeData<D>(
   if (!ctx || !ctx.arrayNodeDataHook) throw new Error(`Couldn't find an ArrayNodeDataHook or context to use.`);
   if(!Array.isArray(originalChildData)) throw new Error(`'${config.type}' renderer only works with arrays`)
 
-  return ctx.arrayNodeDataHook(ctx.instanceId, config, ancestorConfigs, originalChildData, committed, index)
+  return ctx.arrayNodeDataHook(ctx.instanceId, config, ancestorConfigs, originalChildData, committed, path)
 }
 
 export default function NodeDataProvider(

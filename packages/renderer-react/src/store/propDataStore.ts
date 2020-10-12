@@ -1,5 +1,5 @@
 import { atom, RecoilState } from "recoil";
-import { NodeConfig } from "microo-core";
+import { NodeConfig, PathSegment } from "microo-core";
 import { nanoid } from "nanoid";
 
 interface PropDataStateMeta {
@@ -11,51 +11,47 @@ interface PropDataStateMeta {
 }
 
 interface Node {
+  id: string | null,
   meta: PropDataStateMeta | null,
-  children: Array<PropDataStateMeta> | null
+  children: Array<Node> | null
 }
 
-const propDataInstanceConfigStateMetaMap: Map<string | number, Map<NodeConfig, Node>>
-  = new Map<string | number, Map<NodeConfig, Node>>()
+const propStateNodeTree: Array<Node> = []
 
 export const get = (
-  instanceId: string | number,
-  config: NodeConfig,
-  index?: number
+  path: Array<PathSegment>
 ): RecoilState<any> => {
-  if(!has(instanceId, config, index)) throw new Error('Missing state')
-  const configStateMetaNode = getConfigStateMeta(instanceId, config)
-  if(!configStateMetaNode) throw new Error('Should never happen')
-  if(index === undefined){
-    if(!configStateMetaNode.meta) throw new Error('No meta')
-    return configStateMetaNode.meta.state
-  } else {
-    if(!configStateMetaNode.children || !configStateMetaNode.children.length) throw new Error('No children')
-    console.log(`Get ${instanceId}/${config.id}/[${index}]`)
-    return configStateMetaNode.children[index].state
-  }
+  const pathNode = getPathNode(path)
+  if(!pathNode.meta) throw new Error(`Couldn't find state at ${path.join('/')}`)
+  return pathNode.meta.state
 }
 
 export const getAll = (
-  instanceId: string | number,
-  config: NodeConfig
+  path: Array<PathSegment>
 ): Array<RecoilState<any>> => {
-  if(!has(instanceId, config)) throw Error(`No state found for ${instanceId}/${config.id}`)
-  const configStateMetaNode = getConfigStateMeta(instanceId, config)
-  if(!configStateMetaNode || !configStateMetaNode.children || !configStateMetaNode.children.length) throw new Error('No children')
-  return configStateMetaNode.children
-    .filter(meta => meta.committed)
-    .map(meta => meta.state)
+  const pathNode = getPathNode(path)
+  if(!pathNode.children) throw new Error(`Couldn't find child state at ${path.join('/')}`)
+  return Array.from(pathNode.children.values())
+    .filter(node => node.meta && node.meta.committed)
+    .map(node => node.meta?.state as RecoilState<any>)
+}
+
+export const getConfig = (path: Array<PathSegment>): NodeConfig => {
+  const pathNode = getPathNode(path)
+  if(!pathNode.meta) throw new Error(`Couldn't find state at ${path.join('/')}`)
+  return pathNode.meta.config
 }
 
 export const set = (
-  instanceId: string | number,
+  path: Array<PathSegment>,
   config: NodeConfig,
   committed: boolean,
-  originalValue?: any,
+  originalValue?: any
 ) => {
-  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
-  const meta = {
+  if(!path || !path.length) throw new Error('Path of at least one segment is required')
+  console.log(`Setting ${path.join('/')} = ${originalValue} [committed=${committed}`)
+  const node = getPathNode(path)
+  node.meta = {
     state: atom({
       key: nanoid(),
       default: originalValue
@@ -65,100 +61,77 @@ export const set = (
     config,
     default: originalValue
   }
-  let configStateMeta = ensureGetConfigStateMetaNode(instanceId, config)
-  configStateMeta.meta = meta
-}
-export const setItem = (
-  instanceId: string | number,
-  parentConfig: NodeConfig,
-  itemConfig: NodeConfig,
-  committed: boolean,
-  index?: number,
-  originalValue?: any,
-) => {
-  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
-  console.log(`Set ${instanceId}/${parentConfig.id}/[${index}] = ${originalValue} (committed: ${committed})`)
-  const meta = {
-    state: atom({
-      key: nanoid(),
-      default: originalValue
-    }),
-    deleted: false,
-    committed,
-    config: itemConfig,
-    default: originalValue
-  }
-  if(!has(instanceId, parentConfig)) throw new Error('No meta. Array should be set using set() before child operations are performed')
-  let parentConfigStateMetaNode = ensureGetConfigStateMetaNode(instanceId, parentConfig)
-  if(!parentConfigStateMetaNode.children) parentConfigStateMetaNode.children = []
-  parentConfigStateMetaNode.children[index || parentConfigStateMetaNode.children.length] = meta
 }
 
 export const commitItem = (
-  instanceId: string | number,
-  parentConfig: NodeConfig,
-  index: number
+  path: Array<PathSegment>
 ) => {
-  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
-  console.log(`Committing ${instanceId}/${parentConfig.id}/[${index}]`)
-  if(!has(instanceId, parentConfig)) throw new Error('No meta. Array should be set using set() before child operations are performed')
-  let parentConfigStateMetaNode = ensureGetConfigStateMetaNode(instanceId, parentConfig)
-  if(!parentConfigStateMetaNode.children) throw new Error('No children')
-  if(!parentConfigStateMetaNode.children[index]) throw new Error(`No child at ${index} to commit`)
-  parentConfigStateMetaNode.children[index].committed = true
+  if(!path || !path.length) throw new Error('Path of at least one segment is required')
+  const node = getPathNode(path)
+  if(!node.meta) throw new Error('Node is missing meta. Should never happen')
+  node.meta.committed = true
 }
 
-export const has = (instanceId: string | number, config: NodeConfig, index?: number): boolean => {
-  let instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
-  if (!instanceConfigStateMeta) return false
-  let configStateMeta = instanceConfigStateMeta.get(config)
-  if(!configStateMeta) return false
-  if(index === undefined){
-    return !!configStateMeta.meta
-  } else {
-    return !!(configStateMeta.children && configStateMeta.children[index])
+export const has = (path: Array<string | number>): boolean => {
+  if(!path || !path.length) throw new Error('Path of at least one segment is required')
+  let node: Node | undefined = {
+    id: null,
+    meta: null,
+    children: propStateNodeTree
   }
-}
-
-export const removeItem = (instanceId: string | number, parentConfig: NodeConfig, index: number) => {
-  if (typeof instanceId === 'undefined' || instanceId === null) throw new Error('Instance ID is required')
-  if(!parentConfig) throw new Error('Parent config is required')
-  let configStateMeta = ensureGetConfigStateMetaNode(instanceId, parentConfig)
-  if(!configStateMeta.children) return
-  configStateMeta.children.splice(index, 1)
-}
-
-const getConfigStateMeta = (instanceId: string | number, config: NodeConfig) => {
-  const instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
-  if(!instanceConfigStateMeta) return null
-  const configStateMeta = instanceConfigStateMeta.get(config)
-  if(configStateMeta === undefined) return null
-  return configStateMeta
-}
-
-const ensureGetConfigStateMetaNode = (instanceId: string | number, config: NodeConfig) => {
-  let instanceConfigStateMeta = propDataInstanceConfigStateMetaMap.get(instanceId)
-  if (!instanceConfigStateMeta) {
-    instanceConfigStateMeta = new Map<NodeConfig, Node>()
-    propDataInstanceConfigStateMetaMap.set(instanceId, instanceConfigStateMeta)
-  }
-  let configStateMeta = instanceConfigStateMeta.get(config)
-  if(!configStateMeta){
-    configStateMeta = {
-      meta: null,
-      children: []
+  for(let segment of path){
+    if(typeof segment === 'string'){
+      node = node.children?.find(childNode => childNode.id === segment)
+    } else {
+      node = node.children ? node.children[segment] : undefined
     }
-    instanceConfigStateMeta.set(config, configStateMeta)
+
+    if(!node) return false
   }
-  return configStateMeta
+  return true
+}
+
+export const remove = (path: Array<string | number>) => {
+  if(!path || !path.length) throw new Error('Path of at least one segment is required')
+  const clonedPath = [...path]
+  const removeSegment = clonedPath.splice(-1, 1)[0]
+  const parentNode = getPathNode(clonedPath)
+  if(!parentNode) throw new Error(`Missing ancestor trying to set ${path.join('/')}`)
+  if(!parentNode.children) throw new Error(`No children at ${path.join('/')} to remove`)
+  typeof removeSegment === 'string' ?
+    parentNode.children = parentNode.children
+      .filter(childNode => childNode.meta?.config.id !== removeSegment) :
+    parentNode.children.splice(removeSegment, 1)
+}
+
+const getPathNode = (path: Array<string | number>) => {
+  return path.reduce<Node>((a, c) => {
+    if(!a) return a
+    if(!a.children) a.children = []
+    let node = typeof c === 'string' ?
+      a.children.find(node => node.id === c) :
+      a.children[c]
+
+    if(!node){
+      node = {
+        id: typeof c === 'string' ? c : null,
+        meta: null,
+        children: null
+      }
+      typeof c === 'string' ?
+        a.children.push(node) :
+        a.children[c] = node
+    }
+    return node
+  }, { id: null, meta: null, children: propStateNodeTree })
 }
 
 export default {
   get,
   getAll,
   set,
-  setItem,
   commitItem,
   has,
-  removeItem
+  remove,
+  getConfig
 }

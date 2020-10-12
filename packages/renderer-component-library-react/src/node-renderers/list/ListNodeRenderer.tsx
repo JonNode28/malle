@@ -11,7 +11,7 @@ export default function ListNodeRenderer(
     ancestorConfigs,
     originalNodeData,
     committed,
-    index,
+    path,
     ErrorDisplayComponent
   }: NodeRendererProps
 ) {
@@ -30,7 +30,7 @@ export default function ListNodeRenderer(
     childIds,
     removeItem,
     commitItem,
-  } = useArrayNodeData(config, ancestorConfigs, originalNodeData, committed, index)
+  } = useArrayNodeData(config, ancestorConfigs, originalNodeData, committed, path)
 
   return (
     <div className={s.listNodeRenderer}>
@@ -41,7 +41,7 @@ export default function ListNodeRenderer(
               removeItem(i)
             }}>
               <ChildTypeRenderer
-                index={i}
+                path={[ ...path, i ]}
                 committed={committed}
                 originalNodeData={originalNodeData ? originalNodeData[i] : undefined}
                 config={childConfig}
@@ -55,7 +55,7 @@ export default function ListNodeRenderer(
         commitItem(childIds.length)
       }}>
         <ChildTypeRenderer
-          index={childIds.length}
+          path={[ ...path, childIds.length ]}
           committed={false}
           config={childConfig}
           ancestorConfigs={childAncestorConfigs}

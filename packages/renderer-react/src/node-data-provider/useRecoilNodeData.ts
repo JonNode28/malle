@@ -10,7 +10,7 @@ import { useRecoilState } from "recoil";
  * @param ancestorConfigs
  * @param originalNodeData
  * @param committed
- * @param index
+ * @param path
  */
 export const useRecoilNodeData: NodeDataHook = (
   instanceId,
@@ -18,22 +18,14 @@ export const useRecoilNodeData: NodeDataHook = (
   ancestorConfigs,
   originalNodeData,
   committed = true,
-  index?) => {
+  path,) => {
 
   let propDataState;
-  if(index === undefined){
-    if(!propDataStore.has(instanceId, config)){
-      propDataStore.set(instanceId, config, committed, originalNodeData)
-    }
-    propDataState = propDataStore.get(instanceId, config)
-  } else {
-    if(!ancestorConfigs || !ancestorConfigs.length) throw new Error('Parent config is required when working with array data')
-    const parentConfig = ancestorConfigs[ancestorConfigs.length - 1]
-    if(!propDataStore.has(instanceId, parentConfig, index)){
-      propDataStore.setItem(instanceId, parentConfig, config, committed, index, originalNodeData)
-    }
-    propDataState = propDataStore.get(instanceId, parentConfig, index)
+  if(!propDataStore.has(path)){
+    propDataStore.set(path, config, committed, originalNodeData)
   }
+  propDataState = propDataStore.get(path)
+
   return useRecoilState(propDataState)
 }
 
