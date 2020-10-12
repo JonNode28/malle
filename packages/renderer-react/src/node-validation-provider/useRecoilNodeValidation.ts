@@ -8,7 +8,6 @@ import { NodeValidationHook } from "./NodeValidationProvider";
 export const useRecoilNodeValidation: NodeValidationHook = (
   path: Array<PathSegment>
 ) => {
-  return []
   if(!propDataStore.has(path)) return []
   const propDataState = propDataStore.get(path)
   if(!propDataState) return []
