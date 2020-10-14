@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import s from './StringNodeRenderer.pcss'
-import { NodeRendererProps } from "microo-core";
-import { createDefault } from "malle-renderer-react";
-import { useNodeData } from "malle-renderer-react";
-import { useNodeValidation } from "malle-renderer-react";
+import { NodeRendererProps } from "graphter-core";
+import { createDefault } from "graphter-renderer-react";
+import { useNodeData } from "graphter-renderer-react";
+import { useNodeValidation } from "graphter-renderer-react";
 
 function StringNodeRenderer(
   {

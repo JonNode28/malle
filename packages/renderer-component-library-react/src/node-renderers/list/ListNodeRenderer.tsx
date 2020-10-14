@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { NodeConfig, NodeRendererProps } from "microo-core";
-import { nodeRendererStore, createDefault } from "malle-renderer-react";
+import { NodeConfig, NodeRendererProps } from "graphter-core";
+import { nodeRendererStore, createDefault } from "graphter-renderer-react";
 import s from './ListNodeRenderer.pcss'
-import { useArrayNodeData } from "malle-renderer-react";
+import { useArrayNodeData } from "graphter-renderer-react";
 import { nanoid } from "nanoid";
 
 export default function ListNodeRenderer(

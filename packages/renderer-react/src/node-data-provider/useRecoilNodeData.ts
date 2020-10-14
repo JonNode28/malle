@@ -1,4 +1,4 @@
-import { NodeConfig } from "microo-core";
+import { NodeConfig } from "graphter-core";
 import { NodeDataHook } from "./NodeDataProvider";
 import propDataStore from "../store/propDataStore";
 import { useRecoilState } from "recoil";

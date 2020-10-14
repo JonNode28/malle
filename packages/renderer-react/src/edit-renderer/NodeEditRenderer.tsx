@@ -10,7 +10,7 @@ import {
   NodeConfig,
   ErrorRendererProps,
   NodeRendererRegistration,
-} from "microo-core"
+} from "graphter-core"
 import nodeRendererStore from "../store/nodeRendererStore"
 import { nanoid } from 'nanoid'
 import modelDataStore from "../store/modelDataStore";

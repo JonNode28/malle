@@ -1,6 +1,6 @@
 import React, {ComponentType} from "react";
 import s from './ErrorBoundary.pcss';
-import { ErrorRendererProps } from "microo-core";
+import { ErrorRendererProps } from "graphter-core";
 
 interface Props {
   children: any,

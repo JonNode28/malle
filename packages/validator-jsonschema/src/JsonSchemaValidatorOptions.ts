@@ -1,4 +1,4 @@
-import { ValidationErrorDisplayMode, ValidationExecutionStage } from "microo-core";
+import { ValidationErrorDisplayMode, ValidationExecutionStage } from "graphter-core";
 
 export interface JsonSchemaValidatorOptions {
   schema: object,

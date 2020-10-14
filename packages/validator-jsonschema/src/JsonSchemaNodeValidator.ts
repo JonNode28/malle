@@ -4,9 +4,9 @@ import {
   NodeConfig,
   ValidationExecutionStage,
   ValidationResult
-} from "microo-core";
+} from "graphter-core";
 import generateErrorMessage from "./generateErrorMessage";
-import { NodeValidator } from "microo-core/dist/NodeValidator";
+import { NodeValidator } from "graphter-core/dist/NodeValidator";
 
 export default class JsonSchemaNodeValidator extends JsonSchemaValidator implements NodeValidator{
   _options: JsonSchemaValidatorOptions

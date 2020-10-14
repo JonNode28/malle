@@ -84,8 +84,8 @@ module.exports = (_env, argv) => {
       extensions: [ '*', '.js', '.jsx' ],
       alias: {
         'react': path.resolve('./node_modules/react'), // Required so that Webpack doesn't try and use react from linked package in development
-        'recoil': path.resolve('./node_modules/malle-renderer-react/node_modules/recoil'),
-        'malle-renderer-react': path.resolve('./node_modules/malle-renderer-react/dist'),
+        'recoil': path.resolve('./node_modules/graphter-renderer-react/node_modules/recoil'),
+        'graphter-renderer-react': path.resolve('./node_modules/graphter-renderer-react/dist'),
         'safe-buffer': path.resolve('./node_modules/safe-buffer')
       }
     },

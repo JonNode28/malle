@@ -1,5 +1,5 @@
 import React, {createContext, useContext} from 'react';
-import { Service } from "microo-core";
+import { Service } from "graphter-core";
 
 interface DataProviderProps {
   service: Service,

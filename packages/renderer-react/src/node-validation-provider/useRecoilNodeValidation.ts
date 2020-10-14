@@ -1,8 +1,8 @@
 import propDataStore from "../store/propDataStore";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useEffect, useMemo, useState } from "react";
-import { NodeConfig, PathSegment, ValidationExecutionStage, ValidationResult } from "microo-core";
-import { NodeValidator } from "microo-core/dist/NodeValidator";
+import { NodeConfig, PathSegment, ValidationExecutionStage, ValidationResult } from "graphter-core";
+import { NodeValidator } from "graphter-core/dist/NodeValidator";
 import { NodeValidationHook } from "./NodeValidationProvider";
 
 export const useRecoilNodeValidation: NodeValidationHook = (

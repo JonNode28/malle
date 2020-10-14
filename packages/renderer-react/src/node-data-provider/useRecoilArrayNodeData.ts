@@ -1,4 +1,4 @@
-import { NodeConfig, PathSegment } from "microo-core";
+import { NodeConfig, PathSegment } from "graphter-core";
 import { ArrayNodeDataHook } from "./NodeDataProvider";
 import propDataStore from "../store/propDataStore";
 import { useRecoilState } from "recoil";

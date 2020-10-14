@@ -1,6 +1,6 @@
-import { ValidationExecutionStage } from "microo-core";
-import { JsonSchemaNodeValidator } from "microo-validator-jsonschema";
-import { AllValidationExecutionStages } from "microo-core";
+import { ValidationExecutionStage } from "graphter-core";
+import { JsonSchemaNodeValidator } from "graphter-validator-jsonschema";
+import { AllValidationExecutionStages } from "graphter-core";
 
 export default {
   id: 'page',

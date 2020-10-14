@@ -5,8 +5,8 @@ export default function Footer({}){
   return (
     <footer className={s.footer}>
       <ul>
-        <li><a href='https://github.com/JonNode28/malle' target='_blank'>Github</a></li>
-        <li>Copyright Scopic CMS 2020</li>
+        <li><a href='https://github.com/graphter/graphter' target='_blank'>Github</a></li>
+        <li>Copyright Graphter CMS 2020</li>
       </ul>
     </footer>
   )
