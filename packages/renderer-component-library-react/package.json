@@ -1,5 +1,5 @@
 {
-  "name": "graphter-renderer-component-library-react",
+  "name": "@graphter/renderer-component-library-react",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -21,13 +21,13 @@
   "peerDependencies": {
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "graphter-renderer-react": "file:../renderer-react",
+    "@graphter/renderer-react": "file:../renderer-react",
     "@types/recoil": "0.0.1",
     "recoil": "0.0.10"
   },
   "dependencies": {
     "@types/recoil": "0.0.1",
-    "graphter-renderer-react": "file:../renderer-react",
+    "@graphter/renderer-react": "file:../renderer-react",
     "recoil": "0.0.13"
   },
   "devDependencies": {
@@ -56,8 +56,8 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.5.4",
     "json-pointer": "^0.6.0",
-    "graphter-core": "file:../core",
-    "graphter-theme": "file:../theme",
+    "@graphter/core": "file:../core",
+    "@graphter/theme": "file:../theme",
     "nanoid": "^3.1.12",
     "postcss-css-variables": "^0.14.0",
     "postcss-import": "^12.0.1",

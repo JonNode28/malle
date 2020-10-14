@@ -1,6 +1,6 @@
 import ListNodeRenderer from "./ListNodeRenderer";
-import { NodeRendererRegistration } from "graphter-core";
-import { JsonType } from "graphter-core";
+import { NodeRendererRegistration } from "@graphter/core";
+import { JsonType } from "@graphter/core";
 
 export interface ListNodeRendererOptions {
   type: string

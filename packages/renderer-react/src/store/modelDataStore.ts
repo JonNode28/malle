@@ -1,6 +1,6 @@
 import { RecoilValueReadOnly, selector } from "recoil";
 import propDataStore from "./propDataStore";
-import { JsonType, NodeConfig, PathSegment } from "graphter-core";
+import { JsonType, NodeConfig, PathSegment } from "@graphter/core";
 import * as nodeRendererStore from "./nodeRendererStore";
 
 const modelDataMap: { [key: string]: RecoilValueReadOnly<any> } = {};

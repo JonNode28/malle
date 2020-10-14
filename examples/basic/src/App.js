@@ -4,7 +4,7 @@ import Header from './components/Header';
 import s from './App.pcss'
 import Footer from "./components/Footer";
 import { Route, BrowserRouter as Router, Switch, Link } from "react-router-dom";
-import { ServiceProvider } from "graphter-renderer-react";
+import { ServiceProvider } from "@graphter/renderer-react";
 import service from './service';
 import ExampleList from "./components/example-list";
 import { ExampleEdit } from "./components/example-edit/ExampleEdit"

@@ -1,4 +1,4 @@
-import { NodeConfig } from "graphter-core";
+import { NodeConfig } from "@graphter/core";
 
 export function createDefault(config: NodeConfig, fallbackValue: any = undefined): any{
   const defaultType = typeof config.default;

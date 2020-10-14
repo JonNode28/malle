@@ -6,7 +6,7 @@ import '@testing-library/jest-dom/extend-expect'
 import ServiceProvider from "../service-provider";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
-import { ListResult, NodeConfig } from "graphter-core";
+import { ListResult, NodeConfig } from "@graphter/core";
 
 function MockPagination({ count }: RenderPaginationProps) {
   return (

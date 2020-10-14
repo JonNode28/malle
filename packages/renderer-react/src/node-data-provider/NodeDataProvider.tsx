@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { NodeConfig, PathSegment } from "graphter-core";
+import { NodeConfig, PathSegment } from "@graphter/core";
 import { nanoid } from "nanoid";
 import useRecoilArrayNodeData from "./useRecoilArrayNodeData";
 

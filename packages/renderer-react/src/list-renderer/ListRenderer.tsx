@@ -5,7 +5,7 @@ import ErrorBoundary from "../error-boundary";
 import DefaultError from "../default-error";
 import { RenderItemProps } from "./RenderItemProps";
 import { RenderPaginationProps } from "./RenderPaginationProps";
-import { ErrorRendererProps, NodeConfig } from "graphter-core";
+import { ErrorRendererProps, NodeConfig } from "@graphter/core";
 
 export interface ListRendererProps {
   config: NodeConfig

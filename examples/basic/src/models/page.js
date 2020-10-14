@@ -1,6 +1,6 @@
-import { ValidationExecutionStage } from "graphter-core";
-import { JsonSchemaNodeValidator } from "graphter-validator-jsonschema";
-import { AllValidationExecutionStages } from "graphter-core";
+import { ValidationExecutionStage } from "@graphter/core";
+import { JsonSchemaNodeValidator } from "@graphter/validator-jsonschema";
+import { AllValidationExecutionStages } from "@graphter/core";
 
 export default {
   id: 'page',

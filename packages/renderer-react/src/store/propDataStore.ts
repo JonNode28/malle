@@ -1,5 +1,5 @@
 import { atom, RecoilState } from "recoil";
-import { NodeConfig, PathSegment } from "graphter-core";
+import { NodeConfig, PathSegment } from "@graphter/core";
 import { nanoid } from "nanoid";
 
 interface PropDataStateMeta {

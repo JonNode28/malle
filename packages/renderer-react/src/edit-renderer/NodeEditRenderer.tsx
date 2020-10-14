@@ -3,16 +3,13 @@ import s from './NodeEditRenderer.pcss';
 import { isEmpty } from "../util/id";
 import { useService } from "../service-provider/ServiceProvider";
 import DefaultError from "../default-error";
-import {
-  RecoilRoot, useRecoilCallback,
-} from 'recoil';
+import { useRecoilCallback } from 'recoil';
 import {
   NodeConfig,
   ErrorRendererProps,
   NodeRendererRegistration,
-} from "graphter-core"
+} from "@graphter/core"
 import nodeRendererStore from "../store/nodeRendererStore"
-import { nanoid } from 'nanoid'
 import modelDataStore from "../store/modelDataStore";
 
 export interface NodeEditRendererProps {
@@ -94,7 +91,7 @@ export default function NodeEditRenderer(
           })()
         }} data-testid='form'>
 
-        <h1>{config.name}</h1>
+        <h1 className={s.name}>{config.name}</h1>
         {config.description && <p>{config.description}</p>}
 
         <TypeRenderer
@@ -107,8 +104,8 @@ export default function NodeEditRenderer(
         />
 
         <div className={s.controls}>
-          <button type='submit' data-testid='save'>Save</button>
-          <button type='button' data-testid='cancel' onClick={() => cancel(config.id, editingId)}>Cancel</button>
+          <button type='submit' data-testid='save' className={s.save}>Save</button>
+          <button type='button' data-testid='cancel' className={s.cancel} onClick={() => cancel(config.id, editingId)}>Cancel</button>
         </div>
       </form>
     </div>

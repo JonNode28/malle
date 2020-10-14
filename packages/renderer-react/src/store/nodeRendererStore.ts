@@ -1,4 +1,4 @@
-import { NodeRendererRegistration } from "graphter-core";
+import { NodeRendererRegistration } from "@graphter/core";
 
 const nodeRendererMap: { [key: string]: NodeRendererRegistration } = {};
 

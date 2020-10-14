@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { NodeConfig, NodeRendererProps } from "graphter-core";
-import { nodeRendererStore, createDefault } from "graphter-renderer-react";
+import React from 'react'
+import { NodeConfig, NodeRendererProps } from "@graphter/core";
+import { nodeRendererStore, createDefault } from "@graphter/renderer-react";
 import s from './ListNodeRenderer.pcss'
-import { useArrayNodeData } from "graphter-renderer-react";
-import { nanoid } from "nanoid";
+import { useArrayNodeData } from "@graphter/renderer-react";
 
 export default function ListNodeRenderer(
   {

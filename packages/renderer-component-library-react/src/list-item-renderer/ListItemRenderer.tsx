@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import * as R from 'ramda';
 import s from './ListItemRenderer.pcss';
-import { RenderItemProps } from "graphter-renderer-react";
+import { RenderItemProps } from "@graphter/renderer-react";
 
 export interface ListItemRendererProps extends RenderItemProps {
   idPath?: Array<string>,

@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { ValidationErrorDisplayMode, ValidationExecutionStage, ValidationResult, Validator } from "graphter-core";
+import { ValidationErrorDisplayMode, ValidationExecutionStage, ValidationResult, Validator } from "@graphter/core";
 import { JsonSchemaValidatorOptions } from "./JsonSchemaValidatorOptions";
 
 export default class JsonSchemaValidator implements Validator {

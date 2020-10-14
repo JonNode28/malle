@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { NodeRendererProps } from "graphter-core";
-import { createDefault } from "graphter-renderer-react";
-import { useNodeData } from "graphter-renderer-react";
-import { useNodeValidation } from "graphter-renderer-react";
+import { NodeRendererProps } from "@graphter/core";
+import { createDefault } from "@graphter/renderer-react";
+import { useNodeData } from "@graphter/renderer-react";
+import { useNodeValidation } from "@graphter/renderer-react";
 import s from './StringNodeRenderer.pcss'
 
 function StringNodeRenderer(

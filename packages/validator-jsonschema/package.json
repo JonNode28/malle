@@ -1,5 +1,5 @@
 {
-  "name": "graphter-validator-jsonschema",
+  "name": "@graphter/validator-jsonschema",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -30,7 +30,7 @@
     "ajv": "^6.12.2",
     "eslint": "^6.8.0",
     "jest": "^25.5.4",
-    "graphter-core": "file:../core",
+    "@graphter/core": "file:../core",
     "rollup": "^2.2.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",

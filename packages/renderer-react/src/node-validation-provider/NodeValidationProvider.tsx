@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { NodeConfig, PathSegment, ValidationResult } from "graphter-core";
+import { NodeConfig, PathSegment, ValidationResult } from "@graphter/core";
 
 interface DataProviderProps {
   instanceId: string | number,

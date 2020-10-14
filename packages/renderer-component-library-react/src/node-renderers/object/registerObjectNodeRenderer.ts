@@ -1,6 +1,6 @@
 import ObjectNodeRenderer from "./ObjectNodeRenderer";
-import { NodeRendererRegistration } from "graphter-core";
-import { JsonType } from "graphter-core";
+import { NodeRendererRegistration } from "@graphter/core";
+import { JsonType } from "@graphter/core";
 
 export interface ObjectNodeRendererOptions {
   type: string

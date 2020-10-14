@@ -7,20 +7,20 @@ import {
   ValidationResultsProvider,
   ValidationSummary,
   NodeEditRenderer
-} from "graphter-renderer-react";
+} from "@graphter/renderer-react";
 import {
   ErrorPanel,
   registerStringNodeRenderer,
   registerObjectNodeRenderer,
   registerListNodeRenderer
-} from "graphter-renderer-component-library-react";
+} from "@graphter/renderer-component-library-react";
 import {
   NodeDataProvider,
   useRecoilNodeData,
   useRecoilArrayNodeData,
   NodeValidationProvider,
   useRecoilNodeValidation
-} from "graphter-renderer-react";
+} from "@graphter/renderer-react";
 import { RecoilRoot } from "recoil";
 
 export function ExampleEdit({config, listUri}) {

@@ -1,9 +1,7 @@
-import { NodeConfig, PathSegment } from "graphter-core";
 import { ArrayNodeDataHook } from "./NodeDataProvider";
 import propDataStore from "../store/propDataStore";
-import { useRecoilState } from "recoil";
 import { nanoid } from "nanoid";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import useRecoilNodeData from "./useRecoilNodeData";
 
 /**

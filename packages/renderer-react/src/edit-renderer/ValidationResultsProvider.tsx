@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Service, ValidationResult } from "graphter-core";
+import { Service, ValidationResult } from "@graphter/core";
 
 interface ValidationResultsProviderProps {
   children: any

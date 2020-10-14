@@ -2,9 +2,9 @@ import React, { Fragment } from 'react';
 import s from './ExampleList.pcss';
 import pageConfig from "../../models/page";
 import ExampleListItem from "../example-list-item/ExampleListItem";
-import { Pagination } from "graphter-renderer-component-library-react";
+import { Pagination } from "@graphter/renderer-component-library-react";
 import {Link, Route} from "react-router-dom";
-import { ListRenderer } from "graphter-renderer-react";
+import { ListRenderer } from "@graphter/renderer-react";
 import { useLocation } from "react-router";
 import querystring from 'query-string';
 import cs from 'classnames'

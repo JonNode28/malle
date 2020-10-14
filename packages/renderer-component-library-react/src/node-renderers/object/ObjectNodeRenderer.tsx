@@ -1,7 +1,7 @@
 import React from "react";
-import { NodeConfig, NodeRendererProps } from "graphter-core";
-import { nodeRendererStore } from "graphter-renderer-react";
-import { createDefault, useNodeData } from "graphter-renderer-react";
+import { NodeConfig, NodeRendererProps } from "@graphter/core";
+import { nodeRendererStore } from "@graphter/renderer-react";
+import { createDefault, useNodeData } from "@graphter/renderer-react";
 import s from './ObjectNodeRenderer.pcss'
 
 export default function ObjectNodeRenderer(
