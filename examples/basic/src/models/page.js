@@ -46,6 +46,7 @@ export default {
             {
               id: 'name',
               name: 'Name',
+              description: ' ',
               type: 'string',
               validation: [
                 new JsonSchemaNodeValidator({
@@ -61,6 +62,7 @@ export default {
             {
               id: 'location',
               name: 'Location',
+              description: ' ',
               type: 'string'
             }
           ]

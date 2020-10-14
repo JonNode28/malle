@@ -73,9 +73,9 @@ function DefaultExistingItemWrapper(
   }: DefaultExistingItemWrapperProps
 ) {
   return (
-    <div>
+    <div className={s.defaultItemWrapper}>
       {children}
-      <button type='button' onClick={onRemove}>Remove [-]</button>
+      <button type='button' className={s.button} onClick={onRemove}>Remove [-]</button>
     </div>
   )
 }
@@ -95,9 +95,9 @@ function DefaultNewItemWrapper(
 ) {
   return (
 
-    <div>
+    <div className={s.defaultNewItemWrapper}>
       {children}
-      <button type='button' onClick={onAdd}>Add [+]</button>
+      <button type='button' className={s.button} onClick={onAdd}>Add [+]</button>
     </div>
   )
 }

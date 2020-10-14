@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import s from './StringNodeRenderer.pcss'
 import { NodeRendererProps } from "graphter-core";
 import { createDefault } from "graphter-renderer-react";
 import { useNodeData } from "graphter-renderer-react";
 import { useNodeValidation } from "graphter-renderer-react";
+import s from './StringNodeRenderer.pcss'
 
 function StringNodeRenderer(
   {
@@ -24,6 +24,7 @@ function StringNodeRenderer(
         type='text'
         value={nodeData}
         data-testid='string-input'
+        className={s.input}
         onChange={(e) => {
           if(!touched) setTouched(true)
           setNodeData && setNodeData(e.currentTarget.value);
