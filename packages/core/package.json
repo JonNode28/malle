@@ -9,9 +9,6 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest --config jest.config.js",
-    "test:watch": "react-scripts test --env=jsdom",
-    "test:update-snapshots": "jest --updateSnapshot",
     "build": "rollup -c",
     "start": "rollup -c -w",
     "prepare": "npm run build"
