@@ -76,5 +76,8 @@
     "ts-jest": "^25.3.1",
     "typescript": "^3.8.3",
     "use-debounce": "^3.4.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
